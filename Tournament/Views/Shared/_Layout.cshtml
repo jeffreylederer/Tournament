@@ -22,6 +22,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Players", "Index", "Players")</li>
+                    <li>@Html.ActionLink("Tournament Schedule", "Index", "Schedules")</li>
                     <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
                     if (HttpContext.Current.User.IsInRole("Admin"))
                     {

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Tournament.Models.Schedule>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RoundNo)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <td>
+            @Html.DisplayFor(modelItem => item.RoundNo)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {id = item.id}) |
+            @Html.ActionLink("Delete", "Delete", new {id = item.id})
+        </td>
+    </tr>
+}
+
+</table>
