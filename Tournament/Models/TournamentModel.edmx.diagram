@@ -17,6 +17,7 @@
         <AssociationConnector Association="TournamentModel.FK__Players1" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players2" ManuallyRouted="false" />
         <EntityTypeShape EntityType="TournamentModel.User" Width="1.5" PointX="0.75" PointY="8.75" />
+        <EntityTypeShape EntityType="TournamentModel.Fact" Width="1.5" PointX="7.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

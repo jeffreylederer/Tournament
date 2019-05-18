@@ -33,6 +33,7 @@ namespace Tournament.Models
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Fact> Facts { get; set; }
     
         public virtual ObjectResult<GetMatchAll_Result> GetMatchAll(Nullable<int> roundId)
         {

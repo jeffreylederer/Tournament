@@ -21,6 +21,14 @@
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
         </EntityType>
+        <EntityType Name="Fact">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="SizeTeam" Type="int" Nullable="false" />
+          <Property Name="Description" Type="text" Nullable="false" />
+        </EntityType>
         <EntityType Name="Match">
           <Key>
             <PropertyRef Name="id" />
@@ -147,6 +155,7 @@
         </Function>
         <EntityContainer Name="TournamentModelStoreContainer">
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Fact" EntityType="Self.Fact" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Match" EntityType="Self.Match" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
@@ -355,6 +364,7 @@
           <Parameter Name="RoundId" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="Users" EntityType="TournamentModel.User" />
+          <EntitySet Name="Facts" EntityType="TournamentModel.Fact" />
         </EntityContainer>
         <ComplexType Name="GetMatchAll_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -378,6 +388,14 @@
           <Property Name="username" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="password" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Fact">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="SizeTeam" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -470,6 +488,15 @@
                 <ScalarProperty Name="Roles" ColumnName="Roles" />
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Facts">
+            <EntityTypeMapping TypeName="TournamentModel.Fact">
+              <MappingFragment StoreEntitySet="Fact">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="SizeTeam" ColumnName="SizeTeam" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

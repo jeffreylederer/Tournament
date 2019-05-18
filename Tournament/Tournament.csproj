@@ -203,6 +203,9 @@
     <Compile Include="Models\ELMAH_Error.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Fact.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\GetMatchAll_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
