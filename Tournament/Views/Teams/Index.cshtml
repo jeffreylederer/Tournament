@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Tournament.Models.Team>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Wednesday Teams</h2>
+
+<p>
+    @Html.ActionLink("Add Team", "Create")<br/>
+    <a href="/Reports/TeamsReport.aspx" >Teams Report</a>
+</p>
+<table class="table-condensed table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Skip)
+        </th>
+    @{
+        if ((int) ViewBag.TeamSize > 2)
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.ViceSkip)
+            </th>
+        }
+    }
+    @{
+        if ((int) ViewBag.TeamSize > 1)
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.Lead)
+            </th>
+        }
+    }
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model) {
+    <tr>
+        <th>
+            @Html.DisplayFor(modelItem => item.id)
+        </th>
+        <td>
+            @Html.DisplayFor(modelItem => item.Player.FullName)
+        </td>
+    @if ((int) ViewBag.TeamSize > 2)
+    {
+        <td>
+            @Html.DisplayFor(modelItem => item.Player1.FullName)
+        </td>
+    }
+    @if ((int) ViewBag.TeamSize > 1)
+    {
+        <td>
+            @Html.DisplayFor(modelItem => item.Player2.FullName)
+        </td>
+    }
+        <td>
+        @if ((int) ViewBag.TeamSize > 1)
+        {
+            @Html.ActionLink("Edit", "Edit", new {id = item.id})
+        }
+            @if ((int) ViewBag.TeamSize > 1)
+            {
+                @Html.Raw("|")
+            }
+
+            @Html.ActionLink("Delete", "Delete", new {id = item.id}) |
+
+
+            @if ((int) ViewBag.TeamSize > 2)
+            {
+                @Html.ActionLink("Remove Vice Skip", "RemoveViceSkip", new {id = item.id})
+            }
+            @if ((int) ViewBag.TeamSize > 2)
+            {
+                @Html.Raw("|")
+            }
+
+
+            @if ((int) ViewBag.TeamSize > 1)
+            {
+                @Html.ActionLink("Remove Lead", "RemoveLead", new {id = item.id})
+            }
+        </td>
+    </tr>
+    }
+
+</table>
