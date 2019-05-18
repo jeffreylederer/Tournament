@@ -6,7 +6,10 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using Microsoft.Reporting.WebForms;
 using Tournament.Models;
+using Tournament.ReportFiles;
 
 namespace Tournament.Controllers
 {
@@ -76,6 +79,44 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e); ;
             }
             return RedirectToAction("Index");
+        }
+
+        public ActionResult TeamReport()
+        {
+            var reportViewer = new ReportViewer()
+            {
+                ProcessingMode = ProcessingMode.Local,
+                Width = Unit.Pixel(800),
+                Height = Unit.Pixel(1000),
+                ShowExportControls =  true
+            };
+            switch (_teamsize)
+            {
+                case 1:
+                    reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/SingleTeams.rdlc");
+                    break;
+                case 2:
+                    reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/PairsTeams.rdlc");
+                    break;
+                case 3:
+                    reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/TriplesTeams.rdlc");
+                    break;
+            }
+
+            var fact = db.Facts.Find(1);
+            var p2 = new ReportParameter("Description", fact.Description);
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
+
+            var teams = db.Teams;
+            var ds = new TournamentDS();
+            foreach (var team in teams)
+            {
+                ds.Team.AddTeamRow(team.id, team.Player.FullName, team.ViceSkip == null? "": team.Player1.FullName, team.Lead== null? "" : team.Player2.FullName);
+            }
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
+
+            ViewBag.ReportViewer = reportViewer;
+            return View();
         }
 
 

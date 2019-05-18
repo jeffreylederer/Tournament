@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="TournamentDS" targetNamespace="http://tempuri.org/TournamentDS.xsd" xmlns:mstns="http://tempuri.org/TournamentDS.xsd" xmlns="http://tempuri.org/TournamentDS.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="TournamentDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="TournamentDS" msprop:Generator_UserDSName="TournamentDS">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Team" msprop:Generator_TableClassName="TeamDataTable" msprop:Generator_TableVarName="tableTeam" msprop:Generator_TablePropName="Team" msprop:Generator_RowDeletingName="TeamRowDeleting" msprop:Generator_RowChangingName="TeamRowChanging" msprop:Generator_RowEvHandlerName="TeamRowChangeEventHandler" msprop:Generator_RowDeletedName="TeamRowDeleted" msprop:Generator_UserTableName="Team" msprop:Generator_RowChangedName="TeamRowChanged" msprop:Generator_RowEvArgName="TeamRowChangeEvent" msprop:Generator_RowClassName="TeamRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TeamNumber" msprop:Generator_ColumnVarNameInTable="columnTeamNumber" msprop:Generator_ColumnPropNameInRow="TeamNumber" msprop:Generator_ColumnPropNameInTable="TeamNumberColumn" msprop:Generator_UserColumnName="TeamNumber" type="xs:int" minOccurs="0" />
+              <xs:element name="Skip" msprop:Generator_ColumnVarNameInTable="columnSkip" msprop:Generator_ColumnPropNameInRow="Skip" msprop:Generator_ColumnPropNameInTable="SkipColumn" msprop:Generator_UserColumnName="Skip" type="xs:string" minOccurs="0" />
+              <xs:element name="ViceSkip" msprop:Generator_ColumnVarNameInTable="columnViceSkip" msprop:Generator_ColumnPropNameInRow="ViceSkip" msprop:Generator_ColumnPropNameInTable="ViceSkipColumn" msprop:Generator_UserColumnName="ViceSkip" type="xs:string" minOccurs="0" />
+              <xs:element name="Lead" msprop:Generator_ColumnVarNameInTable="columnLead" msprop:Generator_ColumnPropNameInRow="Lead" msprop:Generator_ColumnPropNameInTable="LeadColumn" msprop:Generator_UserColumnName="Lead" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
