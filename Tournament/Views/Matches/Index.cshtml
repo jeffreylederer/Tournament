@@ -1,0 +1,106 @@
+﻿@using System.Web.UI.WebControls
+@using Tournament.Extensions
+@model IEnumerable<Tournament.Models.Match>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2> Matches for @ViewBag.Date</h2>
+@using (Html.BeginForm("Index", "Matches", FormMethod.Post))
+{
+    <div>
+
+        @Html.DropDownList("ScheduleID", (SelectList)ViewBag.ScheduleID, "Select Week", new { @class = "form-control" })
+        <input type="submit" value="Select Week" class="btn btn-primary" />
+    </div>
+}
+<br />
+
+<p>
+    <a href="/Reports/Scoring.aspx?weekid=@ViewBag.RoundId" >This week's standings report</a><br/>
+    <a href="/Reports/ScoreCards.aspx?&weekid=@ViewBag.RoundId" >This week's score cards</a>
+</p>
+
+<table class="table-condensed table-striped">
+    <tr>
+        <th>
+            Exchange Rink
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Rink)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Schedule.RoundNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamNo1)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TeamNo2)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Team1Score)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Team2Score)
+        </th>
+        <th></th>
+    </tr>
+    @{ var id = 0;}
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>
+            @{
+                if (@id > 0)
+                {
+                    @Html.ActionImage("MoveUp", new { id = id, weekid = ViewBag.WeekID }, "~/Content/Images/uparrow.png", "Move Up one rink");
+                }
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Rink)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Schedule.RoundNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team.id)&nbsp; (@Html.DisplayFor(modelItem => item.Team.Player.NickName),@Html.DisplayFor(modelItem => item.Team.Player1.NickName),@Html.DisplayFor(modelItem => item.Team.Player2.NickName) )
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team1.id) &nbsp;(@Html.DisplayFor(modelItem => item.Team1.Player.NickName),@Html.DisplayFor(modelItem => item.Team1.Player1.NickName),@Html.DisplayFor(modelItem => item.Team1.Player2.NickName) )
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team1Score)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team2Score)
+        </td>
+        <td>
+           @Html.ActionLink("Scoring", "Scoring", new { id = item.id })
+        </td>
+    </tr>
+        id++;
+    }
+
+</table>
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $("#ScheduleID").change(function(){
+
+                var selected = $("#ScheduleID option:selected").val();
+                $("#Create").attr('href',"Matches/Create/" + selected);
+
+            });
+
+        });
+
+    </script>
+}

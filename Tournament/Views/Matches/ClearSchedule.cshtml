@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "ClearSchedule";
+}
+
+<h2>Clear Schedule</h2>
+
+<h3 style="color: red;">Are you sure you want to delete the scheduled weeks, teams, and matches for the Wednesday League?</h3>
+<div>
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            @Html.Hidden("DeleteIT","");
+            <input type="submit" value="Delete" class="btn btn-default"/> |
+            @Html.ActionLink("Return to Home page", "Index", "Home")
+        </div>
+    }
+</div>
