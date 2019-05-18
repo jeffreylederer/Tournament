@@ -10,13 +10,13 @@
         <EntityTypeShape EntityType="TournamentModel.Player" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="TournamentModel.Schedule" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="TournamentModel.Team" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.Fact" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
         <AssociationConnector Association="TournamentModel.FK_Schedule_Schedule" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK_Schedule_Team" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK_Schedule_Team1" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players1" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players2" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="TournamentModel.User" Width="1.5" PointX="0.75" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ELMAH_Error">
           <Key>
             <PropertyRef Name="ErrorId" />
@@ -20,18 +20,6 @@
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
-        </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="Fact">
-          <Key>
-            <PropertyRef Name="id" />
-            <PropertyRef Name="SizeTeam" />
-            <PropertyRef Name="Description" />
-          </Key>
-          <Property Name="id" Type="int" Nullable="false" />
-          <Property Name="SizeTeam" Type="int" Nullable="false" />
-          <Property Name="Description" Type="text" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -72,6 +60,15 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
           <Property Name="Skip" Type="int" Nullable="false" />
           <Property Name="ViceSkip" Type="int" />
           <Property Name="Lead" Type="int" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Roles" Type="varchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK__Players">
           <End Role="Player" Type="Self.Player" Multiplicity="1" />
@@ -154,13 +151,7 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
           <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Team" EntityType="Self.Team" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Fact" EntityType="Self.Fact" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [Fact].[id] AS [id], 
-    [Fact].[SizeTeam] AS [SizeTeam], 
-    [Fact].[Description] AS [Description]
-    FROM [dbo].[Fact] AS [Fact]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__Players" Association="Self.FK__Players">
             <End Role="Player" EntitySet="Player" />
             <End Role="Team" EntitySet="Team" />
@@ -186,8 +177,7 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
             <End Role="Match" EntitySet="Match" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TournamentModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -258,16 +248,6 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
           <NavigationProperty Name="Player" Relationship="Self.FK__Players" FromRole="Team" ToRole="Player" />
           <NavigationProperty Name="Player1" Relationship="Self.FK__Players1" FromRole="Team" ToRole="Player" />
           <NavigationProperty Name="Player2" Relationship="Self.FK__Players2" FromRole="Team" ToRole="Player" />
-        </EntityType>
-        <EntityType Name="Fact">
-          <Key>
-            <PropertyRef Name="id" />
-            <PropertyRef Name="SizeTeam" />
-            <PropertyRef Name="Description" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" />
-          <Property Name="SizeTeam" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
         </EntityType>
         <Association Name="FK_Schedule_Schedule">
           <End Role="Schedule" Type="Self.Schedule" Multiplicity="1" />
@@ -347,7 +327,6 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
           <EntitySet Name="Players" EntityType="Self.Player" />
           <EntitySet Name="Schedules" EntityType="Self.Schedule" />
           <EntitySet Name="Teams" EntityType="Self.Team" />
-          <EntitySet Name="Facts" EntityType="Self.Fact" />
           <AssociationSet Name="FK_Schedule_Schedule" Association="Self.FK_Schedule_Schedule">
             <End Role="Schedule" EntitySet="Schedules" />
             <End Role="Match" EntitySet="Matches" />
@@ -373,8 +352,9 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
             <End Role="Team" EntitySet="Teams" />
           </AssociationSet>
           <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
-            <Parameter Name="RoundId" Mode="In" Type="Int32" />
+          <Parameter Name="RoundId" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="Users" EntityType="TournamentModel.User" />
         </EntityContainer>
         <ComplexType Name="GetMatchAll_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -390,6 +370,15 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
           <Property Type="Int32" Name="RoundId" Nullable="false" />
           <Property Type="Int32" Name="Rink" Nullable="false" />
         </ComplexType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -457,15 +446,6 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Facts">
-            <EntityTypeMapping TypeName="TournamentModel.Fact">
-              <MappingFragment StoreEntitySet="Fact">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="SizeTeam" ColumnName="SizeTeam" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetMatchAll" FunctionName="TournamentModel.Store.GetMatchAll">
             <ResultMapping>
               <ComplexTypeMapping TypeName="TournamentModel.GetMatchAll_Result">
@@ -484,6 +464,16 @@ warning 6002: The table/view 'Tournament.dbo.Fact' does not have a primary key d
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="TournamentModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Roles" ColumnName="Roles" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
