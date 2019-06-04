@@ -1,0 +1,13 @@
+﻿@using ReportViewerForMvc
+
+@{
+    ViewBag.Title = "ByesReport";
+}
+
+<h2>Byes Report</h2>
+@Html.ActionLink("Back to Home", "Index","Home")
+
+@Html.ReportViewer(
+    ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer,
+    new { scrolling = "no" })
+

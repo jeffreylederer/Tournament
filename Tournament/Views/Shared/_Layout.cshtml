@@ -21,16 +21,34 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Leagues", "Index", "Leagues")</li>
                     <li>@Html.ActionLink("Players", "Index", "Players")</li>
-                    <li>@Html.ActionLink("Tournament Schedule", "Index", "Schedules")</li>
-                    <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
-                    if (HttpContext.Current.User.IsInRole("Admin"))
-                    {
-                    <li>@Html.ActionLink("Error Log", "Index", "Elmah", new {type = ""}, new {target = "_blank"})</li>
+                    <li class="menu-item dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Create Tournament<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Tournament Schedule", "Index", "Schedules")</li>
+                            <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
+                            <li>@Html.ActionLink("Matches", "Index", "Matches", new { RoundId = 1 }, null)</li>
+                            <li><a href="/Reports/Byes.aspx?league=Tuesday">Byes</a></li>
+                            <li><a href="/Reports/Schedule.aspx?league=Tuesday">View Schedule</a></li>
+                            @{
+                                //if (HttpContext.Current.User.IsInRole("Admin"))
+                                {
+                                    <li>----------------------------</li>
+                                    <li>@Html.ActionLink("Clear Schedule", "ClearSchedule", "Matches")</li>
+                                    <li>@Html.ActionLink("Create Matches", "CreateMatches", "Matches")</li>
+                                }
+                            }
+
+                        </ul>
+
+                        @if (HttpContext.Current.User.IsInRole("Admin"))
+                        {
+                        <li>@Html.ActionLink("Error Log", "Index", "Elmah", new { type = "" }, new { target = "_blank" })</li>
                     }
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>

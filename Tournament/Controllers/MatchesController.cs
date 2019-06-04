@@ -5,8 +5,11 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using Microsoft.Reporting.WebForms;
 using Tournament.Code;
 using Tournament.Models;
+using Tournament.ReportFiles;
 
 namespace Tournament.Controllers
 {
@@ -18,9 +21,9 @@ namespace Tournament.Controllers
         // GET: Matches
         public ActionResult Index(int? RoundId)
         {
-            var Matches = db.Matches.Where(x => x.RoundId == RoundId.Value && x.Rink != -1); ;
-            ViewBag.ScheduleID = new SelectList(db.Schedules.ToList(), "id", "RoundNo", RoundId ?? 0);
-            ViewBag.RoundId = db.Schedules.Find(RoundId.Value).RoundNo;
+            var Matches = db.Matches.Where(x => x.RoundId == RoundId.Value && x.Rink != -1);
+            ViewBag.ScheduleID = new SelectList(db.Schedules.Where(x=>x.Leagueid == (int)HttpContext.Session["leagueid"]).ToList(), "id", "RoundName", RoundId ?? 0);
+            ViewBag.RoundId = db.Schedules.Find(RoundId.Value).id;
             ViewBag.WeekID = RoundId;
             return View(Matches.OrderBy(x => x.Rink).ToList());
         }
@@ -56,13 +59,18 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateMatches(string DeleteIT)
         {
-            var numOfWeeks = db.Schedules.Count();
-            var numofTeams = db.Teams.Count();
-            db.Matches.RemoveRange(db.Matches);
+            var numOfWeeks = db.Schedules.Count(x => x.Leagueid == (int)HttpContext.Session["leagueid"]);
+            var numofTeams = db.Teams.Count(x => x.Leagueid == (int)HttpContext.Session["leagueid"]);
+            foreach (var item in db.Schedules.Where(x => x.Leagueid == (int) HttpContext.Session["leagueid"]))
+            {
+                foreach(var match in db.Matches.Where(x => x.RoundId == item.id).ToList())
+                    db.Matches.Remove(match);
+            }
             db.SaveChanges();
             var cs = new CreateSchedule();
 
             var matches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
+            
 
             foreach (var match in matches)
             {
@@ -86,11 +94,11 @@ namespace Tournament.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-           
-            return RedirectToAction("index", new { RoundId = 1 });
+            var round1 = db.Schedules.Where(x => x.Leagueid == (int) HttpContext.Session["leagueid"]).First();
+            return RedirectToAction("index", new { RoundId = round1.id });
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public ActionResult ClearSchedule()
         {
             return View();
@@ -100,9 +108,13 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ClearSchedule(string DeleteIT)
         {
-            db.Schedules.RemoveRange(db.Schedules);
-            db.Teams.RemoveRange(db.Teams);
-            db.Matches.RemoveRange(db.Matches);
+            foreach (var item in db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]))
+            {
+                foreach (var match in db.Matches.Where(x => x.RoundId == item.id).ToList())
+                    db.Matches.Remove(match);
+            }
+            db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]));
+            db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]));
             try
             {
                 db.SaveChanges();
@@ -114,6 +126,65 @@ namespace Tournament.Controllers
             
             return RedirectToAction("index", "Home");
         }
+
+        public ActionResult ScoringReport(int RoundId)
+        {
+            var reportViewer = new ReportViewer()
+            {
+                ProcessingMode = ProcessingMode.Local,
+                Width = Unit.Pixel(800),
+                Height = Unit.Pixel(1000),
+                ShowExportControls = true
+            };
+            ViewBag.RoundId = RoundId;
+
+            
+            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
+            var RoundName = db.Schedules.Find(RoundId).RoundName;
+            var ds = new TournamentDS();
+            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Byes.rdlc");
+
+            ViewBag.ReportViewer = reportViewer;
+            return View();
+        }
+
+        public ActionResult ByesReport()
+        {
+            var reportViewer = new ReportViewer()
+            {
+                ProcessingMode = ProcessingMode.Local,
+                Width = Unit.Pixel(800),
+                Height = Unit.Pixel(1000),
+                ShowExportControls = true
+            };
+
+            var ds = new TournamentDS();
+            using (var db = new TournamentEntities())
+            {
+                foreach (var item in db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x=>x.SortOrder))
+                {
+                    var schedule = item.RoundName;
+                    foreach (var match in db.Matches.Where(x => x.RoundId == item.id && x.Rink == -1).ToList())
+                    {
+                        var team = db.Teams.Find(match.TeamNo1);
+                        ds.Byes.AddByesRow(item.RoundName, match.TeamNo1,
+                            team.Player.NickName +
+                            (!team.ViceSkip.HasValue? "": $",{team.Player1.NickName}") +
+                            (!team.Lead.HasValue? "": $",{team.Player2.NickName}"));
+                    }
+                }
+            }
+
+            var p2 = new ReportParameter("Description", "Description");
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
+
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Byes", ds.Byes.Rows));
+
+            ViewBag.ReportViewer = reportViewer;
+            return View();
+        }
+
 
         public ActionResult Scoring(int? id)
         {
@@ -134,7 +205,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Scoring([Bind(Include = "id,GameDate,Rink,Team1,Team2,Team1Score,Team2Score")] Match Match)
+        public ActionResult Scoring([Bind(Include = "id,RoundId,Rink,TeamNo1,TeamNo2,Team1Score,Team2Score")] Match Match)
         {
             if (ModelState.IsValid)
             {

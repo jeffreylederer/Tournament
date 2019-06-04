@@ -198,16 +198,62 @@
     <Compile Include="Controllers\ElmahController.cs" />
     <Compile Include="Controllers\ElmanResult.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LeaguesController.cs" />
     <Compile Include="Controllers\PlayersController.cs" />
     <Compile Include="Controllers\SchedulesController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
     <Compile Include="Controllers\MatchesController.cs" />
+    <Compile Include="Controllers\UserLeaguesController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Extensions\HtmlHelperExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Forfeit.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GetMatchAll_Result.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\League.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LeagueViewModel.cs" />
     <Compile Include="Models\LogUserViewModel.cs" />
+    <Compile Include="Models\Match.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MetaData.cs" />
+    <Compile Include="Models\Player.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Schedule.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Team.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserLeague.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportFiles\TournamentDS.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -226,6 +272,16 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Models\TournamentModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+      <LastGenOutput>TournamentModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\TournamentModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+      <LastGenOutput>TournamentModel.cs</LastGenOutput>
+    </Content>
     <Content Include="ReportViewerWebForm.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -234,6 +290,13 @@
     </Content>
     <Content Include="ReportFiles\TournamentDS.xsc">
       <DependentUpon>TournamentDS.xsd</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\TournamentModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>TournamentModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\TournamentModel.edmx.diagram">
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
     </Content>
     <None Include="ReportFiles\TournamentDS.xsd">
       <SubType>Designer</SubType>
@@ -295,7 +358,6 @@
     <Content Include="Views\Teams\TeamReport.cshtml" />
     <Content Include="Views\Schedules\Create.cshtml" />
     <Content Include="Views\Schedules\Delete.cshtml" />
-    <Content Include="Views\Schedules\Details.cshtml" />
     <Content Include="Views\Schedules\Edit.cshtml" />
     <Content Include="Views\Schedules\Index.cshtml" />
     <Content Include="Views\Matches\ClearSchedule.cshtml" />
@@ -303,6 +365,22 @@
     <Content Include="Views\Matches\CreateMatches.cshtml" />
     <Content Include="Views\Matches\Index.cshtml" />
     <Content Include="Views\Matches\Scoring.cshtml" />
+    <Content Include="Views\Matches\ScoringReport.cshtml" />
+    <Content Include="Views\Matches\ByesReport.cshtml" />
+    <Content Include="Views\Users\Create.cshtml" />
+    <Content Include="Views\Users\Delete.cshtml" />
+    <Content Include="Views\Users\Details.cshtml" />
+    <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Leagues\Create.cshtml" />
+    <Content Include="Views\Leagues\Delete.cshtml" />
+    <Content Include="Views\Leagues\Edit.cshtml" />
+    <Content Include="Views\Leagues\Index.cshtml" />
+    <Content Include="Views\UserLeagues\Create.cshtml" />
+    <Content Include="Views\UserLeagues\Delete.cshtml" />
+    <Content Include="Views\UserLeagues\Edit.cshtml" />
+    <Content Include="Views\UserLeagues\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -325,9 +403,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ReportFiles\AllScoreCards.rdlc" />
+    <EmbeddedResource Include="ReportFiles\Byes.rdlc" />
     <EmbeddedResource Include="ReportFiles\SingleTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\PairsTeams.rdlc" />
+    <EmbeddedResource Include="ReportFiles\Standings.rdlc" />
     <EmbeddedResource Include="ReportFiles\TriplesTeams.rdlc" />
+    <EmbeddedResource Include="ReportFiles\ScoreCard.rdlc" />
+    <EmbeddedResource Include="ReportFiles\RoundScoreCards.rdlc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

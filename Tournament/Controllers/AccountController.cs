@@ -33,7 +33,7 @@ namespace Tournament.Controllers
 
                     var users = entities.Users.Where(x => x.username == model.Username);
                     // User found in the database
-                    if (users != null && users.Count() == 1 && users.First().password == model.Password)
+                    if (users.Count() == 1 && users.First().password == model.Password)
                     {
                         var user = users.First();
                         FormsAuthentication.SetAuthCookie(username, false);
@@ -81,5 +81,7 @@ namespace Tournament.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        
     }
 }

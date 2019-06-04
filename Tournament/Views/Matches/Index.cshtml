@@ -11,8 +11,8 @@
 {
     <div>
 
-        @Html.DropDownList("ScheduleID", (SelectList)ViewBag.ScheduleID, "Select Week", new { @class = "form-control" })
-        <input type="submit" value="Select Week" class="btn btn-primary" />
+        @Html.DropDownList("RoundId", (SelectList)ViewBag.ScheduleID, "Select Round", new { @class = "form-control" })
+        <input type="submit" value="Select Round" class="btn btn-primary" />
     </div>
 }
 <br />
@@ -31,7 +31,7 @@
             @Html.DisplayNameFor(model => model.Rink)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Schedule.RoundNo)
+            @Html.DisplayNameFor(model => model.Schedule.RoundName)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.TeamNo1)
@@ -63,7 +63,7 @@
             @Html.DisplayFor(modelItem => item.Rink)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Schedule.RoundNo)
+            @Html.DisplayFor(modelItem => item.Schedule.RoundName)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Team.id)&nbsp; (@Html.DisplayFor(modelItem => item.Team.Player.NickName),@Html.DisplayFor(modelItem => item.Team.Player1.NickName),@Html.DisplayFor(modelItem => item.Team.Player2.NickName) )

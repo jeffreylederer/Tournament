@@ -21,11 +21,6 @@ namespace Tournament.Models
         [StringLength(25)]
         public string shortname { get; set; }
 
-        [Display(Name = "In Tuesday League")]
-        public bool TuesdayLeague { get; set; }
-        [Display(Name = "In Wednesday League")]
-        public bool WednesdayLeague { get; set; }
-
         [Display(Name = "Player")]
         public string FullName { get; set; }
 
@@ -41,7 +36,7 @@ namespace Tournament.Models
     {
         [Display(Name = "Team Number")]
         [Required]
-        public int id { get; set; }
+        public int TeamNo { get; set; }
 
         [Display(Name = "Vice Skip")]
         public string ViceSkip { get; set; }
@@ -57,7 +52,67 @@ namespace Tournament.Models
         [Required]
         public int id { get; set; }
 
+        [Display(Name = "Round Name")]
+        public int RoundName { get; set; }
+    }
+
+    [MetadataType(typeof(MatchMetaData))]
+    public partial class Match
+    {
+    }
+
+    public partial class MatchMetaData
+    {
+
+        [Display(Name = "Game Number")]
+        public int id { get; set; }
+
         [Display(Name = "Round Number")]
-        public int RoundNo { get; set; }
+        public int RoundId { get; set; }
+
+        public int Rink { get; set; }
+
+        [Display(Name = "Team 1")]
+        public int TeamNo1 { get; set; }
+
+        [Display(Name = "Team 2")]
+        public int TeamNo2 { get; set; }
+
+        [Display(Name = "Team Score 1")]
+        public int Team1Score { get; set; }
+
+        [Display(Name = "Team Score 2")]
+        public int Team2Score { get; set; }
+    }
+
+    [MetadataType(typeof(LeagueMetaData))]
+    public partial class League
+    {
+    }
+
+    public partial class LeagueMetaData
+    {
+        [Display(Name = "League Name")]
+        public string LeagueName { get; set; }
+
+        [Display(Name = "Team Size")]
+        [Range(1,3,ErrorMessage = "Teams may have 1,2, or 3 players")]
+        public int TeamSize { get; set; }
+    }
+
+    [MetadataType(typeof(UserLeagueMetaData))]
+    public partial class UserLeague
+    {
+    }
+
+    public partial class UserLeagueMetaData
+    {
+        [Display(Name = "User")]
+        public int UserId { get; set; }
+
+        [Display(Name = "League Name")]
+        public int LeagueId { get; set; }
+
+        public string Roles { get; set; }
     }
 }

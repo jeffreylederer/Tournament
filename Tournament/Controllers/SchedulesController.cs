@@ -18,28 +18,20 @@ namespace Tournament.Controllers
         // GET: Schedules
         public ActionResult Index()
         {
-            return View(db.Schedules.ToList());
+            return View(db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x=>x.SortOrder).ToList());
         }
 
-        // GET: Schedules/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Schedule schedule = db.Schedules.Find(id);
-            if (schedule == null)
-            {
-                return HttpNotFound();
-            }
-            return View(schedule);
-        }
+       
 
         // GET: Schedules/Create
         public ActionResult Create()
         {
-            return View();
+            var item = new Schedule()
+            {
+                Leagueid = (int) HttpContext.Session["leagueid"],
+                Cancelled = false
+            };
+            return View(item);
         }
 
         // POST: Schedules/Create
@@ -47,7 +39,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,RoundNo")] Schedule schedule)
+        public ActionResult Create([Bind(Include = "RoundName,SortOrder,LeagueId,Cancelled")] Schedule schedule)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +87,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,RoundNo")] Schedule schedule)
+        public ActionResult Edit([Bind(Include = "id,RoundName,Cancelled,SortOrder")] Schedule schedule)
         {
             if (ModelState.IsValid)
             {

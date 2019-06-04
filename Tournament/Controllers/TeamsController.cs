@@ -17,20 +17,15 @@ namespace Tournament.Controllers
     public class TeamsController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
-        private int _teamsize;
+       
 
-        public TeamsController()
-        {
-            var fact = db.Facts.Find(1);
-            _teamsize = fact.SizeTeam;
-        }
-
+       
         // GET: Teams
         public ActionResult Index()
         {
-            var Teams = db.Teams.Include(t => t.Player).Include(t => t.Player1);
-            ViewBag.TeamSize = _teamsize;
-            return View(Teams.OrderBy(x => x.id).ToList());
+            var Teams = db.Teams;
+            ViewBag.TeamSize = (int) HttpContext.Session["teamsize"];
+            return View(Teams.Where(x=>x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x => x.TeamNo).ToList());
         }
 
         public ActionResult RemoveLead(int? id)
@@ -90,7 +85,7 @@ namespace Tournament.Controllers
                 Height = Unit.Pixel(1000),
                 ShowExportControls =  true
             };
-            switch (_teamsize)
+            switch ((int)HttpContext.Session["teamsize"])
             {
                 case 1:
                     reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/SingleTeams.rdlc");
@@ -103,11 +98,10 @@ namespace Tournament.Controllers
                     break;
             }
 
-            var fact = db.Facts.Find(1);
-            var p2 = new ReportParameter("Description", fact.Description);
+            var p2 = new ReportParameter("Description", (string) HttpContext.Session["leaguename"]);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
-            var teams = db.Teams;
+            var teams = db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]);
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
@@ -124,7 +118,7 @@ namespace Tournament.Controllers
         // GET: Teams/Create
         public ActionResult Create()
         {
-            var items = db.Teams.ToList();
+            var items = db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x=>x.TeamNo).ToList();
             int id = 1;
             if (items.Count > 1)
             {
@@ -134,11 +128,12 @@ namespace Tournament.Controllers
 
             var item = new Team()
             {
-                id = id
+                id = id,
+                Leagueid = (int)HttpContext.Session["leagueid"]
             };
-            var teams = db.Teams.OrderBy(x => x.id);
+            var teams = db.Teams.Where(x=>x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x => x.TeamNo);
             var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active))
+            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == (int)HttpContext.Session["leagueid"]))
             {
                 if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                     list.Add(player);
@@ -147,7 +142,7 @@ namespace Tournament.Controllers
             ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", " ");
             ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", " ");
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = _teamsize;
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             return View(item);
         }
 
@@ -156,11 +151,11 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,Skip,Lead,ViceSkip")] Team Team)
+        public ActionResult Create([Bind(Include = "id,Skip,Lead,ViceSkip,LeagueId, TeamNo")] Team team)
         {
             if (ModelState.IsValid)
             {
-                db.Teams.Add(Team);
+                db.Teams.Add(team);
                 try
                 {
                     db.SaveChanges();
@@ -183,19 +178,19 @@ namespace Tournament.Controllers
 
             }
 
-            var teams = db.Teams.OrderBy(x => x.id);
+            var teams = db.Teams.Where(x=>x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x => x.TeamNo);
             var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active))
+            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == (int)HttpContext.Session["leagueid"]))
             {
                 if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                     list.Add(player);
             }
-            ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.Skip);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.ViceSkip);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.Lead);
+            ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Skip);
+            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.ViceSkip);
+            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Lead);
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = _teamsize;
-            return View(Team);
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"]; 
+            return View(team);
         }
 
         // GET: Teams/Edit/5
@@ -205,27 +200,27 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Team Team = db.Teams.Find(id);
-            if (Team == null)
+            Team team = db.Teams.Find(id);
+            if (team == null)
             {
                 return HttpNotFound();
             }
-            var teams = db.Teams.OrderBy(x => x.id);
+            var teams = db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x => x.TeamNo);
             var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active))
+            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid== (int)HttpContext.Session["leagueid"]))
             {
                 if(!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                     list.Add(player);
             }
-            if (Team.ViceSkip != null)
-                list.Add(Team.Player1);
-            if (Team.Lead != null)
-                list.Add(Team.Player2);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.Lead);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.ViceSkip);
+            if (team.ViceSkip != null)
+                list.Add(team.Player1);
+            if (team.Lead != null)
+                list.Add(team.Player2);
+            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Lead);
+            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.ViceSkip);
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = _teamsize;
-            return View(Team);
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"]; 
+            return View(team);
         }
 
         // POST: Teams/Edit/5
@@ -233,11 +228,11 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,Skip,Lead,ViceSkip")] Team Team)
+        public ActionResult Edit([Bind(Include = "id,Skip,Lead,ViceSkip,LeagueId,TeamNo")] Team team)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(Team).State = EntityState.Modified;
+                db.Entry(team).State = EntityState.Modified;
                 try
                 {
                     db.SaveChanges();
@@ -258,23 +253,23 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Edit failed");
                 }
             }
-            var teams = db.Teams.OrderBy(x => x.id);
+            var teams = db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x => x.TeamNo);
 
             var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active))
+            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == (int)HttpContext.Session["leagueid"]))
             {
                 if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                     list.Add(player);
             }
-            if (Team.ViceSkip != null)
-                list.Add(Team.Player1);
-            if (Team.Lead != null)
-                list.Add(Team.Player2);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.Lead);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", Team.ViceSkip);
+            if (team.ViceSkip != null)
+                list.Add(team.Player1);
+            if (team.Lead != null)
+                list.Add(team.Player2);
+            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Lead);
+            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.ViceSkip);
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = _teamsize;
-            return View(Team);
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            return View(team);
         }
 
         // GET: Teams/Delete/5
@@ -284,13 +279,13 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Team Team = db.Teams.Find(id);
-            if (Team == null)
+            Team team = db.Teams.Find(id);
+            if (team == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.TeamSize = _teamsize;
-            return View(Team);
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            return View(team);
         }
 
         // POST: Teams/Delete/5
@@ -298,8 +293,12 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Team Team = db.Teams.Find(id);
-            db.Teams.Remove(Team);
+            Team team = db.Teams.Find(id);
+            if (team == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            db.Teams.Remove(team);
             try
             {
                 db.SaveChanges();
@@ -318,7 +317,8 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
                 ViewBag.Error = "Delete failed";
             }
-            return View(Team);
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            return View(team);
         }
 
         protected override void Dispose(bool disposing)

@@ -20,8 +20,8 @@ namespace Tournament.Controllers
         {
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = from s in db.Players
-                select s;
+            var list = from s in db.Players where s.Leagueid == (int) HttpContext.Session["leagueid"]
+                       select s;
             switch (sortOrder)
             {
                 case "name_desc":
@@ -38,7 +38,7 @@ namespace Tournament.Controllers
                     break;
             }
             ViewBag.Count = list.Count();
-            ViewBag.Active = db.Players.Where(x=>x.Active).Count();
+            ViewBag.Active = db.Players.Where(x=>x.Active && x.Leagueid == (int) HttpContext.Session["leagueid"]).Count();
 
             return View(list);
         }
@@ -63,7 +63,9 @@ namespace Tournament.Controllers
         {
             var item = new Player()
             {
-                Active = true
+                Active = true,
+                Leagueid = (int)HttpContext.Session["leagueid"]
+
             };
             return View(item);
         }
@@ -73,7 +75,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,FirstName,LastName,Active,FullName,shortname,NickName")] Player player)
+        public ActionResult Create([Bind(Include = "id,FirstName,LastName,Active,FullName,shortname,NickName, LeagueId")] Player player)
         {
             if (ModelState.IsValid)
             {
@@ -121,7 +123,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,Active,FullName,shortname,NickName")] Player player)
+        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,Active,FullName,shortname,NickName,LeagueId")] Player player)
         {
             if (ModelState.IsValid)
             {

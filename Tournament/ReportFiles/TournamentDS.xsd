@@ -34,6 +34,15 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="Byes" msprop:Generator_TableClassName="ByesDataTable" msprop:Generator_TableVarName="tableByes" msprop:Generator_RowChangedName="ByesRowChanged" msprop:Generator_TablePropName="Byes" msprop:Generator_RowDeletingName="ByesRowDeleting" msprop:Generator_RowChangingName="ByesRowChanging" msprop:Generator_RowEvHandlerName="ByesRowChangeEventHandler" msprop:Generator_RowDeletedName="ByesRowDeleted" msprop:Generator_RowClassName="ByesRow" msprop:Generator_UserTableName="Byes" msprop:Generator_RowEvArgName="ByesRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RoundName" msprop:Generator_ColumnVarNameInTable="columnRoundName" msprop:Generator_ColumnPropNameInRow="RoundName" msprop:Generator_ColumnPropNameInTable="RoundNameColumn" msprop:Generator_UserColumnName="RoundName" type="xs:string" minOccurs="0" />
+              <xs:element name="TeamNo" msprop:Generator_ColumnVarNameInTable="columnTeamNo" msprop:Generator_ColumnPropNameInRow="TeamNo" msprop:Generator_ColumnPropNameInTable="TeamNoColumn" msprop:Generator_UserColumnName="TeamNo" type="xs:int" minOccurs="0" />
+              <xs:element name="Players" msprop:Generator_ColumnVarNameInTable="columnPlayers" msprop:Generator_ColumnPropNameInRow="Players" msprop:Generator_ColumnPropNameInTable="PlayersColumn" msprop:Generator_UserColumnName="Players" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
   </xs:element>

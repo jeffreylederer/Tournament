@@ -18,14 +18,14 @@
     @Html.HiddenFor(model => model.id)
     @Html.HiddenFor(model => model.RoundId)
     @Html.HiddenFor(model => model.Rink)
-    @Html.HiddenFor(model => model.Team1)
-    @Html.HiddenFor(model => model.Team2)
+    @Html.HiddenFor(model => model.TeamNo1)
+    @Html.HiddenFor(model => model.TeamNo2)
     
 
     <div class="form-group">
-        @Html.LabelFor(model => model.RoundId, "Date", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.RoundId, "Round Number", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Model.Schedule.RoundId
+            @Model.Schedule.RoundName
         </div>
     </div>
 
@@ -37,16 +37,16 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Team1, "Team", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.TeamNo1, "Team 1", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Model.Team1 &nbsp; &nbsp;(@Model.Team.Player.NickName, @Model.Team1.Player1.NickName, @Model.Team1.Player2.NickName)
+            @Model.TeamNo1 &nbsp; &nbsp;(Skip: @Model.Team.Player.NickName)
         </div>
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Team2, "Team", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.TeamNo2, "Team2 ", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Model.Team2 &nbsp;&nbsp;(@Model.Team1.Player.NickName, @Model.Team1.Player1.NickName, @Model.Team1.Player2.NickName)
+            @Model.TeamNo2 &nbsp;&nbsp;(Skip: @Model.Team1.Player.NickName)
         </div>
     </div>
 
@@ -75,7 +75,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {ScheduleID=Model.GameDate})
+    @Html.ActionLink("Back to List", "Index", new {RoundId=Model.RoundId})
 </div>
 
 @section Scripts {
