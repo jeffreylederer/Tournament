@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 using Elmah;
 using Tournament.Models;
 
@@ -17,18 +18,24 @@ namespace Tournament.Controllers
         private TournamentEntities db = new TournamentEntities();
 
         // GET: UserLeagues
-        public ActionResult Index()
+        public ActionResult Index(int id)
         {
-            var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User);
+            var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
+            ViewBag.LeagueId = id;
             return View(userLeagues.ToList());
         }
 
         
         // GET: UserLeagues/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            ViewBag.LeagueId = new SelectList(db.Leagues, "id", "LeagueName");
+            var league = db.Leagues.Find(id);
+            ViewBag.LeagueName = league.LeagueName;
             ViewBag.UserId = new SelectList(db.Users, "id", "username");
+            var item = new UserLeague()
+            {
+                LeagueId = id
+            };
             return View();
         }
 
@@ -45,7 +52,7 @@ namespace Tournament.Controllers
                 try
                 {
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new {id=userLeague.LeagueId});
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
                 {
@@ -62,8 +69,11 @@ namespace Tournament.Controllers
                 }
             }
 
-            ViewBag.LeagueId = new SelectList(db.Leagues, "id", "LeagueName", userLeague.LeagueId);
+            
             ViewBag.UserId = new SelectList(db.Users, "id", "username", userLeague.UserId);
+            ViewBag.LeagueId = userLeague.LeagueId;
+            var league = db.Leagues.Find(userLeague.LeagueId);
+            ViewBag.LeagueName = league.LeagueName;
             return View(userLeague);
         }
 
@@ -112,7 +122,7 @@ namespace Tournament.Controllers
                     db.Entry(userLeagueToUpdate).OriginalValues["RowVersion"] = rowVersion;
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new {id= userLeagueToUpdate.LeagueId});
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -168,7 +178,7 @@ namespace Tournament.Controllers
             {
                 if (concurrencyError.GetValueOrDefault())
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index","Leagues");
                 }
                 return HttpNotFound();
             }
@@ -195,7 +205,7 @@ namespace Tournament.Controllers
             {
                 db.Entry(userLeague).State = EntityState.Deleted;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new {id=userLeague.LeagueId});
             }
             catch (DbUpdateConcurrencyException)
             {

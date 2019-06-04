@@ -379,8 +379,7 @@
         <EntityType Name="UserLeague">
           <Key>
             <PropertyRef Name="id" />
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="LeagueId" />
+           
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
