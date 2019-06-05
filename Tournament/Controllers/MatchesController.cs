@@ -51,8 +51,7 @@ namespace Tournament.Controllers
             return RedirectToAction("Index", new { ScheduleID = weekid });
         }
 
-        [Authorize(Roles = "Admin")]
-        public ActionResult CreateMatches()
+       public ActionResult CreateMatches()
         {
             return View();
         }
@@ -101,7 +100,7 @@ namespace Tournament.Controllers
             return RedirectToAction("index", new { RoundId = round1.id });
         }
 
-        //[Authorize(Roles = "Admin")]
+        
         public ActionResult ClearSchedule()
         {
             return View();
