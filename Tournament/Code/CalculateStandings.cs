@@ -15,9 +15,10 @@ namespace Tournament.Code
         public static TournamentDS.StandingDataTable Doit(int weekid)
         {
             var ds = new TournamentDS();
+            var list = new List<Standing>();
             using (var db = new TournamentEntities())
             {
-                var list = new List<Standing>();
+               
                 foreach (var team in db.Teams)
                 {
                     list.Add(new Standing()
@@ -58,13 +59,14 @@ namespace Tournament.Code
                     }
                     list.Sort((a, b) => (b.Wins * 1000 + b.TotalScore).CompareTo(a.Wins * 1000 + a.TotalScore));
 
-                    int place = 1;
-                    foreach (var item in list)
-                    {
-                        ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place++, item.Wins, item.Loses
-                        );
-                    }
+                   
                 }
+            }
+            int place = 1;
+            foreach (var item in list)
+            {
+                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place++, item.Wins, item.Loses
+                );
             }
             return ds.Standing;
         }

@@ -5,10 +5,10 @@
 }
 
 <h2>Delete</h2>
-
+<p class="error">@ViewBag.ConcurrencyErrorMessage</p>
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Team</h4>
+    <h4>@ViewBag.LeagueName Team</h4>
     <span style="color: red;">@ViewBag.Error</span>
     <hr />
     <dl class="dl-horizontal">
@@ -27,36 +27,38 @@
         <dd>
             @Html.DisplayFor(model => model.Player.FullName)
         </dd>
-    @{
-        if ((int) ViewBag.TeamSize > 2)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.ViceSkip)
-            </dt>
+        @{
+            if ((int)ViewBag.TeamSize > 2)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.ViceSkip)
+                </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Player1.FullName)
-            </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Player1.FullName)
+                </dd>
+            }
         }
-    }
-    @{
-        if ((int) ViewBag.TeamSize > 1)
-        {
-            <dt>
-                @Html.DisplayNameFor(model => model.Lead)
-            </dt>
+        @{
+            if ((int)ViewBag.TeamSize > 1)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.Lead)
+                </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.Player2.FullName)
-            </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.Player2.FullName)
+                </dd>
+            }
         }
-    }
 
-        </dl>
+    </dl>
 
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.id)
+        @Html.HiddenFor(model => model.rowversion)
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |

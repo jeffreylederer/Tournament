@@ -13,6 +13,7 @@ using Tournament.Models;
 
 namespace Tournament.Controllers
 {
+    [Authorize(Roles="Admin")]
     public class UserLeaguesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
@@ -32,11 +33,11 @@ namespace Tournament.Controllers
             var league = db.Leagues.Find(id);
             ViewBag.LeagueName = league.LeagueName;
             ViewBag.UserId = new SelectList(db.Users, "id", "username");
-            var item = new UserLeague()
+            var userleague = new UserLeague()
             {
                 LeagueId = id
             };
-            return View();
+            return View(userleague);
         }
 
         // POST: UserLeagues/Create
@@ -73,7 +74,7 @@ namespace Tournament.Controllers
             ViewBag.UserId = new SelectList(db.Users, "id", "username", userLeague.UserId);
             ViewBag.LeagueId = userLeague.LeagueId;
             var league = db.Leagues.Find(userLeague.LeagueId);
-            ViewBag.LeagueName = league.LeagueName;
+            //ViewBag.LeagueName = league.LeagueName;
             return View(userLeague);
         }
 
@@ -119,7 +120,7 @@ namespace Tournament.Controllers
             {
                 try
                 {
-                    db.Entry(userLeagueToUpdate).OriginalValues["RowVersion"] = rowVersion;
+                    db.Entry(userLeagueToUpdate).OriginalValues["rowversion"] = rowVersion;
                     db.SaveChanges();
 
                     return RedirectToAction("Index", new {id= userLeagueToUpdate.LeagueId});
@@ -203,9 +204,10 @@ namespace Tournament.Controllers
         {
             try
             {
+                var id = userLeague.LeagueId;
                 db.Entry(userLeague).State = EntityState.Deleted;
                 db.SaveChanges();
-                return RedirectToAction("Index", new {id=userLeague.LeagueId});
+                return RedirectToAction("Index", new {id=id});
             }
             catch (DbUpdateConcurrencyException)
             {

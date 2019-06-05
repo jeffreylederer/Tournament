@@ -54,15 +54,17 @@ namespace Tournament.Controllers
 
 
 
-                        if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
-                            && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
+                        //if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
+                        //    && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                        //{
+                        //    return RedirectToAction("Index", "Home");
+                        //}
+                        //else
+                        //{
+                        //    return RedirectToAction("Index", "Home");
+                        //}
+                        HttpContext.Session["user"] = username;
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {

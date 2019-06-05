@@ -5,10 +5,18 @@
 }
 
 <h2>Team Report</h2>
-
-@Html.ActionLink("Back to List", "Index")
-
-@Html.ReportViewer(
-ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, 
-new { scrolling = "no" })
+<table>
+    <tr>
+        <td>
+            @Html.ActionLink("Back to List", "Index")
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.ReportViewer(
+            ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer,
+            new { scrolling = "no" })
+        </td>
+    </tr>
+</table>
 

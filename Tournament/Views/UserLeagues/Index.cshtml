@@ -7,16 +7,14 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", new {id=ViewBag.LeagueId})
 </p>
 <table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Roles)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.rowversion)
-        </th>
+        
         <th>
             @Html.DisplayNameFor(model => model.League.LeagueName)
         </th>
@@ -26,26 +24,27 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Roles)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.rowversion)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.League.LeagueName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.username)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Roles)
+            </td>
+        
+            <td>
+                @Html.DisplayFor(modelItem => item.League.LeagueName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.username)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.id  }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            </td>
+        </tr>
+    }
 
 </table>
+
+<div>
+    @Html.ActionLink("Back to Leagues", "Index","Leagues")
+</div>

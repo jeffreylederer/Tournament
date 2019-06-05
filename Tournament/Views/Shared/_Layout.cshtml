@@ -24,9 +24,9 @@
                    
                     <li>@Html.ActionLink("Players", "Index", "Players")</li>
                     <li class="menu-item dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Create Tournament<b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tournament<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Tournament Schedule", "Index", "Schedules")</li>
+                            <li>@Html.ActionLink("Schedule", "Index", "Schedules")</li>
                             <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
                             <li>@Html.ActionLink("Matches", "Index", "Matches", new { RoundId = 1 }, null)</li>
                             <li><a href="/Reports/Byes.aspx?league=Tuesday">Byes</a></li>
@@ -47,10 +47,11 @@
                             <li class="menu-item dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("Users", "Index", "Users")</li>
                                     <li>@Html.ActionLink("Leagues", "Index", "Leagues")</li>
-                                    <li>@Html.ActionLink("Error Log", "Index", "Elmah", new { type = "" }, new { target = "_blank" })</li>
+                                    <li>@Html.ActionLink("Error Log", "Index", "Elmah", new {type = ""}, new {target = "_blank"})</li>
                                 </ul>
-                          
+                            </li>
                         }
                         <li>@Html.ActionLink("About", "About", "Home")</li>
                         <li>@Html.ActionLink("Contact", "Contact", "Home")</li>

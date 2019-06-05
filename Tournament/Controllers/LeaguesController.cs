@@ -12,6 +12,7 @@ using Tournament.Models;
 
 namespace Tournament.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class LeaguesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
@@ -89,21 +90,21 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var leagueToUpdate = db.Leagues.Find(id);
-            if (leagueToUpdate == null)
+            var update = db.Leagues.Find(id);
+            if (update == null)
             {
-                var deleteLeague= new League();
-                TryUpdateModel(deleteLeague, fieldsToBind);
+                var delete= new League();
+                TryUpdateModel(delete, fieldsToBind);
                 ModelState.AddModelError(string.Empty,
                     "Unable to save changes. The league was deleted by another user.");
-                return View(deleteLeague);
+                return View(delete);
             }
 
-            if (TryUpdateModel(leagueToUpdate, fieldsToBind))
+            if (TryUpdateModel(update, fieldsToBind))
             {
                 try
                 {
-                    db.Entry(leagueToUpdate).OriginalValues["RowVersion"] = rowVersion;
+                    db.Entry(update).OriginalValues["rowversion"] = rowVersion;
                     db.SaveChanges();
 
                     return RedirectToAction("Index");
@@ -133,7 +134,7 @@ namespace Tournament.Controllers
                                                                + "edit operation was canceled and the current values in the database "
                                                                + "have been displayed. If you still want to edit this record, click "
                                                                + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        leagueToUpdate.rowversion = databaseValues.rowversion;
+                        update.rowversion = databaseValues.rowversion;
                     }
                 }
                 catch (RetryLimitExceededException dex )
@@ -143,7 +144,7 @@ namespace Tournament.Controllers
                     ErrorSignal.FromCurrentContext().Raise(dex);
                 }
             }
-            return View(leagueToUpdate);
+            return View(update);
         }
 
         // GET: Leagues/Delete/5

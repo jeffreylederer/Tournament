@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Wednesday Teams</h2>
+<h2>@ViewBag.LeagueName Teams</h2>
 
 <p>
     @Html.ActionLink("Add Team", "Create")<br/>
@@ -72,7 +72,7 @@
 
             @if ((int) ViewBag.TeamSize > 2)
             {
-                @Html.ActionLink("Remove Vice Skip", "RemoveViceSkip", new {id = item.id})
+                @Html.ActionLink("Remove Vice Skip", "RemoveViceSkip", new {id = item.id, rowversion= System.Text.Encoding.Default.GetString(item.rowversion)})
             }
             @if ((int) ViewBag.TeamSize > 2)
             {
@@ -82,7 +82,7 @@
 
             @if ((int) ViewBag.TeamSize > 1)
             {
-                @Html.ActionLink("Remove Lead", "RemoveLead", new {id = item.id})
+                @Html.ActionLink("Remove Lead", "RemoveLead", new {id = item.id, rowversion = System.Text.Encoding.Default.GetString(item.rowversion) })
             }
         </td>
     </tr>

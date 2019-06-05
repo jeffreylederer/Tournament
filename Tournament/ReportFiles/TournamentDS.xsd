@@ -12,16 +12,6 @@
   <xs:element name="TournamentDS" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="TournamentDS" msprop:Generator_UserDSName="TournamentDS">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="Team" msprop:Generator_TableClassName="TeamDataTable" msprop:Generator_TableVarName="tableTeam" msprop:Generator_RowChangedName="TeamRowChanged" msprop:Generator_TablePropName="Team" msprop:Generator_RowDeletingName="TeamRowDeleting" msprop:Generator_RowChangingName="TeamRowChanging" msprop:Generator_RowEvHandlerName="TeamRowChangeEventHandler" msprop:Generator_RowDeletedName="TeamRowDeleted" msprop:Generator_RowClassName="TeamRow" msprop:Generator_UserTableName="Team" msprop:Generator_RowEvArgName="TeamRowChangeEvent">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="TeamNumber" msprop:Generator_ColumnVarNameInTable="columnTeamNumber" msprop:Generator_ColumnPropNameInRow="TeamNumber" msprop:Generator_ColumnPropNameInTable="TeamNumberColumn" msprop:Generator_UserColumnName="TeamNumber" type="xs:int" minOccurs="0" />
-              <xs:element name="Skip" msprop:Generator_ColumnVarNameInTable="columnSkip" msprop:Generator_ColumnPropNameInRow="Skip" msprop:Generator_ColumnPropNameInTable="SkipColumn" msprop:Generator_UserColumnName="Skip" type="xs:string" minOccurs="0" />
-              <xs:element name="ViceSkip" msprop:Generator_ColumnVarNameInTable="columnViceSkip" msprop:Generator_ColumnPropNameInRow="ViceSkip" msprop:Generator_ColumnPropNameInTable="ViceSkipColumn" msprop:Generator_UserColumnName="ViceSkip" type="xs:string" minOccurs="0" />
-              <xs:element name="Lead" msprop:Generator_ColumnVarNameInTable="columnLead" msprop:Generator_ColumnPropNameInRow="Lead" msprop:Generator_ColumnPropNameInTable="LeadColumn" msprop:Generator_UserColumnName="Lead" type="xs:string" minOccurs="0" />
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
         <xs:element name="Standing" msprop:Generator_TableClassName="StandingDataTable" msprop:Generator_TableVarName="tableStanding" msprop:Generator_TablePropName="Standing" msprop:Generator_RowDeletingName="StandingRowDeleting" msprop:Generator_RowChangingName="StandingRowChanging" msprop:Generator_RowEvHandlerName="StandingRowChangeEventHandler" msprop:Generator_RowDeletedName="StandingRowDeleted" msprop:Generator_UserTableName="Standing" msprop:Generator_RowChangedName="StandingRowChanged" msprop:Generator_RowEvArgName="StandingRowChangeEvent" msprop:Generator_RowClassName="StandingRow">
           <xs:complexType>
             <xs:sequence>
@@ -40,6 +30,16 @@
               <xs:element name="RoundName" msprop:Generator_ColumnVarNameInTable="columnRoundName" msprop:Generator_ColumnPropNameInRow="RoundName" msprop:Generator_ColumnPropNameInTable="RoundNameColumn" msprop:Generator_UserColumnName="RoundName" type="xs:string" minOccurs="0" />
               <xs:element name="TeamNo" msprop:Generator_ColumnVarNameInTable="columnTeamNo" msprop:Generator_ColumnPropNameInRow="TeamNo" msprop:Generator_ColumnPropNameInTable="TeamNoColumn" msprop:Generator_UserColumnName="TeamNo" type="xs:int" minOccurs="0" />
               <xs:element name="Players" msprop:Generator_ColumnVarNameInTable="columnPlayers" msprop:Generator_ColumnPropNameInRow="Players" msprop:Generator_ColumnPropNameInTable="PlayersColumn" msprop:Generator_UserColumnName="Players" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Team" msprop:Generator_TableClassName="TeamDataTable" msprop:Generator_TableVarName="tableTeam" msprop:Generator_RowChangedName="TeamRowChanged" msprop:Generator_TablePropName="Team" msprop:Generator_RowDeletingName="TeamRowDeleting" msprop:Generator_RowChangingName="TeamRowChanging" msprop:Generator_RowEvHandlerName="TeamRowChangeEventHandler" msprop:Generator_RowDeletedName="TeamRowDeleted" msprop:Generator_RowClassName="TeamRow" msprop:Generator_UserTableName="Team" msprop:Generator_RowEvArgName="TeamRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TeamNo" msprop:Generator_ColumnVarNameInTable="columnTeamNo" msprop:Generator_ColumnPropNameInRow="TeamNo" msprop:Generator_ColumnPropNameInTable="TeamNoColumn" msprop:Generator_UserColumnName="TeamNo" type="xs:int" minOccurs="0" />
+              <xs:element name="Skip" msprop:Generator_ColumnVarNameInTable="columnSkip" msprop:Generator_ColumnPropNameInRow="Skip" msprop:Generator_ColumnPropNameInTable="SkipColumn" msprop:Generator_UserColumnName="Skip" type="xs:string" minOccurs="0" />
+              <xs:element name="Lead" msprop:Generator_ColumnVarNameInTable="columnLead" msprop:Generator_ColumnPropNameInRow="Lead" msprop:Generator_ColumnPropNameInTable="LeadColumn" msprop:Generator_UserColumnName="Lead" type="xs:string" minOccurs="0" />
+              <xs:element name="ViceSkip" msprop:Generator_ColumnVarNameInTable="columnViceSkip" msprop:Generator_ColumnPropNameInRow="ViceSkip" msprop:Generator_ColumnPropNameInTable="ViceSkipColumn" msprop:Generator_UserColumnName="ViceSkip" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

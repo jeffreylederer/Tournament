@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>@ViewBag.LeagueName Rounds</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -26,7 +26,7 @@
 @foreach (var item in Model) {
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.SortOrder)
+            @Html.DisplayFor(modelItem => item.SortOrder)
         </th>
         <td>
             @Html.DisplayFor(modelItem => item.RoundName)

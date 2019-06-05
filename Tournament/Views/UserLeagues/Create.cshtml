@@ -11,9 +11,10 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>UserLeague</h4>
+        <h4>User/League</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model=>model.LeagueId)
         <div class="form-group">
             @Html.LabelFor(model => model.UserId, "User", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -46,5 +47,5 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {id=ViewBag.LeagueId})
+    @Html.ActionLink("Back to List", "Index", new {id=Model.LeagueId})
 </div>

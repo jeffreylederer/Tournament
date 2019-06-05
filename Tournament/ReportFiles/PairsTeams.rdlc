@@ -9,16 +9,23 @@
       </ConnectionProperties>
       <rd:DataSourceID>c35ebdb1-14ea-4b20-ad88-f6c582b98ffe</rd:DataSourceID>
     </DataSource>
+    <DataSource Name="TournamentDS">
+      <ConnectionProperties>
+        <DataProvider>System.Data.DataSet</DataProvider>
+        <ConnectString>/* Local Connection */</ConnectString>
+      </ConnectionProperties>
+      <rd:DataSourceID>da36a9ac-d7e0-4377-81a2-7fba502d015e</rd:DataSourceID>
+    </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="Team">
       <Query>
-        <DataSourceName>LeaguesDS</DataSourceName>
+        <DataSourceName>TournamentDS</DataSourceName>
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="TeamNumber">
-          <DataField>TeamNumber</DataField>
+        <Field Name="TeamNo">
+          <DataField>TeamNo</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="Skip">
@@ -29,11 +36,15 @@
           <DataField>Lead</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="ViceSkip">
+          <DataField>ViceSkip</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
-        <rd:DataSetName>LeaguesDS</rd:DataSetName>
-        <rd:SchemaPath>C:\Users\DellPC\documents\visual studio 2017\Projects\Leagues\Leagues\Reports\LeaguesDS.xsd</rd:SchemaPath>
-        <rd:TableName>TuesdayTeam</rd:TableName>
+        <rd:DataSetName>TournamentDS</rd:DataSetName>
+        <rd:SchemaPath>C:\Users\DellPC\documents\visual studio 2017\Projects\Tournament\Tournament\ReportFiles\TournamentDS.xsd</rd:SchemaPath>
+        <rd:TableName>Team</rd:TableName>
         <rd:TableAdapterFillMethod />
         <rd:TableAdapterGetDataMethod />
         <rd:TableAdapterName />
@@ -164,21 +175,21 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="TeamNumber">
+                        <Textbox Name="TeamNo">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!TeamNumber.Value</Value>
+                                  <Value>=Fields!TeamNo.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>TeamNumber</rd:DefaultName>
+                          <rd:DefaultName>TeamNo</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>

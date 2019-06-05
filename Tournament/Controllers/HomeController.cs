@@ -13,75 +13,96 @@ namespace Tournament.Controllers
     {
         private TournamentEntities db = new TournamentEntities();
 
-        public ActionResult Index(int? id)
+        [Authorize]
+        public ActionResult Index()
         {
-
-            if (!id.HasValue)
+            var username = (string) HttpContext.Session["user"];
+            var role = "";
+            var user = db.Users.Where(x => x.username == username).First();
+            ViewBag.Error = "";
+            List<League> leagues;
+            if (!string.IsNullOrWhiteSpace(user.Roles) &&  user.Roles.Contains("Admin"))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                role = "LeagueAdmin";
+                leagues = db.Leagues.ToList();
             }
-            var leagues = db.UserLeagues.Where(x => x.UserId == id.Value).Include("Leagues").ToList();
+            else
+            {
+                var userleagues = db.UserLeagues.Include(u => u.League).Where(x => x.UserId == user.id);
+                if (userleagues.Any())
+                    role = userleagues.First().Roles;
+                leagues = new List<League>();
+                foreach (var item in userleagues)
+                    leagues.Add(item.League);
+            }
             if (!leagues.Any())
             {
-                return HttpNotFound();
+                ViewBag.Error = "You are not assigned to any league";
+                leagues = new List<League>();
+                return View(leagues);
             }
             if (leagues.Count() == 1)
             {
-                var league = db.Leagues.Find(leagues.First().LeagueId);
-                if (league == null)
-                {
-                    return HttpNotFound();
-                }
+                var league = leagues.First();
                 HttpContext.Session["leaguename"] = league.LeagueName;
-                HttpContext.Session["leagueid"] = leagues.First().LeagueId;
-                HttpContext.Session["leaguerole"] = leagues.First().Roles;
+                HttpContext.Session["leagueid"] = league.id;
+                HttpContext.Session["leaguerole"] = role;
                 HttpContext.Session["teamsize"] = league.TeamSize;
                 return RedirectToAction("Welcome");
             }
-            var list = new List<LeagueViewModel>();
-            foreach (var item in leagues)
-            {
-                var league = db.Leagues.Find(item.LeagueId);
-                if (league == null)
-                {
-                    return HttpNotFound();
-                }
-                list.Add(new LeagueViewModel()
-                {
-                    id = item.id,
-                    League =league.LeagueName,
-                });
-            }
-            return View(list);
+            
+           return View(leagues);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">league id</param>
+        /// <returns></returns>
         public ActionResult Register(int? id)
         {
             if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            
-            var item = db.UserLeagues.Find(id.Value);
-            if (item == null)
+
+            var username = (string)HttpContext.Session["user"];
+            var user = db.Users.Where(x => x.username == username).First();
+            if(user == null)
             {
                 return HttpNotFound();
             }
-            var league = db.Leagues.Find(item.LeagueId);
+            var role = "";
+            if (user.Roles.Contains("Admin"))
+            {
+                role = "LeagueAdmin";
+            }
+            else
+            {
+                var item = db.UserLeagues.Where(x => x.UserId == user.id && x.LeagueId == id).First();
+                if (item == null)
+                {
+                    return HttpNotFound();
+                }
+                role = item.Roles;
+            }
+                
+            
+            var league = db.Leagues.Find(id);
             if (league == null)
             {
                 return HttpNotFound();
             }
             HttpContext.Session["teamsize"] = league.TeamSize;
             HttpContext.Session["leaguename"] = league.LeagueName;
-            HttpContext.Session["leagueid"] = item.LeagueId;
-            HttpContext.Session["leaguerole"] = item.Roles;
+            HttpContext.Session["leagueid"] = id.Value;
+            HttpContext.Session["leaguerole"] = role;
            
             
             return RedirectToAction("Welcome");
         }
 
-        public ActionResult Welcome(int id)
+        public ActionResult Welcome()
         {
             ViewBag.League = HttpContext.Session["leaguename"];
             return View();

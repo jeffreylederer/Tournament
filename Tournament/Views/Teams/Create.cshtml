@@ -12,7 +12,7 @@
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>Team</h4>
+    <h4>@ViewBag.LeagueName Team</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model=>model.Leagueid)
@@ -80,7 +80,7 @@
 <table class="table-condensed table-striped">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.id)
+            @Html.DisplayNameFor(model => model.TeamNo)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Skip)
@@ -109,7 +109,7 @@
     {
         <tr>
             <th>
-                @Html.DisplayFor(modelItem => item.id)
+                @Html.DisplayFor(modelItem => item.TeamNo)
             </th>
             <td>
                 @Html.DisplayFor(modelItem => item.Player.FullName)

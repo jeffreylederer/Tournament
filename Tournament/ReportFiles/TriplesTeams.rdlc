@@ -24,26 +24,26 @@
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="TeamNumber">
-          <DataField>TeamNumber</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
+        <Field Name="TeamNo">
+          <DataField>TeamNo</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="Skip">
           <DataField>Skip</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="ViceSkip">
-          <DataField>ViceSkip</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Lead">
           <DataField>Lead</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="ViceSkip">
+          <DataField>ViceSkip</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>TournamentDS</rd:DataSetName>
-        <rd:SchemaPath>c:\users\dellpc\documents\visual studio 2017\Projects\Tournament\Tournament\ReportFiles\TournamentDS.xsd</rd:SchemaPath>
+        <rd:SchemaPath>C:\Users\DellPC\documents\visual studio 2017\Projects\Tournament\Tournament\ReportFiles\TournamentDS.xsd</rd:SchemaPath>
         <rd:TableName>Team</rd:TableName>
         <rd:TableAdapterFillMethod />
         <rd:TableAdapterGetDataMethod />
@@ -210,21 +210,21 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="TeamNumber">
+                        <Textbox Name="TeamNo">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!TeamNumber.Value</Value>
+                                  <Value>=Fields!TeamNo.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>TeamNumber</rd:DefaultName>
+                          <rd:DefaultName>TeamNo</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>

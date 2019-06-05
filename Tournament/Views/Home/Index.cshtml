@@ -1,15 +1,13 @@
-﻿@model IEnumerable<Tournament.Models.LeagueViewModel>
+﻿@model IEnumerable<Tournament.Models.League>
 @{
     ViewBag.Title = "Home Page";
 }
 
-<p>
-@Html.ActionLink("Create New", "Create")
-</p>
+@ViewBag.Error
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.League)
+            @Html.DisplayNameFor(model => model.LeagueName)
         </th>
         <th></th>
     </tr>
@@ -17,10 +15,10 @@
     @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.League)
+                @Html.DisplayFor(modelItem => item.LeagueName)
             </td>
             <td>
-                @Html.ActionLink("Select", "Register", new { id=item.id }) |
+                @Html.ActionLink("Select", "Register", new { id=item.id })
             </td>
         </tr>
     }

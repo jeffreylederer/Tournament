@@ -20,6 +20,7 @@
     @Html.HiddenFor(model => model.Rink)
     @Html.HiddenFor(model => model.TeamNo1)
     @Html.HiddenFor(model => model.TeamNo2)
+    @Html.HiddenFor(model=>model.rowversion)
     
 
     <div class="form-group">
@@ -67,6 +68,14 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(model => model.Forfeit, "Team Forfeiting", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("Forfeit", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Forfeit, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" value="Save" class="btn btn-default" />
         </div>
@@ -80,4 +89,37 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            switch ($("#Forfeit").find(":selected").val()) {
+            case "1":
+                $("#Team1Score").prop('disabled', false);
+                $("#Team2Score").prop('disabled', false);
+                break;
+            case "2":
+            case "3":
+                $("#Team1Score").val(0);
+                $("#Team2Score").val(0);
+                $("#Team1Score").prop('disabled', true);
+                $("#Team2Score").prop('disabled', true);
+                break;
+            }
+        });
+
+        $('#Forfeit').change(function() {
+            switch ($(this).find(":selected").val()) {
+            case "1":
+                $("#Team1Score").prop('disabled', false);
+                $("#Team2Score").prop('disabled', false);
+                break;
+            case "2":
+            case "3":
+                $("#Team1Score").val(0);
+                $("#Team2Score").val(0);
+                $("#Team1Score").prop('disabled', true);
+                $("#Team2Score").prop('disabled', true);
+                break;
+            }
+        });
+    </script>
 }

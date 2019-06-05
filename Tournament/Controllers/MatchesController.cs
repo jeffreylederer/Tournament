@@ -10,6 +10,7 @@ using Microsoft.Reporting.WebForms;
 using Tournament.Code;
 using Tournament.Models;
 using Tournament.ReportFiles;
+using System.Data.Entity.Infrastructure;
 
 namespace Tournament.Controllers
 {
@@ -21,8 +22,9 @@ namespace Tournament.Controllers
         // GET: Matches
         public ActionResult Index(int? RoundId)
         {
+            var leagueid = (int)HttpContext.Session["leagueid"];
             var Matches = db.Matches.Where(x => x.RoundId == RoundId.Value && x.Rink != -1);
-            ViewBag.ScheduleID = new SelectList(db.Schedules.Where(x=>x.Leagueid == (int)HttpContext.Session["leagueid"]).ToList(), "id", "RoundName", RoundId ?? 0);
+            ViewBag.ScheduleID = new SelectList(db.Schedules.Where(x=>x.Leagueid == leagueid), "id", "RoundName", RoundId == null?"0": RoundId.ToString());
             ViewBag.RoundId = db.Schedules.Find(RoundId.Value).id;
             ViewBag.WeekID = RoundId;
             return View(Matches.OrderBy(x => x.Rink).ToList());
@@ -59,9 +61,10 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateMatches(string DeleteIT)
         {
-            var numOfWeeks = db.Schedules.Count(x => x.Leagueid == (int)HttpContext.Session["leagueid"]);
-            var numofTeams = db.Teams.Count(x => x.Leagueid == (int)HttpContext.Session["leagueid"]);
-            foreach (var item in db.Schedules.Where(x => x.Leagueid == (int) HttpContext.Session["leagueid"]))
+            var leagueid = (int)HttpContext.Session["leagueid"];
+            var numOfWeeks = db.Schedules.Count(x => x.Leagueid == leagueid);
+            var numofTeams = db.Teams.Count(x => x.Leagueid == leagueid);
+            foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
             {
                 foreach(var match in db.Matches.Where(x => x.RoundId == item.id).ToList())
                     db.Matches.Remove(match);
@@ -94,7 +97,7 @@ namespace Tournament.Controllers
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
             }
-            var round1 = db.Schedules.Where(x => x.Leagueid == (int) HttpContext.Session["leagueid"]).First();
+            var round1 = db.Schedules.Where(x => x.Leagueid == leagueid).First();
             return RedirectToAction("index", new { RoundId = round1.id });
         }
 
@@ -108,13 +111,14 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ClearSchedule(string DeleteIT)
         {
-            foreach (var item in db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]))
+            var leagueid = (int)HttpContext.Session["leagueid"];
+            foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
             {
                 foreach (var match in db.Matches.Where(x => x.RoundId == item.id).ToList())
                     db.Matches.Remove(match);
             }
-            db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]));
-            db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]));
+            db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == leagueid));
+            db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == leagueid));
             try
             {
                 db.SaveChanges();
@@ -129,6 +133,7 @@ namespace Tournament.Controllers
 
         public ActionResult ScoringReport(int RoundId)
         {
+
             var reportViewer = new ReportViewer()
             {
                 ProcessingMode = ProcessingMode.Local,
@@ -151,6 +156,7 @@ namespace Tournament.Controllers
 
         public ActionResult ByesReport()
         {
+            var leagueid = (int)HttpContext.Session["leagueid"];
             var reportViewer = new ReportViewer()
             {
                 ProcessingMode = ProcessingMode.Local,
@@ -162,7 +168,7 @@ namespace Tournament.Controllers
             var ds = new TournamentDS();
             using (var db = new TournamentEntities())
             {
-                foreach (var item in db.Schedules.Where(x => x.Leagueid == (int)HttpContext.Session["leagueid"]).OrderBy(x=>x.SortOrder))
+                foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.SortOrder))
                 {
                     var schedule = item.RoundName;
                     foreach (var match in db.Matches.Where(x => x.RoundId == item.id && x.Rink == -1).ToList())
@@ -192,12 +198,13 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Match Match = db.Matches.Find(id);
-            if (Match == null)
+            Match match = db.Matches.Find(id);
+            if (match == null)
             {
                 return HttpNotFound();
             }
-            return View(Match);
+            ViewBag.Forfeit = new SelectList(db.Forfeits, "value", "text", match.ForFeitId);
+            return View(match);
         }
 
         // POST: Matches/Edit/5
@@ -205,31 +212,72 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Scoring([Bind(Include = "id,RoundId,Rink,TeamNo1,TeamNo2,Team1Score,Team2Score")] Match Match)
+        public ActionResult Scoring(int? id, byte[] rowVersion)
         {
-            if (ModelState.IsValid)
+            string[] fieldsToBind = new string[] {"RoundId","Rink","TeamNo1","TeamNo2","Team1Score","Team2Score","ForfeitId", "rowversion" };
+            if (id == null)
             {
-                db.Entry(Match).State = EntityState.Modified;
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var update = db.Matches.Find(id);
+            if (update == null)
+            {
+                var delete = new Match();
+                TryUpdateModel(delete, fieldsToBind);
+                ModelState.AddModelError(string.Empty,
+                    "Unable to save changes. The match was deleted by another user.");
+                return View(delete);
+            }
+
+            if (TryUpdateModel(update, fieldsToBind))
+            {
                 try
                 {
+                    db.Entry(update).OriginalValues["rowversion"] = rowVersion;
                     db.SaveChanges();
-                    return RedirectToAction("Index", new { ScheduleID = Match.RoundId });
+
+                    return RedirectToAction("Index");
                 }
-                catch (System.Data.Entity.Infrastructure.DbUpdateException e)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    Exception ex = e;
-                    while (ex.InnerException != null)
-                        ex = ex.InnerException;
-                    ModelState.AddModelError(string.Empty, ex.Message);
+                    var entry = ex.Entries.Single();
+                    var clientValues = (Match)entry.Entity;
+                    var databaseEntry = entry.GetDatabaseValues();
+                    if (databaseEntry == null)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "Unable to save changes. The match was deleted by another user.");
+                    }
+                    else
+                    {
+                        var databaseValues = (Match)databaseEntry.ToObject();
+
+                        if (databaseValues.Team1Score != clientValues.Team1Score)
+                            ModelState.AddModelError("Team 1 Score", "Current value: "
+                                                                    + databaseValues.Team1Score);
+                        if(databaseValues.Team2Score != clientValues.Team2Score)
+                        ModelState.AddModelError("Team 1 Score", "Current value: "
+                                                                 + databaseValues.Team2Score);
+                        if (databaseValues.ForFeitId != clientValues.ForFeitId)
+                            ModelState.AddModelError("Forfeit", "Current value: "
+                                                                     + databaseValues.ForFeitId);
+                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                               + "was modified by another user after you got the original value. The "
+                                                               + "edit operation was canceled and the current values in the database "
+                                                               + "have been displayed. If you still want to edit this record, click "
+                                                               + "the Save button again. Otherwise click the Back to List hyperlink.");
+                        update.rowversion = databaseValues.rowversion;
+                    }
                 }
-                catch (Exception e)
+                catch (RetryLimitExceededException dex)
                 {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    ModelState.AddModelError(string.Empty, "Edit failed");
+                    //Log the error (uncomment dex variable name and add a line here to write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    ErrorSignal.FromCurrentContext().Raise(dex);
                 }
             }
-            return View(Match);
+            ViewBag.Forfeit = new SelectList(db.Forfeits, "value", "text", update.ForFeitId);
+            return View(update);
         }
 
 

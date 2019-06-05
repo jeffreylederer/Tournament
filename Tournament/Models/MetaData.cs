@@ -54,6 +54,9 @@ namespace Tournament.Models
 
         [Display(Name = "Round Name")]
         public int RoundName { get; set; }
+
+        [Display(Name = "Sort Order")]
+        public int SortOrder { get; set; }
     }
 
     [MetadataType(typeof(MatchMetaData))]
@@ -67,7 +70,7 @@ namespace Tournament.Models
         [Display(Name = "Game Number")]
         public int id { get; set; }
 
-        [Display(Name = "Round Number")]
+        [Display(Name = "Round Name")]
         public int RoundId { get; set; }
 
         public int Rink { get; set; }
