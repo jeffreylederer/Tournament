@@ -110,7 +110,7 @@ namespace Tournament.Controllers
                     TeamNo2 = match.Rink == -1? (int?) null : team2.id,
                     Team1Score = 0,
                     Team2Score = 0,
-                    ForFeitId = 1
+                    ForFeitId = 0
                 });
                
             }
