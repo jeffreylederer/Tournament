@@ -209,9 +209,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Forfeit.cs">
-      <DependentUpon>TournamentModel.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Models\Forfeit.cs" />
     <Compile Include="Models\GetMatchAll_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
@@ -364,7 +362,7 @@
     <Content Include="Views\Matches\CreateMatches.cshtml" />
     <Content Include="Views\Matches\Index.cshtml" />
     <Content Include="Views\Matches\Scoring.cshtml" />
-    <Content Include="Views\Matches\ScoringReport.cshtml" />
+    <Content Include="Views\Matches\StandingsReport.cshtml" />
     <Content Include="Views\Matches\ByesReport.cshtml" />
     <Content Include="Views\Users\Create.cshtml" />
     <Content Include="Views\Users\Delete.cshtml" />
@@ -380,6 +378,7 @@
     <Content Include="Views\UserLeagues\Delete.cshtml" />
     <Content Include="Views\UserLeagues\Edit.cshtml" />
     <Content Include="Views\UserLeagues\Index.cshtml" />
+    <Content Include="Views\Matches\ScoreCardReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -402,14 +401,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ReportFiles\AllScoreCards.rdlc" />
     <EmbeddedResource Include="ReportFiles\Byes.rdlc" />
     <EmbeddedResource Include="ReportFiles\SingleTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\PairsTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\Standings.rdlc" />
     <EmbeddedResource Include="ReportFiles\TriplesTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\ScoreCard.rdlc" />
-    <EmbeddedResource Include="ReportFiles\RoundScoreCards.rdlc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -34,7 +34,6 @@ namespace Tournament.Models
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserLeague> UserLeagues { get; set; }
-        public virtual DbSet<Forfeit> Forfeits { get; set; }
     
         public virtual ObjectResult<GetMatchAll_Result> GetMatchAll(Nullable<int> roundId)
         {

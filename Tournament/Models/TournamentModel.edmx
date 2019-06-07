@@ -5,13 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Forfeit">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
-          <Property Name="Term" Type="varchar" MaxLength="10" Nullable="false" />
-        </EntityType>
         <EntityType Name="League">
           <Key>
             <PropertyRef Name="id" />
@@ -165,14 +158,14 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Match_Schedule">
-          <End Role="Forfeit" Type="Self.Forfeit" Multiplicity="1" />
+          <End Role="Schedule" Type="Self.Schedule" Multiplicity="1" />
           <End Role="Match" Type="Self.Match" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Forfeit">
-              <PropertyRef Name="Id" />
+            <Principal Role="Schedule">
+              <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="Match">
-              <PropertyRef Name="ForFeitId" />
+              <PropertyRef Name="RoundId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -228,7 +221,6 @@
           <Parameter Name="RoundId" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="TournamentModelStoreContainer">
-          <EntitySet Name="Forfeit" EntityType="Self.Forfeit" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="League" EntityType="Self.League" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Match" EntityType="Self.Match" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
@@ -261,7 +253,7 @@
             <End Role="Team" EntitySet="Team" />
           </AssociationSet>
           <AssociationSet Name="FK_Match_Schedule" Association="Self.FK_Match_Schedule">
-            <End Role="Forfeit" EntitySet="Forfeit" />
+            <End Role="Schedule" EntitySet="Schedule" />
             <End Role="Match" EntitySet="Match" />
           </AssociationSet>
           <AssociationSet Name="FK_Match_Team" Association="Self.FK_Match_Team">
@@ -314,7 +306,6 @@
           <NavigationProperty Name="Team1" Relationship="Self.FK_Match_Team1" FromRole="Match" ToRole="Team" />
           <Property Name="rowversion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <Property Name="ForFeitId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Forfeit" Relationship="TournamentModel.FK_Match_Schedule1" FromRole="Match" ToRole="Forfeit" />
         </EntityType>
         <EntityType Name="Player">
           <Key>
@@ -544,11 +535,6 @@
           <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
           <Parameter Name="RoundId" Mode="In" Type="Int32" />
           </FunctionImport>
-          <EntitySet Name="Forfeits" EntityType="TournamentModel.Forfeit" />
-          <AssociationSet Name="FK_Match_Schedule1" Association="TournamentModel.FK_Match_Schedule1">
-            <End Role="Forfeit" EntitySet="Forfeits" />
-            <End Role="Match" EntitySet="Matches" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserLeague_League" Association="TournamentModel.FK_UserLeague_League">
             <End Role="League" EntitySet="Leagues" />
             <End Role="UserLeague" EntitySet="UserLeagues" />
@@ -571,26 +557,6 @@
           <Property Type="String" Name="Date" Nullable="false" MaxLength="50" />
           <Property Type="Int32" Name="Rink" Nullable="false" />
         </ComplexType>
-        <EntityType Name="Forfeit">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Term" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Matches" Relationship="TournamentModel.FK_Match_Schedule1" FromRole="Forfeit" ToRole="Match" />
-        </EntityType>
-        <Association Name="FK_Match_Schedule1">
-          <End Type="TournamentModel.Forfeit" Role="Forfeit" Multiplicity="1" />
-          <End Type="TournamentModel.Match" Role="Match" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Forfeit">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Match">
-              <PropertyRef Name="ForFeitId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_UserLeague_League">
           <End Type="TournamentModel.League" Role="League" Multiplicity="1" />
           <End Type="TournamentModel.UserLeague" Role="UserLeague" Multiplicity="*" />
@@ -725,14 +691,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="Forfeits">
-            <EntityTypeMapping TypeName="TournamentModel.Forfeit">
-              <MappingFragment StoreEntitySet="Forfeit">
-                <ScalarProperty Name="Term" ColumnName="Term" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

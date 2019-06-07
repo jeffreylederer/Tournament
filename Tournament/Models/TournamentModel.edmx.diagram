@@ -21,8 +21,6 @@
         <AssociationConnector Association="TournamentModel.FK__Players" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players1" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players2" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="TournamentModel.Forfeit" Width="1.5" PointX="3.375" PointY="8.875" />
-        <AssociationConnector Association="TournamentModel.FK_Match_Schedule1" />
         <AssociationConnector Association="TournamentModel.FK_UserLeague_League" />
         <AssociationConnector Association="TournamentModel.FK_UserLeague_User" />
       </Diagram>

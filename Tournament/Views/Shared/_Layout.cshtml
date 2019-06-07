@@ -29,8 +29,8 @@
                             <li>@Html.ActionLink("Schedule", "Index", "Schedules")</li>
                             <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
                             <li>@Html.ActionLink("Matches", "Index", "Matches", new { RoundId = 1 }, null)</li>
-                            <li><a href="/Reports/Byes.aspx?league=Tuesday">Byes</a></li>
-                            <li><a href="/Reports/Schedule.aspx?league=Tuesday">View Schedule</a></li>
+                            <li>@Html.ActionLink("Byes Report","ByesReport", "Matches")</li>
+                            
                             @{
                                 //if (HttpContext.Current.User.IsInRole("Admin"))
                                 {

@@ -1,0 +1,22 @@
+﻿@using ReportViewerForMvc
+
+@{
+    ViewBag.Title = "ScoreCardReport";
+}
+
+<h2>Score Card Report</h2>
+
+<table>
+    <tr>
+        <td>
+            @Html.ActionLink("Back to List", "Index", new { RoundId = ViewBag.RoundId })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.ReportViewer(
+                ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer,
+                new { scrolling = "no" })
+        </td>
+    </tr>
+</table>

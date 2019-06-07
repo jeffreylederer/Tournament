@@ -27,6 +27,5 @@ namespace Tournament.Models
         public virtual Schedule Schedule { get; set; }
         public virtual Team Team { get; set; }
         public virtual Team Team1 { get; set; }
-        public virtual Forfeit Forfeit { get; set; }
     }
 }

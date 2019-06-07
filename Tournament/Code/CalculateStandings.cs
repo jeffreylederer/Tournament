@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Tournament.Models;
 using Tournament.ReportFiles;
 
@@ -12,61 +13,116 @@ namespace Tournament.Code
 
         
 
-        public static TournamentDS.StandingDataTable Doit(int weekid)
+        public static TournamentDS.StandingDataTable Doit(int weekid, int teamsize)
         {
             var ds = new TournamentDS();
             var list = new List<Standing>();
             using (var db = new TournamentEntities())
             {
-               
+
                 foreach (var team in db.Teams)
                 {
+                    string players = "";
+                    switch (teamsize)
+                    {
+                        case 1:
+                            players = team.Player.NickName;
+                            break;
+                        case 2:
+                            players = $"{team.Player.NickName}, {team.Player2.NickName}";
+                            break;
+                        case 3:
+                            players = $"{team.Player.NickName}, {team.Player1.NickName}, {team.Player2.NickName}";
+                            break;
+                    }
                     list.Add(new Standing()
                     {
                         TeamNumber = team.id,
                         Wins = 0,
                         Loses = 0,
                         TotalScore = 0,
-                        Players = team.Player.NickName + ", " + team.Player1.NickName + team.Player2.NickName
+                        Players = players
                     });
                 }
-                foreach (var week in db.Schedules.Where(x => x.id <= weekid))
+                foreach(var week in db.Schedules.Where(x => x.id <= weekid))
                 {
+                    if (week.Cancelled)
+                        continue;
+                    var total = 0;
+                    var numMatches = 0;
+                    var bye = false;
+                    bool forfeit = false;
                     foreach (var match in db.Matches.Where(x => x.RoundId == week.id))
                     {
-                        if (match.Team1Score > match.Team2Score && match.Rink != -1)
+                        //team 1 wins
+                        if (match.Team1Score > match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
                         {
                             var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
-                            var loser = list.Find(x => x.TeamNumber == match.TeamNo2);
+                            var loser = list.Find(x => x.TeamNumber == match.TeamNo2.Value);
                             winner.Wins++;
                             loser.Loses++;
                             winner.TotalScore += Math.Min(20, match.Team1Score);
-
+                            loser.TotalScore += Math.Min(20, match.Team2Score);
+                            total += Math.Min(20, match.Team1Score);
+                            numMatches++;
                         }
-                        else if (match.Rink != -1)
+                        //team 2 wins
+                        else if (match.Rink != -1 && match.ForFeitId == 0)
                         {
-                            var winner = list.Find(x => x.TeamNumber == match.TeamNo2);
+                            var winner = list.Find(x => x.TeamNumber == match.TeamNo2.Value);
                             var loser = list.Find(x => x.TeamNumber == match.TeamNo1);
                             winner.Wins++;
                             loser.Loses++;
                             winner.TotalScore += Math.Min(20, match.Team2Score);
+                            loser.TotalScore += Math.Min(20, match.Team1Score);
+                            total += Math.Min(20, match.Team2Score);
+                            numMatches++;
                         }
+                        // forfeit
+                        else if (match.Rink != -1 && match.ForFeitId != 0)
+                        {
+                            var winner = list.Find(x => x.TeamNumber == (match.TeamNo1== match.ForFeitId? match.TeamNo2.Value: match.TeamNo1));
+                            var loser = list.Find(x => x.TeamNumber == match.ForFeitId);
+                            forfeit = true;
+                            winner.Wins++;
+                            loser.Loses++;
+                        }
+                        //bye
                         else
                         {
                             var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
                             winner.Wins++;
+                            bye = true;
+                        }
+
+                    }
+                    if (bye || forfeit)
+                    {
+
+                        foreach (var match in db.Matches.Where(x => x.RoundId == week.id))
+                        {
+                            if (match.Rink != -1 && match.ForFeitId != 0)
+                            {
+                                var winner = list.Find(x => x.TeamNumber == (match.TeamNo1 == match.ForFeitId ? match.TeamNo2.Value : match.TeamNo1));
+                                winner.TotalScore += total / numMatches;
+                            }
+                            else if (match.Rink == -1)
+                            {
+                                var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
+                                winner.TotalScore += total / numMatches;
+                            }
                         }
                     }
-                    list.Sort((a, b) => (b.Wins * 1000 + b.TotalScore).CompareTo(a.Wins * 1000 + a.TotalScore));
 
-                   
+
+
                 }
             }
             int place = 1;
+            list.Sort((a, b) => (b.Wins * 1000 + b.TotalScore).CompareTo(a.Wins * 1000 + a.TotalScore));
             foreach (var item in list)
             {
-                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place++, item.Wins, item.Loses
-                );
+                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place++, item.Wins, item.Loses);
             }
             return ds.Standing;
         }

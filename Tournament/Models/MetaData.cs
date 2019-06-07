@@ -81,11 +81,14 @@ namespace Tournament.Models
         [Display(Name = "Team 2")]
         public int TeamNo2 { get; set; }
 
-        [Display(Name = "Team Score 1")]
+        [Display(Name = "Team 1 Score")]
         public int Team1Score { get; set; }
 
-        [Display(Name = "Team Score 2")]
+        [Display(Name = "Team 2 Score")]
         public int Team2Score { get; set; }
+
+        [Display(Name = "Team Forfeiting")]
+        public int ForFeitId { get; set; }
     }
 
     [MetadataType(typeof(LeagueMetaData))]

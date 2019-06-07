@@ -1,5 +1,6 @@
 ﻿using Elmah;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -22,11 +23,30 @@ namespace Tournament.Controllers
         // GET: Matches
         public ActionResult Index(int? RoundId)
         {
+            int id;
             var leagueid = (int)HttpContext.Session["leagueid"];
-            var Matches = db.Matches.Where(x => x.RoundId == RoundId.Value && x.Rink != -1);
-            ViewBag.ScheduleID = new SelectList(db.Schedules.Where(x=>x.Leagueid == leagueid), "id", "RoundName", RoundId == null?"0": RoundId.ToString());
-            ViewBag.RoundId = db.Schedules.Find(RoundId.Value).id;
-            ViewBag.WeekID = RoundId;
+            if (!RoundId.HasValue)
+            {
+                var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.SortOrder);
+                if (weeks.Any())
+                {
+                    id = weeks.First().id;
+                }
+                else
+                {
+                    return View(new List<Match>());
+                }
+            }
+            else
+            {
+                id = RoundId.Value;
+            }
+            
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            var Matches = db.Matches.Where(x => x.RoundId == id && x.Rink != -1);
+            ViewBag.ScheduleID = new SelectList(db.Schedules.Where(x=>x.Leagueid == leagueid), "id", "RoundName", id.ToString());
+            ViewBag.RoundId = db.Schedules.Find(id).id;
+            ViewBag.WeekID = id;
             return View(Matches.OrderBy(x => x.Rink).ToList());
         }
 
@@ -73,18 +93,24 @@ namespace Tournament.Controllers
 
             var matches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
             
+            var scheduleList = db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
+            var teamList = db.Teams.Where(x => x.Leagueid == leagueid).ToList();
 
             foreach (var match in matches)
             {
+                var team1 = teamList.Find(x => x.TeamNo == match.Team1 + 1);
+                var team2 = teamList.Find(x => x.TeamNo == match.Team2 + 1);
+                var round = scheduleList.Find(x => x.SortOrder == match.Week + 1);
                 db.Matches.Add(new Match()
                 {
                     id=0,
-                    RoundId = match.Week + 1,
+                    RoundId = round.id,
                     Rink = match.Rink == -1 ? -1 : match.Rink + 1,
-                    TeamNo1 = match.Team1 + 1,
-                    TeamNo2 = match.Team2 + 1,
+                    TeamNo1 = team1.id,
+                    TeamNo2 = match.Rink == -1? (int?) null : team2.id,
                     Team1Score = 0,
-                    Team2Score = 0
+                    Team2Score = 0,
+                    ForFeitId = 1
                 });
                
             }
@@ -130,7 +156,7 @@ namespace Tournament.Controllers
             return RedirectToAction("index", "Home");
         }
 
-        public ActionResult ScoringReport(int RoundId)
+        public ActionResult StandingsReport(int id)
         {
 
             var reportViewer = new ReportViewer()
@@ -140,15 +166,123 @@ namespace Tournament.Controllers
                 Height = Unit.Pixel(1000),
                 ShowExportControls = true
             };
-            ViewBag.RoundId = RoundId;
+            ViewBag.RoundId = id;
 
-            
-            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
-            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
-            var RoundName = db.Schedules.Find(RoundId).RoundName;
+
             var ds = new TournamentDS();
-            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Byes.rdlc");
+            bool IsBye = false;
+            bool isCancelled = false;
 
+           
+            var week = db.Schedules.Find(id);
+            var WeekDate = week.RoundName;
+            if (!week.Cancelled)
+            {
+                foreach (var item in db.Matches.Include(x=>x.Team1).Include(x=>x.Team).Include(x=>x.Schedule).Where(x => x.RoundId == id && x.Rink != -1)
+                    .OrderBy(x => x.Rink))
+                {
+                    var forfeit = "";
+                    if(item.ForFeitId != 0)
+                    {
+                        if(item.ForFeitId == item.Team.id)
+                            forfeit = item.Team.TeamNo.ToString();
+                        else
+                        {
+                            forfeit = item.Team1.TeamNo.ToString();
+                        }
+                    }
+                    ds.Game.AddGameRow(item.Team.TeamNo,
+                        Players(item.Team),
+                        item.Team1.TeamNo,
+                        Players(item.Team1),
+                        item.Team1Score,
+                        item.Team2Score, item.Rink, forfeit);
+                }
+
+                var matches = db.Matches.Where(x => x.Rink == -1 && x.RoundId == id);
+                if (matches.Any())
+                {
+                    var match = matches.First();
+
+                    ds.Byes.AddByesRow(match.Schedule.RoundName, match.Team.TeamNo,
+                        Players(match.Team));
+                    reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", ds.Byes.Rows));
+                    IsBye = true;
+                }
+                else
+                {
+                    reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
+                }
+                reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", ds.Game.Rows));
+            }
+            else
+            {
+                isCancelled = true;
+                reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", new System.Data.DataTable()));
+                reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
+            }
+
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(id, (int)HttpContext.Session["teamsize"]).Rows));
+            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Standings.rdlc");
+
+            var p1 = new ReportParameter("WeekDate", WeekDate);
+            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
+            var p3 = new ReportParameter("IsBye", IsBye ? "1" : "0");
+            var p4 = new ReportParameter("IsCancelled", isCancelled ? "1" : "0");
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3, p4 });
+            
+
+            ViewBag.ReportViewer = reportViewer;
+            return View();
+        }
+
+        private string Players(Team team)
+        {
+            var TeamSize = (int)HttpContext.Session["teamsize"];
+            switch (TeamSize)
+            {
+                case 1:
+                    return $"{team.Player.NickName}";
+                case 2:
+                    return $"{team.Player.NickName}, {team.Player2.NickName}";
+                case 3:
+                    return $"{team.Player.NickName}, {team.Player1.NickName}, {team.Player2.NickName}";
+
+            }
+            return "";
+        }
+
+        public ActionResult ScoreCardReport(int id)
+        {
+
+            var reportViewer = new ReportViewer()
+            {
+                ProcessingMode = ProcessingMode.Local,
+                Width = Unit.Pixel(800),
+                Height = Unit.Pixel(1000),
+                ShowExportControls = true
+            };
+            ViewBag.RoundId = id;
+
+            var ds = new TournamentDS();
+            foreach (var match in db.Matches.Where(x => x.RoundId == id && x.Rink != -1).Include(x=>x.Schedule).Include(x=>x.Team).Include(x=>x.Team1).OrderBy(x => x.Rink))
+            {
+                ds.ScoreCard.AddScoreCardRow(match.Rink, match.Schedule.RoundName,
+                    match.Team.Player.NickName, 
+                    match.Team.ViceSkip.HasValue? match.Team.Player1.NickName:"",
+                    match.Team.Lead.HasValue ? match.Team.Player2.NickName:"",
+                    match.Team1.Player.NickName,
+                    match.Team1.ViceSkip.HasValue ? match.Team1.Player1.NickName : "",
+                    match.Team1.Lead.HasValue ? match.Team1.Player2.NickName : "",
+                    match.Team.TeamNo, match.Team1.TeamNo);
+            }
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Match", ds.ScoreCard.Rows));
+
+            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/ScoreCard.rdlc");
+
+            var p1 = new ReportParameter("teamsize", HttpContext.Session["teamsize"].ToString());
+            var p2 = new ReportParameter("Description", (string) HttpContext.Session["leaguename"]);
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2 });
             ViewBag.ReportViewer = reportViewer;
             return View();
         }
@@ -165,23 +299,18 @@ namespace Tournament.Controllers
             };
 
             var ds = new TournamentDS();
-            using (var db = new TournamentEntities())
-            {
-                foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.SortOrder))
-                {
-                    var schedule = item.RoundName;
-                    foreach (var match in db.Matches.Where(x => x.RoundId == item.id && x.Rink == -1).ToList())
-                    {
-                        var team = db.Teams.Find(match.TeamNo1);
-                        ds.Byes.AddByesRow(item.RoundName, match.TeamNo1,
-                            team.Player.NickName +
-                            (!team.ViceSkip.HasValue? "": $",{team.Player1.NickName}") +
-                            (!team.Lead.HasValue? "": $",{team.Player2.NickName}"));
-                    }
-                }
-            }
 
-            var p2 = new ReportParameter("Description", "Description");
+
+            foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.SortOrder))
+            {
+                var matches = db.Matches.Where(x => x.Rink == -1 && x.RoundId == item.id);
+                if(matches.Any())
+                    ds.Byes.AddByesRow(item.RoundName, matches.First().Team.TeamNo, Players(matches.First().Team));
+
+            }
+            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Byes.rdlc");
+
+            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Byes", ds.Byes.Rows));
@@ -202,7 +331,12 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.Forfeit = new SelectList(db.Forfeits, "value", "text", match.ForFeitId);
+            var forfeits = new List<Forfeit>();
+            forfeits.Add(new Forfeit() {Id = 0, Term = "No Forfeit"});
+            forfeits.Add(new Forfeit() {Id=match.TeamNo1, Term = $"Team No. {match.Team.TeamNo}"});
+            forfeits.Add(new Forfeit() {Id = match.TeamNo2.Value, Term = $"Team No. {match.Team1.TeamNo}"});
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", match.ForFeitId);
             return View(match);
         }
 
@@ -213,7 +347,7 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Scoring(int? id, byte[] rowVersion)
         {
-            string[] fieldsToBind = new string[] {"RoundId","Rink","TeamNo1","TeamNo2","Team1Score","Team2Score","ForfeitId", "rowversion" };
+            string[] fieldsToBind = new string[] {"RoundId","Rink","TeamNo1","TeamNo2","Team1Score","Team2Score", "ForFeitId", "rowversion" };
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -235,7 +369,7 @@ namespace Tournament.Controllers
                     db.Entry(update).OriginalValues["rowversion"] = rowVersion;
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new { RoundId = update.RoundId});
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
@@ -275,7 +409,12 @@ namespace Tournament.Controllers
                     ErrorSignal.FromCurrentContext().Raise(dex);
                 }
             }
-            ViewBag.Forfeit = new SelectList(db.Forfeits, "value", "text", update.ForFeitId);
+            var forfeits = new List<Forfeit>();
+            forfeits.Add(new Forfeit() { Id = 0, Term = "No Forfeit" });
+            forfeits.Add(new Forfeit() { Id = update.TeamNo1, Term = $"Team No. {update.Team.TeamNo}" });
+            forfeits.Add(new Forfeit() { Id = update.TeamNo2.Value, Term = $"Team No. {update.Team1.TeamNo}" });
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", update.ForFeitId);
             return View(update);
         }
 

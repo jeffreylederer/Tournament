@@ -24,8 +24,8 @@
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="RoundNo">
-          <DataField>RoundNo</DataField>
+        <Field Name="RoundName">
+          <DataField>RoundName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="TeamNo">
@@ -55,10 +55,10 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>0.88542in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>0.72917in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>3in</Width>
@@ -165,21 +165,21 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="RoundNo">
+                        <Textbox Name="RoundName">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!RoundNo.Value</Value>
+                                  <Value>=Fields!RoundName.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>RoundNo</rd:DefaultName>
+                          <rd:DefaultName>RoundName</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -191,6 +191,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -277,7 +278,7 @@
             <DataSetName>Byes</DataSetName>
             <Top>0.01958in</Top>
             <Height>0.5in</Height>
-            <Width>5in</Width>
+            <Width>4.61459in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -288,7 +289,7 @@
         <Height>0.59375in</Height>
         <Style />
       </Body>
-      <Width>5in</Width>
+      <Width>4.64583in</Width>
       <Page>
         <PageHeader>
           <Height>0.35417in</Height>
@@ -316,7 +317,7 @@
               </Paragraphs>
               <rd:DefaultName>Textbox1</rd:DefaultName>
               <Height>0.34375in</Height>
-              <Width>5in</Width>
+              <Width>4.61458in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
