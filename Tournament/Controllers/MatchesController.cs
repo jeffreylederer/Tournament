@@ -325,7 +325,7 @@ namespace Tournament.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,LeagueAdmin,Scorer")]
         public ActionResult Scoring(int? id)
         {
             if (id == null)
