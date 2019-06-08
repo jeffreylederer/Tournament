@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -10,6 +11,7 @@ namespace Tournament.Controllers
 {
     public class AccountsController : Controller
     {
+        [AllowAnonymous]
         public ActionResult Login()
         {
             return View();
@@ -77,6 +79,7 @@ namespace Tournament.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult LogOff()
         {
             FormsAuthentication.SignOut();
@@ -84,6 +87,64 @@ namespace Tournament.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        
+        [Authorize]
+        public ActionResult ChangePassword()
+        {
+            var item = new ChangePasswordViewModel()
+            {
+                EmailAddress = User.Identity.Name
+            };
+            return View(item);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(
+            [Bind(Include = "EmailAddress,OldPassword, Password,Confirm")] ChangePasswordViewModel chpvm)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db = new TournamentEntities())
+                {
+                    var users = db.Users.Where(x => x.username.ToLower() == chpvm.EmailAddress.ToString());
+                    if (!users.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "User Id or Current Password not found");
+                        return View(chpvm);
+                    }
+                    var user = users.First();
+                    if (user.password != chpvm.OldPassword)
+                    {
+                        ModelState.AddModelError(string.Empty, "User Id or Current Password not found");
+                        return View(chpvm);
+                    }
+                    if (chpvm.Password != chpvm.Confirm)
+                    {
+                        ModelState.AddModelError(string.Empty, "New Password and Confirming Password are not the same");
+                        return View(chpvm);
+                    }
+
+                    try
+                    {
+                        user.password = chpvm.Password;
+                        db.Entry(user).State = EntityState.Modified;
+                        db.SaveChanges();
+                        return RedirectToAction("PasswordAccepted", "Accounts");
+                    }
+                    catch
+                    {
+                        ModelState.AddModelError(string.Empty, "Password was not updated, try again");
+                    }
+                }
+            }
+            return View(chpvm);
+        }
+
+        public ActionResult PasswordAccepted()
+        {
+            return View();
+        }
+
+
     }
 }

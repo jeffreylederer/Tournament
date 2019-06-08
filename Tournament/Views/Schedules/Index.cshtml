@@ -7,8 +7,16 @@
 <h2>@ViewBag.LeagueName Rounds</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@{
+    if (HttpContext.Current.User.IsInRole("Admin") ||
+        HttpContext.Current.User.IsInRole("LeagueAdmin"))
+    {
+        @Html.ActionLink("Create New", "Create")
+    }
+}
+</
+
+        p>
 <table class="table">
     <tr>
         <th>
@@ -35,9 +43,16 @@
             @Html.DisplayFor(modelItem => item.Cancelled)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.id })
-        </td>
+        @{
+            if (HttpContext.Current.User.IsInRole("Admin") ||
+                HttpContext.Current.User.IsInRole("LeagueAdmin"))
+            {
+                @Html.ActionLink("Edit", "Edit", new {id = item.id}) 
+                @Html.Raw(" | ")
+                @Html.ActionLink("Delete", "Delete", new {id = item.id})
+            }
+        }
+            </td>
     </tr>
 }
 

@@ -15,13 +15,13 @@ using System.Text;
 
 namespace Tournament.Controllers
 {
-    [Authorize]
+   
     public class TeamsController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
        
 
-       
+       [Authorize]
         // GET: Teams
         public ActionResult Index()
         {
@@ -31,6 +31,7 @@ namespace Tournament.Controllers
             return View(db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo).ToList());
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult RemoveLead(int? id, string rowversion)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(rowversion);
@@ -63,6 +64,7 @@ namespace Tournament.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult RemoveViceSkip(int? id, string rowversion)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(rowversion);
@@ -95,6 +97,7 @@ namespace Tournament.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public ActionResult TeamReport()
         {
             var leagueid = (int)HttpContext.Session["leagueid"];

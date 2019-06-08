@@ -21,24 +21,14 @@ namespace Tournament.Controllers
             return View(db.Users.ToList());
         }
 
-        // GET: Users/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.Users.Find(id);
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user);
-        }
-
+       
         // GET: Users/Create
         public ActionResult Create()
         {
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("Admin", "Admin"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", "");
             return View();
         }
 
@@ -55,7 +45,10 @@ namespace Tournament.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("Admin", "Admin"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", user.Roles);
             return View(user);
         }
 
@@ -71,6 +64,10 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("Admin", "Admin"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", user.Roles);
             return View(user);
         }
 
@@ -87,6 +84,10 @@ namespace Tournament.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("Admin", "Admin"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", user.Roles);
             return View(user);
         }
 

@@ -15,11 +15,12 @@ using System.Data.Entity.Infrastructure;
 
 namespace Tournament.Controllers
 {
-    [Authorize]
+   
     public class MatchesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
 
+        [Authorize]
         // GET: Matches
         public ActionResult Index(int? RoundId)
         {
@@ -50,6 +51,7 @@ namespace Tournament.Controllers
             return View(Matches.OrderBy(x => x.Rink).ToList());
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult MoveUp(int id, int weekid)
         {
             var Matches = db.Matches.Where(x => x.RoundId == weekid).OrderBy(x => x.Rink);
@@ -71,7 +73,8 @@ namespace Tournament.Controllers
             return RedirectToAction("Index", new { ScheduleID = weekid });
         }
 
-       public ActionResult CreateMatches()
+        [Authorize(Roles = "Admin,LeagueAdmin")]
+        public ActionResult CreateMatches()
         {
             return View();
         }
@@ -126,7 +129,7 @@ namespace Tournament.Controllers
             return RedirectToAction("index", new { RoundId = round1.id });
         }
 
-        
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult ClearSchedule()
         {
             return View();
@@ -156,6 +159,7 @@ namespace Tournament.Controllers
             return RedirectToAction("index", "Home");
         }
 
+        [Authorize]
         public ActionResult StandingsReport(int id)
         {
 
@@ -252,6 +256,7 @@ namespace Tournament.Controllers
             return "";
         }
 
+        [Authorize]
         public ActionResult ScoreCardReport(int id)
         {
 
@@ -287,6 +292,7 @@ namespace Tournament.Controllers
             return View();
         }
 
+        [Authorize]
         public ActionResult ByesReport()
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
@@ -319,7 +325,7 @@ namespace Tournament.Controllers
             return View();
         }
 
-
+        [Authorize]
         public ActionResult Scoring(int? id)
         {
             if (id == null)

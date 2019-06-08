@@ -23,6 +23,7 @@ namespace Tournament.Controllers
         {
             var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
             ViewBag.LeagueId = id;
+            ViewBag.LeagueName = (string) HttpContext.Session["leaguename"];
             return View(userLeagues.ToList());
         }
 
@@ -37,6 +38,12 @@ namespace Tournament.Controllers
             {
                 LeagueId = id
             };
+            var dict = new List<Role>();
+            dict.Add(new Role("","No Roles"));
+            dict.Add(new Role("LeagueAdmin","LeagueAdmin"));
+            dict.Add(new Role("Scorer","Scorer"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue","RoleText","");
+
             return View(userleague);
         }
 
@@ -73,6 +80,11 @@ namespace Tournament.Controllers
             
             ViewBag.UserId = new SelectList(db.Users, "id", "username", userLeague.UserId);
             ViewBag.LeagueId = userLeague.LeagueId;
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
+            dict.Add(new Role("Scorer", "Scorer"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
             var league = db.Leagues.Find(userLeague.LeagueId);
             //ViewBag.LeagueName = league.LeagueName;
             return View(userLeague);
@@ -90,7 +102,11 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-           
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
+            dict.Add(new Role("Scorer", "Scorer"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
             return View(userLeague);
         }
 
@@ -163,7 +179,11 @@ namespace Tournament.Controllers
                     ErrorSignal.FromCurrentContext().Raise(dex);
                 }
             }
-            
+            var dict = new List<Role>();
+            dict.Add(new Role("", "No Roles"));
+            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
+            dict.Add(new Role("Scorer", "Scorer"));
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeagueToUpdate.Roles);
             return View(userLeagueToUpdate);
         }
 

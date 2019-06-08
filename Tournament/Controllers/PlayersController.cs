@@ -12,11 +12,12 @@ using Tournament.Models;
 
 namespace Tournament.Controllers
 {
-    [Authorize]
+    
     public class PlayersController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
 
+        [Authorize]
         // GET: Players
         public ActionResult Index(string sortOrder)
         {
@@ -47,7 +48,7 @@ namespace Tournament.Controllers
             return View(list);
         }
 
-        
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Players/Create
         public ActionResult Create()
         {
@@ -95,6 +96,7 @@ namespace Tournament.Controllers
             return View(player);
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Players/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -111,6 +113,7 @@ namespace Tournament.Controllers
             return View(player);
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // POST: Players/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -190,6 +193,7 @@ namespace Tournament.Controllers
             return View(playerToUpdate);
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Players/Delete/5
         public ActionResult Delete(int? id, bool? concurrencyError)
         {

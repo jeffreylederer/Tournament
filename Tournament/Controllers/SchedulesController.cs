@@ -12,11 +12,12 @@ using Tournament.Models;
 
 namespace Tournament.Controllers
 {
-    [Authorize]
+   
     public class SchedulesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
 
+        [Authorize]
         // GET: Schedules
         public ActionResult Index()
         {
@@ -26,8 +27,8 @@ namespace Tournament.Controllers
             return View(list);
         }
 
-       
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Schedules/Create
         public ActionResult Create()
         {
@@ -73,6 +74,7 @@ namespace Tournament.Controllers
             return View(schedule);
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Schedules/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -162,6 +164,7 @@ namespace Tournament.Controllers
             return View(scheduleToUpdate); ;
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Schedules/Delete/5
         public ActionResult Delete(int? id, bool? concurrencyError)
         {

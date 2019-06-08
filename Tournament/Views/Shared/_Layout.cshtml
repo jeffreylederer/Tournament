@@ -32,7 +32,7 @@
                             <li>@Html.ActionLink("Byes Report","ByesReport", "Matches")</li>
                             
                             @{
-                                //if (HttpContext.Current.User.IsInRole("Admin"))
+                                if (HttpContext.Current.User.IsInRole("Admin,LeagueAdmin"))
                                 {
                                     <li>----------------------------</li>
                                     <li>@Html.ActionLink("Clear Schedule", "ClearSchedule", "Matches")</li>

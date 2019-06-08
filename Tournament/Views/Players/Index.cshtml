@@ -7,8 +7,16 @@
 <h2>@ViewBag.LeagueName Players</h2>
 
 <p>
-    @Html.ActionLink("Add a Player", "Create")
-    </p>
+@{
+    if (HttpContext.Current.User.IsInRole("Admin") ||
+        HttpContext.Current.User.IsInRole("LeagueAdmin"))
+    {
+        @Html.ActionLink("Add a Player", "Create")
+    }
+}
+</
+
+        p>
 <p> Total Players: @ViewBag.Count<br/>
     Active Players: @ViewBag.Active
 </p>
@@ -36,30 +44,38 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Active)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.shortname)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NickName)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
-        </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.LastName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.FirstName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Active)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.FullName)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.shortname)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.NickName)
+    </td>
+    <td>
+    @{
+        if (HttpContext.Current.User.IsInRole("Admin") ||
+            HttpContext.Current.User.IsInRole("LeagueAdmin"))
+        {
+            @Html.ActionLink("Edit", "Edit", new {id = item.id});  
+            @Html.Raw(" | ");
+            @Html.ActionLink("Delete", "Delete", new {id = item.id});
+        }
+    }
+</td>
     </tr>
 }
 

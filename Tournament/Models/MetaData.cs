@@ -40,6 +40,9 @@ namespace Tournament.Models
 
         [Display(Name = "Vice Skip")]
         public string ViceSkip { get; set; }
+
+        [Display(Name = "League Name")]
+        public string LeagueId { get; set; }
     }
 
 
@@ -119,6 +122,22 @@ namespace Tournament.Models
         [Display(Name = "League Name")]
         public int LeagueId { get; set; }
 
+        [Display(Name = "Role")]
+        public string Roles { get; set; }
+    }
+
+    [MetadataType(typeof(UserMetaData))]
+    public partial class User
+    {
+    }
+
+    public partial class UserMetaData
+    {
+        [Display(Name = "User EmailAddress")]
+        [EmailAddress]
+        public int username { get; set; }
+
+        [Display(Name = "Role")]
         public string Roles { get; set; }
     }
 }

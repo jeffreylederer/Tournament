@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using Tournament.Models;
 
 namespace Tournament.Controllers
@@ -17,21 +18,16 @@ namespace Tournament.Controllers
         public ActionResult Index()
         {
             var username = (string) HttpContext.Session["user"];
-            var role = "";
             var user = db.Users.Where(x => x.username == username).First();
             ViewBag.Error = "";
-            List<League> leagues;
+            var leagues = new List<League>();
             if (!string.IsNullOrWhiteSpace(user.Roles) &&  user.Roles.Contains("Admin"))
             {
-                role = "LeagueAdmin";
                 leagues = db.Leagues.ToList();
             }
             else
             {
                 var userleagues = db.UserLeagues.Include(u => u.League).Where(x => x.UserId == user.id);
-                if (userleagues.Any())
-                    role = userleagues.First().Roles;
-                leagues = new List<League>();
                 foreach (var item in userleagues)
                     leagues.Add(item.League);
             }
@@ -43,16 +39,13 @@ namespace Tournament.Controllers
             }
             if (leagues.Count() == 1)
             {
-                var league = leagues.First();
-                HttpContext.Session["leaguename"] = league.LeagueName;
-                HttpContext.Session["leagueid"] = league.id;
-                HttpContext.Session["leaguerole"] = role;
-                HttpContext.Session["teamsize"] = league.TeamSize;
-                return RedirectToAction("Welcome");
+                return RedirectToAction("Register", new {id = leagues.First().id});
+
             }
             
            return View(leagues);
         }
+
 
         /// <summary>
         /// 
@@ -73,21 +66,22 @@ namespace Tournament.Controllers
                 return HttpNotFound();
             }
             var role = "";
-            if (user.Roles.Contains("Admin"))
+            if (!string.IsNullOrWhiteSpace(user.Roles))
             {
-                role = "LeagueAdmin";
+                role = user.Roles;
             }
-            else
+            var items = db.UserLeagues.Where(x => x.UserId == user.id && x.LeagueId == id);
+            if (items.Any())
             {
-                var item = db.UserLeagues.Where(x => x.UserId == user.id && x.LeagueId == id).First();
-                if (item == null)
+                var item = items.First();
+                if (!string.IsNullOrWhiteSpace(item.Roles))
                 {
-                    return HttpNotFound();
+                    role = string.IsNullOrWhiteSpace(role) ? item.Roles : $"{role},{item.Roles}";
                 }
-                role = item.Roles;
             }
-                
-            
+
+
+
             var league = db.Leagues.Find(id);
             if (league == null)
             {
@@ -97,17 +91,33 @@ namespace Tournament.Controllers
             HttpContext.Session["leaguename"] = league.LeagueName;
             HttpContext.Session["leagueid"] = id.Value;
             HttpContext.Session["leaguerole"] = role;
-           
-            
+
+            FormsAuthentication.SetAuthCookie(user.username, false);
+            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+                1, // Ticket version 
+                user.username, // username to be used by ticket 
+                DateTime.Now, // ticket issue date-time
+                DateTime.Now.AddMinutes(60), // Date and time the cookie will expire 
+                false, // persistent cookie?
+                role,
+                FormsAuthentication.FormsCookiePath);
+
+            string encryptCookie = FormsAuthentication.Encrypt(ticket);
+            HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptCookie);
+            HttpContext.Response.Cookies.Add(cookie);
+
+
             return RedirectToAction("Welcome");
         }
 
+        [Authorize]
         public ActionResult Welcome()
         {
             ViewBag.League = HttpContext.Session["leaguename"];
             return View();
         }
 
+        [Authorize]
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
@@ -115,6 +125,7 @@ namespace Tournament.Controllers
             return View();
         }
 
+        [Authorize]
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

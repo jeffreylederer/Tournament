@@ -4,10 +4,10 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Users of @ViewBag.LeagueName</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create", new {id=ViewBag.LeagueId})
+    @Html.ActionLink("Add User", "Create", new {id=ViewBag.LeagueId})
 </p>
 <table class="table">
     <tr>
@@ -15,9 +15,7 @@
             @Html.DisplayNameFor(model => model.Roles)
         </th>
         
-        <th>
-            @Html.DisplayNameFor(model => model.League.LeagueName)
-        </th>
+        
         <th>
             @Html.DisplayNameFor(model => model.User.username)
         </th>
@@ -30,9 +28,7 @@
                 @Html.DisplayFor(modelItem => item.Roles)
             </td>
         
-            <td>
-                @Html.DisplayFor(modelItem => item.League.LeagueName)
-            </td>
+           
             <td>
                 @Html.DisplayFor(modelItem => item.User.username)
             </td>
