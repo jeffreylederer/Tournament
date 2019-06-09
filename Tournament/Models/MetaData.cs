@@ -42,7 +42,7 @@ namespace Tournament.Models
         public string ViceSkip { get; set; }
 
         [Display(Name = "League Name")]
-        public string LeagueId { get; set; }
+        public string Leagueid { get; set; }
     }
 
 

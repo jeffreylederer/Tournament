@@ -2,17 +2,13 @@
 
 namespace Tournament.Models
 {
-    public class ChangePasswordViewModel
+    public class ResetPasswordViewModel
     {
-        [EmailAddress]
         [Required]
-        [Display(Name = "User ID")]
-        public string EmailAddress { get; set; }
+        [Display(Name = "Activation Code")]
+        public string ActivationCode { get; set; }
 
-        [Required]
-        [Display(Name = "Current Password")]
-        public string OldPassword { get; set; }
-
+        
         [Required]
         [Display(Name = "New Password")]
         public string Password { get; set; }

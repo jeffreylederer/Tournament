@@ -13,14 +13,14 @@ namespace Tournament.Code
 
         
 
-        public static TournamentDS.StandingDataTable Doit(int weekid, int teamsize)
+        public static TournamentDS.StandingDataTable Doit(int weekid, int teamsize, int leagueid)
         {
             var ds = new TournamentDS();
             var list = new List<Standing>();
             using (var db = new TournamentEntities())
             {
 
-                foreach (var team in db.Teams)
+                foreach (var team in db.Teams.Where(x=>x.Leagueid== leagueid))
                 {
                     string players = "";
                     switch (teamsize)
@@ -37,14 +37,14 @@ namespace Tournament.Code
                     }
                     list.Add(new Standing()
                     {
-                        TeamNumber = team.id,
+                        TeamNumber = team.TeamNo,
                         Wins = 0,
                         Loses = 0,
                         TotalScore = 0,
                         Players = players
                     });
                 }
-                foreach(var week in db.Schedules.Where(x => x.id <= weekid))
+                foreach(var week in db.Schedules.Where(x => x.id <= weekid && x.Leagueid == leagueid))
                 {
                     if (week.Cancelled)
                         continue;
@@ -57,8 +57,8 @@ namespace Tournament.Code
                         //team 1 wins
                         if (match.Team1Score > match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
                         {
-                            var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
-                            var loser = list.Find(x => x.TeamNumber == match.TeamNo2.Value);
+                            var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
+                            var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
                             winner.Wins++;
                             loser.Loses++;
                             winner.TotalScore += Math.Min(20, match.Team1Score);
@@ -69,8 +69,8 @@ namespace Tournament.Code
                         //team 2 wins
                         else if (match.Rink != -1 && match.ForFeitId == 0)
                         {
-                            var winner = list.Find(x => x.TeamNumber == match.TeamNo2.Value);
-                            var loser = list.Find(x => x.TeamNumber == match.TeamNo1);
+                            var winner = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
+                            var loser = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                             winner.Wins++;
                             loser.Loses++;
                             winner.TotalScore += Math.Min(20, match.Team2Score);
@@ -81,7 +81,7 @@ namespace Tournament.Code
                         // forfeit
                         else if (match.Rink != -1 && match.ForFeitId != 0)
                         {
-                            var winner = list.Find(x => x.TeamNumber == (match.TeamNo1== match.ForFeitId? match.TeamNo2.Value: match.TeamNo1));
+                            var winner = list.Find(x => x.TeamNumber == (match.Team.TeamNo== match.ForFeitId? match.Team1.TeamNo: match.Team.TeamNo));
                             var loser = list.Find(x => x.TeamNumber == match.ForFeitId);
                             forfeit = true;
                             winner.Wins++;
@@ -90,7 +90,7 @@ namespace Tournament.Code
                         //bye
                         else
                         {
-                            var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
+                            var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                             winner.Wins++;
                             bye = true;
                         }
@@ -103,12 +103,12 @@ namespace Tournament.Code
                         {
                             if (match.Rink != -1 && match.ForFeitId != 0)
                             {
-                                var winner = list.Find(x => x.TeamNumber == (match.TeamNo1 == match.ForFeitId ? match.TeamNo2.Value : match.TeamNo1));
+                                var winner = list.Find(x => x.TeamNumber == (match.Team.TeamNo == match.ForFeitId ? match.Team1.TeamNo : match.Team.TeamNo));
                                 winner.TotalScore += total / numMatches;
                             }
                             else if (match.Rink == -1)
                             {
-                                var winner = list.Find(x => x.TeamNumber == match.TeamNo1);
+                                var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                                 winner.TotalScore += total / numMatches;
                             }
                         }

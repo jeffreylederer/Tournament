@@ -26,6 +26,7 @@ namespace Tournament.Controllers
         {
             int id;
             var leagueid = (int)HttpContext.Session["leagueid"];
+            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
             if (!RoundId.HasValue)
             {
                 var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.SortOrder);
@@ -69,8 +70,8 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
                 throw;
             }
-            
-            return RedirectToAction("Index", new { ScheduleID = weekid });
+            ViewBag.WeekID = weekid;
+            return RedirectToAction("Index", new { RoundId = weekid });
         }
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
@@ -226,7 +227,7 @@ namespace Tournament.Controllers
                 reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
             }
 
-            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(id, (int)HttpContext.Session["teamsize"]).Rows));
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(id, (int)HttpContext.Session["teamsize"], (int)HttpContext.Session["leagueid"]).Rows));
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Standings.rdlc");
 
             var p1 = new ReportParameter("WeekDate", WeekDate);
@@ -339,8 +340,8 @@ namespace Tournament.Controllers
             }
             var forfeits = new List<Forfeit>();
             forfeits.Add(new Forfeit() {Id = 0, Term = "No Forfeit"});
-            forfeits.Add(new Forfeit() {Id=match.TeamNo1, Term = $"Team No. {match.Team.TeamNo}"});
-            forfeits.Add(new Forfeit() {Id = match.TeamNo2.Value, Term = $"Team No. {match.Team1.TeamNo}"});
+            forfeits.Add(new Forfeit() {Id=match.Team.TeamNo, Term = $"Team No. {match.Team.TeamNo}"});
+            forfeits.Add(new Forfeit() {Id = match.Team1.TeamNo, Term = $"Team No. {match.Team1.TeamNo}"});
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", match.ForFeitId);
             return View(match);
@@ -417,8 +418,9 @@ namespace Tournament.Controllers
             }
             var forfeits = new List<Forfeit>();
             forfeits.Add(new Forfeit() { Id = 0, Term = "No Forfeit" });
-            forfeits.Add(new Forfeit() { Id = update.TeamNo1, Term = $"Team No. {update.Team.TeamNo}" });
-            forfeits.Add(new Forfeit() { Id = update.TeamNo2.Value, Term = $"Team No. {update.Team1.TeamNo}" });
+            forfeits.Add(new Forfeit() { Id = update.Team.TeamNo, Term = $"Team No. {update.Team.TeamNo}" });
+            forfeits.Add(new Forfeit() { Id = update.Team1.TeamNo, Term = $"Team No. {update.Team1.TeamNo}" });
+
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", update.ForFeitId);
             return View(update);

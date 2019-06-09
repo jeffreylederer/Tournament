@@ -7,13 +7,25 @@
     ViewBag.Title = "Index";
 }
 
-<h2> Matches for @ViewBag.Date</h2>
+<h2> Matches for @ViewBag.LeagueName</h2>
 @using (Html.BeginForm("Index", "Matches", FormMethod.Post))
 {
     <div>
-
-        @Html.DropDownList("RoundId", (SelectList)ViewBag.ScheduleID, "Select Round", new { @class = "form-control" })
-        <input type="submit" value="Select Round" class="btn btn-primary" />
+        <table>
+        <tr>
+            <td>
+                Round:&nbsp;&nbsp;
+            </td>
+            <td>
+                @Html.DropDownList("RoundId", (SelectList)ViewBag.ScheduleID, "Select Round", new { @class = "form-control" })
+            </td>
+        </tr>
+        <tr><td></td>
+                <td >
+                    <input type="submit" value="Select Round" class="btn btn-primary" />
+                </td>
+            </tr>
+        </table>
     </div>
 }
 <br />

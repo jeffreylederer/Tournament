@@ -691,7 +691,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -1180,7 +1179,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Last Game Played</Value>
+                    <Value>=iif(Parameters!IsCancelled.Value="0","Games Played","Round was Cancelled")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
