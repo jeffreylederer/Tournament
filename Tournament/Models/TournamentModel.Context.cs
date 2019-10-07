@@ -35,13 +35,13 @@ namespace Tournament.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserLeague> UserLeagues { get; set; }
     
-        public virtual ObjectResult<GetMatchAll_Result> GetMatchAll(Nullable<int> roundId)
+        public virtual ObjectResult<GetMatchAll_Result> GetMatchAll(Nullable<int> weekId)
         {
-            var roundIdParameter = roundId.HasValue ?
-                new ObjectParameter("RoundId", roundId) :
-                new ObjectParameter("RoundId", typeof(int));
+            var weekIdParameter = weekId.HasValue ?
+                new ObjectParameter("WeekId", weekId) :
+                new ObjectParameter("WeekId", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMatchAll_Result>("GetMatchAll", roundIdParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMatchAll_Result>("GetMatchAll", weekIdParameter);
         }
     }
 }

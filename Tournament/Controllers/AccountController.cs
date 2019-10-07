@@ -172,17 +172,17 @@ namespace Tournament.Controllers
                 var verifyUrl = $"/Accounts/ResetPassword/{activationCode}";
                 var link = $"http://{Request.Url.Host}:{Request.Url.Port}{verifyUrl}";
 
-                var fromEmail = new MailAddress("lawnbowlingpittsburgh@gmail.com", "Lawn Bowling Pittsburgh");
+                var fromEmail = new MailAddress("tournament@lawnbowlingpittsburgh.org", "Lawn Bowling Pittsburgh");
                 var toEmail = new MailAddress(forgotPassword.EmailId);
-                var fromEmailPassword = "xxxxx"; // Replace with actual password
+                var fromEmailPassword = "burnt#end"; // Replace with actual password
 
                 var subject = "Reset Password for Tournament Application";
                 var body =
-                    $"Hi,<br/>br/>We got request for reset your account password. Please click on the below link to reset your password<br/><br/><a href={link}>Reset Password link</a>";
+                    $"Hi,<br/><br/>We got request for reset your account password. Please click on the below link to reset your password<br/><br/><a href={link}>Reset Password link</a>";
 
                 var smtp = new SmtpClient
                 {
-                    Host = "smtp.gmail.com",
+                    Host = "smtp.ionos.com ",
                     Port = 587,
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
@@ -190,13 +190,15 @@ namespace Tournament.Controllers
                     Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword)
                 };
 
-                using (var message = new MailMessage(fromEmail, toEmail)
+                var message = new MailMessage(fromEmail, toEmail)
                 {
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true
-                })
+                };
                 smtp.Send(message);
+                message.Dispose();
+                smtp.Dispose();
                 return RedirectToAction("SentEmail", "Accounts");
             }
             return View(forgotPassword);

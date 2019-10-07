@@ -17,12 +17,12 @@
                 Round:&nbsp;&nbsp;
             </td>
             <td>
-                @Html.DropDownList("RoundId", (SelectList)ViewBag.ScheduleID, "Select Round", new { @class = "form-control" })
+                @Html.DropDownList("scheduleId", (SelectList)ViewBag.ScheduleID, new { @class = "form-control" })
             </td>
         </tr>
         <tr><td></td>
                 <td >
-                    <input type="submit" value="Select Round" class="btn btn-primary" />
+                    <input type="submit" value="Select Game Date" class="btn btn-primary" />
                 </td>
             </tr>
         </table>
@@ -31,8 +31,8 @@
 <br />
 
 <p>
-    @Html.ActionLink("This week's standings report", "StandingsReport", new { id = ViewBag.RoundId })<br />
-    @Html.ActionLink("This week's score cards", "ScoreCardReport", new { id = ViewBag.RoundId })
+    @Html.ActionLink("This week's standings report", "StandingsReport", new { id = ViewBag.WeekId })<br />
+    @Html.ActionLink("This week's score cards", "ScoreCardReport", new { id = ViewBag.WeekId })
 </p>
 
 <table class="table-condensed table-striped">
@@ -49,9 +49,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Rink)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Schedule.RoundName)
-        </th>
+        
         <th>
             @Html.DisplayNameFor(model => model.TeamNo1)
         </th>
@@ -84,9 +82,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Rink)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Schedule.RoundName)
             </td>
             <td>
                 @{

@@ -15,7 +15,7 @@ namespace Tournament.Models
     public partial class Match
     {
         public int id { get; set; }
-        public int RoundId { get; set; }
+        public int WeekId { get; set; }
         public int Rink { get; set; }
         public int TeamNo1 { get; set; }
         public Nullable<int> TeamNo2 { get; set; }

@@ -16,7 +16,7 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.id)
-    @Html.HiddenFor(model => model.RoundId)
+    @Html.HiddenFor(model => model.WeekId)
     @Html.HiddenFor(model => model.Rink)
     @Html.HiddenFor(model => model.TeamNo1)
     @Html.HiddenFor(model => model.TeamNo2)
@@ -24,9 +24,9 @@
     
 
     <div class="form-group">
-        @Html.LabelFor(model => model.RoundId, "Round Number", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.Schedule.GameDate, "Game Date", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Model.Schedule.RoundName
+            @Model.Schedule.WeekDate
         </div>
     </div>
 
@@ -46,13 +46,13 @@
             switch ((int)ViewBag.TeamSize)
             {
                 case 1:
-                    players = $"Team #{Model.Team.TeamNo} Score ({Model.Team.Player.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName})";
                     break;
                 case 2:
-                    players = $"Team #{Model.Team.TeamNo} Score ({Model.Team.Player.NickName}, {Model.Team.Player2.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName}, {Model.Team.Player2.NickName})";
                     break;
                 case 3:
-                    players = $"Team #{Model.Team.TeamNo} Score ({Model.Team.Player.NickName}, {Model.Team.Player1.NickName}, {Model.Team.Player2.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName}, {Model.Team.Player1.NickName}, {Model.Team.Player2.NickName})";
                     break;
             }
         }
@@ -69,13 +69,13 @@
             switch ((int)ViewBag.TeamSize)
             {
                 case 1:
-                    players1 = $"Team #{Model.Team1.TeamNo} Score ({Model.Team1.Player.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName})";
                     break;
                 case 2:
-                    players1 = $"Team #{Model.Team1.TeamNo} Score ({Model.Team1.Player.NickName}, {Model.Team1.Player2.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName}, {Model.Team1.Player2.NickName})";
                     break;
                 case 3:
-                    players1 = $"Team #{Model.Team1.TeamNo} Score ({Model.Team1.Player.NickName}, {Model.Team1.Player1.NickName}, {Model.Team.Player2.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName}, {Model.Team1.Player1.NickName}, {Model.Team.Player2.NickName})";
                     break;
             }
         }
@@ -103,7 +103,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {RoundId=Model.RoundId})
+    @Html.ActionLink("Back to List", "Index", new {scheduleId=Model.WeekId})
 </div>
 
 @section Scripts {

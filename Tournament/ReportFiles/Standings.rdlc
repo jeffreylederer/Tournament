@@ -1179,7 +1179,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>=iif(Parameters!IsCancelled.Value="0","Games Played","Round was Cancelled")</Value>
+                    <Value>=iif(Parameters!IsCancelled.Value="0","Games Played","Week was Cancelled")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
@@ -1510,7 +1510,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>="Standing for Round " + Parameters!WeekDate.Value</Value>
+                      <Value>="Standing for Date " + Parameters!WeekDate.Value</Value>
                       <Style>
                         <FontSize>14pt</FontSize>
                         <FontWeight>Bold</FontWeight>

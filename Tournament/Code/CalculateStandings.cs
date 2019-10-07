@@ -52,7 +52,7 @@ namespace Tournament.Code
                     var numMatches = 0;
                     var bye = false;
                     bool forfeit = false;
-                    foreach (var match in db.Matches.Where(x => x.RoundId == week.id))
+                    foreach (var match in db.Matches.Where(x => x.WeekId == week.id))
                     {
                         //team 1 wins
                         if (match.Team1Score > match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
@@ -99,7 +99,7 @@ namespace Tournament.Code
                     if (bye || forfeit)
                     {
 
-                        foreach (var match in db.Matches.Where(x => x.RoundId == week.id))
+                        foreach (var match in db.Matches.Where(x => x.WeekId == week.id))
                         {
                             if (match.Rink != -1 && match.ForFeitId != 0)
                             {

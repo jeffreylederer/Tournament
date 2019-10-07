@@ -2,28 +2,24 @@
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
-    <DataSource Name="LeaguesDS">
+    <DataSource Name="TournamentModels">
       <ConnectionProperties>
         <DataProvider>System.Data.DataSet</DataProvider>
         <ConnectString>/* Local Connection */</ConnectString>
       </ConnectionProperties>
-      <rd:DataSourceID>b4a06a79-95af-401c-a7ce-207080002d1d</rd:DataSourceID>
+      <rd:DataSourceID>7de090e8-c25c-4d17-8435-af671a108637</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="Match">
       <Query>
-        <DataSourceName>LeaguesDS</DataSourceName>
+        <DataSourceName>TournamentModels</DataSourceName>
         <CommandText>/* Local Query */</CommandText>
       </Query>
       <Fields>
-        <Field Name="Rink">
-          <DataField>Rink</DataField>
+        <Field Name="ID">
+          <DataField>ID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="Date">
-          <DataField>Date</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Skip1">
           <DataField>Skip1</DataField>
@@ -57,14 +53,21 @@
           <DataField>Team2</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Date">
+          <DataField>Date</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Rink">
+          <DataField>Rink</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
-        <rd:DataSetName>TournamentDS</rd:DataSetName>
-        <rd:SchemaPath>C:\Users\DellPC\documents\visual studio 2017\Projects\Tournament\Tournament\ReportFiles\TournamentDS.xsd</rd:SchemaPath>
-        <rd:TableName>ScoreCard</rd:TableName>
-        <rd:TableAdapterFillMethod />
-        <rd:TableAdapterGetDataMethod />
-        <rd:TableAdapterName />
+        <rd:DataSetName>Tournament.Models</rd:DataSetName>
+        <rd:TableName>TournamentEntities</rd:TableName>
+        <rd:ObjectDataSourceSelectMethod>GetMatchAll</rd:ObjectDataSourceSelectMethod>
+        <rd:ObjectDataSourceSelectMethodSignature>System.Data.Entity.Core.Objects.ObjectResult`1[Tournament.Models.GetMatchAll_Result] GetMatchAll(System.Nullable`1[System.Int32])</rd:ObjectDataSourceSelectMethodSignature>
+        <rd:ObjectDataSourceType>Tournament.Models.TournamentEntities, Tournament, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</rd:ObjectDataSourceType>
       </rd:DataSetInfo>
     </DataSet>
   </DataSets>
@@ -119,7 +122,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Round</Value>
+                                  <Value>Date</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>

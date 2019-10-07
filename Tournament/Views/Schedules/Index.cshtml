@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>@ViewBag.LeagueName Rounds</h2>
+<h2>@ViewBag.LeagueName Weeks</h2>
 
 <p>
 @{
@@ -20,10 +20,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.SortOrder)
+            @Html.DisplayNameFor(model => model.WeekNumber)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.RoundName)
+            @Html.DisplayNameFor(model => model.GameDate)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Cancelled)
@@ -34,10 +34,10 @@
 @foreach (var item in Model) {
     <tr>
         <th>
-            @Html.DisplayFor(modelItem => item.SortOrder)
+            @Html.DisplayFor(modelItem => item.WeekNumber)
         </th>
         <td>
-            @Html.DisplayFor(modelItem => item.RoundName)
+            @Html.DisplayFor(modelItem => item.GameDate)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Cancelled)

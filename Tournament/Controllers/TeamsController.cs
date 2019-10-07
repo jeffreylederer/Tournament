@@ -128,7 +128,7 @@ namespace Tournament.Controllers
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
-                ds.Team.AddTeamRow(team.id, team.Player.FullName,  team.Lead== null? "" : team.Player2.FullName, team.ViceSkip == null ? "" : team.Player1.FullName);
+                ds.Team.AddTeamRow(team.TeamNo, team.Player.FullName,  team.Lead== null? "" : team.Player2.FullName, team.ViceSkip == null ? "" : team.Player1.FullName);
             }
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
 

@@ -23,7 +23,7 @@ namespace Tournament.Controllers
         {
             int leagueid = (int) this.HttpContext.Session["leagueid"];
             ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
-            var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.SortOrder).ToList();
+            var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.WeekNumber).ToList();
             return View(list);
         }
 
@@ -32,9 +32,21 @@ namespace Tournament.Controllers
         // GET: Schedules/Create
         public ActionResult Create()
         {
+            var id =1;
+            var leagueid = (int)this.HttpContext.Session["leagueid"];
+            DateTime date = DateTime.Now;
+            var items = db.Schedules.Where(x=>x.Leagueid==leagueid).OrderByDescending(x => x.WeekNumber);
+            if (items.Count() > 0)
+            {
+                date = items.First().GameDate.AddDays(7);
+                id = items.First().id + 1;
+            }
+
             var item = new Schedule()
             {
-                Leagueid = (int) HttpContext.Session["leagueid"],
+                WeekNumber = id,
+                GameDate = date,
+                Leagueid = leagueid,
                 Cancelled = false
             };
             ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
@@ -46,7 +58,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "RoundName,SortOrder,LeagueId,Cancelled")] Schedule schedule)
+        public ActionResult Create([Bind(Include = "GameDate,WeekNumber,LeagueId,Cancelled")] Schedule schedule)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +110,7 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, byte[] rowVersion)
         {
-            string[] fieldsToBind = new string[] {"RoundName","Cancelled","SortOrder", "rowversion" };
+            string[] fieldsToBind = new string[] {"GameDate","Cancelled","WeekNumber", "rowversion" };
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -136,15 +148,15 @@ namespace Tournament.Controllers
                     {
                         var databaseValues = (Schedule)databaseEntry.ToObject();
 
-                        if (databaseValues.RoundName != clientValues.RoundName)
-                            ModelState.AddModelError("Round Name", "Current value: "
-                                                                    + databaseValues.RoundName);
+                        if (databaseValues.WeekDate != clientValues.WeekDate)
+                            ModelState.AddModelError("Game Date", "Current value: "
+                                                                    + databaseValues.GameDate.ToShortDateString());
                         if (databaseValues.Cancelled != clientValues.Cancelled)
                             ModelState.AddModelError("Cancelled", "Current value: "
                                                                   + databaseValues.Cancelled);
-                        if (databaseValues.SortOrder != clientValues.SortOrder)
-                            ModelState.AddModelError("Sort Order", "Current value: "
-                                                                  + databaseValues.SortOrder.ToString());
+                        if (databaseValues.WeekNumber != clientValues.WeekNumber)
+                            ModelState.AddModelError("Week Number", "Current value: "
+                                                                  + databaseValues.WeekNumber.ToString());
                         ModelState.AddModelError(string.Empty, "The record you attempted to edit "
                                                                + "was modified by another user after you got the original value. The "
                                                                + "edit operation was canceled and the current values in the database "

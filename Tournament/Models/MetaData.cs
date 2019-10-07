@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tournament.Models
 {
@@ -55,11 +56,12 @@ namespace Tournament.Models
         [Required]
         public int id { get; set; }
 
-        [Display(Name = "Round Name")]
-        public int RoundName { get; set; }
+        [Display(Name = "Game Date")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
+        public DateTime GameDate { get; set; }
 
-        [Display(Name = "Sort Order")]
-        public int SortOrder { get; set; }
+        [Display(Name = "Week Number")]
+        public int WeekNumber { get; set; }
     }
 
     [MetadataType(typeof(MatchMetaData))]
@@ -73,8 +75,8 @@ namespace Tournament.Models
         [Display(Name = "Game Number")]
         public int id { get; set; }
 
-        [Display(Name = "Round Name")]
-        public int RoundId { get; set; }
+        [Display(Name = "Date")]
+        public int WeekId { get; set; }
 
         public int Rink { get; set; }
 
