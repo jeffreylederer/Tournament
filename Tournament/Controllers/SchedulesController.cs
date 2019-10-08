@@ -39,7 +39,7 @@ namespace Tournament.Controllers
             if (items.Count() > 0)
             {
                 date = items.First().GameDate.AddDays(7);
-                id = items.First().id + 1;
+                id=items.Max(x => x.WeekNumber)+1;
             }
 
             var item = new Schedule()

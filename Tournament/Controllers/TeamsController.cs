@@ -163,9 +163,10 @@ namespace Tournament.Controllers
                 if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                     list.Add(player);
             }
-            ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", " ");
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", " ");
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", " ");
+            ViewBag.List = list.OrderBy(x => x.LastName);
+            //ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
+            //ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
+            //ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             return View(item);

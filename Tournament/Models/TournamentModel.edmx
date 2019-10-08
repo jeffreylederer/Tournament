@@ -566,7 +566,7 @@
             <End Role="UserLeague" EntitySet="UserLeagues" />
           </AssociationSet>
           <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
-            <Parameter Name="WeekId" Mode="In" Type="Int32" />
+          <Parameter Name="WeekId" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetMatchAll_Result">

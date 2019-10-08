@@ -29,7 +29,7 @@ namespace Tournament.Controllers
             ViewBag.TeamSize = league.TeamSize;
             if (!scheduleId.HasValue)
                 scheduleId = db.Schedules.Where(x => x.Leagueid == leagueid).First().id;
-            var matches = db.Matches.Where(x => x.WeekId == scheduleId.Value && x.Rink != -1);
+            var matches = db.Matches.Where(x => x.WeekId == scheduleId.Value && x.Rink != -1).OrderBy(x=>x.Rink);
             ViewBag.scheduleId = new SelectList(db.Schedules.Where(x=>x.Leagueid == leagueid).OrderBy(x=>x.WeekNumber).ToList(), "id", "WeekDate", scheduleId);
             ViewBag.Date = db.Schedules.Find(scheduleId.Value).WeekDate;
             ViewBag.WeekID = scheduleId;
@@ -38,13 +38,14 @@ namespace Tournament.Controllers
         }
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
-        public ActionResult MoveUp(int id, int weekid)
+        public ActionResult MoveUp(int id)
         {
-            var Matches = db.Matches.Where(x => x.WeekId == weekid).OrderBy(x => x.Rink);
-            var match = Matches.First(x => x.Rink == id);
-            var match1 = Matches.First(x => x.Rink == id + 1);
-            match1.Rink = id;
-            match.Rink = id + 1;
+            
+            var match = db.Matches.Find(id);
+            var weekMatches = db.Matches.Where(x => x.WeekId == match.WeekId);
+            var match1 = weekMatches.First(x => x.Rink == match.Rink-1);
+            match1.Rink = match.Rink;
+            match.Rink = match1.Rink-1;
             db.Entry(match).State = EntityState.Modified;
             try
             {
@@ -55,8 +56,7 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(e);
                 throw;
             }
-            ViewBag.WeekID = weekid;
-            return RedirectToAction("Index", new { RoundId = weekid });
+            return RedirectToAction("Index", new { scheduleId = match.WeekId });
         }
 
         [Authorize(Roles = "Admin,LeagueAdmin")]

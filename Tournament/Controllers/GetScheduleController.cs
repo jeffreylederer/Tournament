@@ -137,7 +137,7 @@ namespace Tournament.Controllers
                     foreach (var match in matches)
                     {
                         if (match.Rink != -1)
-                            weekLine.Append($"'{match.Team.TeamNo}-{match.Team.TeamNo}',");
+                            weekLine.Append($"'{match.Team.TeamNo}-{match.Team1.TeamNo}',");
                     }
                     var wline = weekLine.ToString();
 
