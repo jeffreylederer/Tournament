@@ -72,6 +72,33 @@ namespace Tournament.Controllers
             var leagueid = (int)HttpContext.Session["leagueid"];
             var numOfWeeks = db.Schedules.Count(x => x.Leagueid == leagueid);
             var numofTeams = db.Teams.Count(x => x.Leagueid == leagueid);
+
+            //first check to make sure teams are complete
+            bool complete = true;
+            foreach (var team in db.Teams.Where(x => x.Leagueid == leagueid))
+            {
+                switch ((int)HttpContext.Session["teamsize"])
+                {
+                    case 1:
+                        if (!team.Skip.HasValue)
+                            complete = false;
+                        break;
+                    case 2:
+                        if (!team.Lead.HasValue || !team.Skip.HasValue)
+                            complete = false;
+                        break;
+                    case 3:
+                        if (!team.Skip.HasValue || !team.Lead.HasValue || !team.ViceSkip.HasValue)
+                            complete = false;
+                        break;
+                }
+            }
+            if (!complete)
+            {
+                ViewBag.Error = "No matches created, some teams have empty slots";
+                return View();
+            }
+
             foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
             {
                 foreach(var match in db.Matches.Where(x => x.WeekId == item.id).ToList())
@@ -174,7 +201,7 @@ namespace Tournament.Controllers
                     var forfeit = "";
                     if(item.ForFeitId != 0)
                     {
-                        if(item.ForFeitId == item.Team.id)
+                        if(item.ForFeitId == item.Team.TeamNo)
                             forfeit = item.Team.TeamNo.ToString();
                         else
                         {
@@ -232,11 +259,11 @@ namespace Tournament.Controllers
             switch (TeamSize)
             {
                 case 1:
-                    return $"{team.Player.NickName}";
+                    return $"{team.Player.Membership.NickName}";
                 case 2:
-                    return $"{team.Player.NickName}, {team.Player2.NickName}";
+                    return $"{team.Player.Membership.NickName}, {team.Player2.Membership.NickName}";
                 case 3:
-                    return $"{team.Player.NickName}, {team.Player1.NickName}, {team.Player2.NickName}";
+                    return $"{team.Player.Membership.NickName}, {team.Player1.Membership.NickName}, {team.Player2.Membership.NickName}";
 
             }
             return "";
@@ -313,12 +340,24 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            var forfeits = new List<Forfeit>();
-            forfeits.Add(new Forfeit() {Id = 0, Term = "No Forfeit"});
-            forfeits.Add(new Forfeit() {Id=match.Team.TeamNo, Term = $"Team No. {match.Team.TeamNo}"});
-            forfeits.Add(new Forfeit() {Id = match.Team1.TeamNo, Term = $"Team No. {match.Team1.TeamNo}"});
+            var forfeits = new List<SelectListItem>
+            {
+                new SelectListItem {Value = "0", Text = "No Forfeit", Selected = match.ForFeitId == 0},
+                new SelectListItem
+                {
+                    Value = match.Team.TeamNo.ToString(),
+                    Text = $"Team No. {match.Team.TeamNo}",
+                    Selected = match.ForFeitId == match.Team.TeamNo
+                },
+                new SelectListItem
+                {
+                    Value = match.Team1.TeamNo.ToString(),
+                    Text = $"Team No. {match.Team1.TeamNo}",
+                    Selected = match.ForFeitId == match.Team1.TeamNo
+                }
+            };
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", match.ForFeitId);
+            ViewBag.ForFeitId = forfeits;
             return View(match);
         }
 
@@ -327,33 +366,19 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Scoring(int? id, byte[] rowVersion)
+        public ActionResult Scoring([Bind(Include = "id,WeekId,Rink,TeamNo1,TeamNo2,Team1Score,Team2Score,ForFeitId,rowversion")] Match match)
         {
-            string[] fieldsToBind = new string[] {"WeekId","Rink","TeamNo1","TeamNo2","Team1Score","Team2Score", "ForFeitId", "rowversion" };
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var update = db.Matches.Find(id);
-            if (update == null)
-            {
-                var delete = new Match();
-                TryUpdateModel(delete, fieldsToBind);
-                ModelState.AddModelError(string.Empty,
-                    "Unable to save changes. The match was deleted by another user.");
-                return View(delete);
-            }
 
-            if (TryUpdateModel(update, fieldsToBind))
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    db.Entry(update).OriginalValues["rowversion"] = rowVersion;
+                    db.Entry(match).State = EntityState.Modified;
                     db.SaveChanges();
-
-                    return RedirectToAction("Index", new { scheduleId = update.WeekId });
+                    return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException ex)
+            }
+            catch (DbUpdateConcurrencyException ex)
                 {
                     var entry = ex.Entries.Single();
                     var clientValues = (Match)entry.Entity;
@@ -381,24 +406,35 @@ namespace Tournament.Controllers
                                                                + "edit operation was canceled and the current values in the database "
                                                                + "have been displayed. If you still want to edit this record, click "
                                                                + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        update.rowversion = databaseValues.rowversion;
+                        match.rowversion = databaseValues.rowversion;
                     }
                 }
-                catch (RetryLimitExceededException dex)
-                {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                    ErrorSignal.FromCurrentContext().Raise(dex);
-                }
-            }
-            var forfeits = new List<Forfeit>();
-            forfeits.Add(new Forfeit() { Id = 0, Term = "No Forfeit" });
-            forfeits.Add(new Forfeit() { Id = update.Team.TeamNo, Term = $"Team No. {update.Team.TeamNo}" });
-            forfeits.Add(new Forfeit() { Id = update.Team1.TeamNo, Term = $"Team No. {update.Team1.TeamNo}" });
+            catch (Exception dex)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.)
+                ModelState.AddModelError("",
+                    "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
 
+            }
+            var forfeits = new List<SelectListItem>
+            {
+                new SelectListItem {Value = "0", Text = "No Forfeit", Selected = match.ForFeitId == 0},
+                new SelectListItem
+                {
+                    Value = match.Team.TeamNo.ToString(),
+                    Text = $"Team No. {match.Team.TeamNo}",
+                    Selected = match.ForFeitId == match.Team.TeamNo
+                },
+                new SelectListItem
+                {
+                    Value = match.Team1.TeamNo.ToString(),
+                    Text = $"Team No. {match.Team1.TeamNo}",
+                    Selected = match.ForFeitId == match.Team1.TeamNo
+                }
+            };
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.ForFeitId = new SelectList(forfeits, "id", "term", update.ForFeitId);
-            return View(update);
+            ViewBag.ForFeitId = forfeits;
+            return View(match);
         }
 
 

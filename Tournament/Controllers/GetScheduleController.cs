@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.UI;
 using Tournament.Models;
 
 namespace Tournament.Controllers
 {
-   
-        // GET: GetSchedule
+
+    // GET: GetSchedule
     public class GetScheduleController : Controller
     {
         /// <summary>
@@ -41,29 +37,27 @@ namespace Tournament.Controllers
                     new Rink()
                     {
                         Green = "Luba",
-                        Direction = "N-S",
+                        Direction = "E-W",
                         Boundary = "Red"
                     },
                     new Rink()
                     {
                         Green = "Phillips",
-                        Direction = "E-W",
+                        Direction = "N-S",
                         Boundary = "Red"
                     },
                     new Rink()
                     {
                         Green = "Luba",
-                        Direction = "E-W",
+                        Direction = "N-S",
                         Boundary = "White"
                     },
                     new Rink()
                     {
                         Green = "Phillips",
-                        Direction = "N-S",
+                        Direction = "E-W",
                         Boundary = "White"
                     },
-
-
                     new Rink()
                     {
                         Green = "Luba",
@@ -75,45 +69,32 @@ namespace Tournament.Controllers
                         Green = "Phillips",
                         Direction = "E-W",
                         Boundary = "Yellow"
-                    },
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "E-W",
-                        Boundary = "Red"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "N-S",
-                        Boundary = "Red"
                     },
 
                     new Rink()
                     {
                         Green = "Luba",
                         Direction = "N-S",
-                        Boundary = "Yellow"
+                        Boundary = "Red"
                     },
                     new Rink()
                     {
                         Green = "Phillips",
-                        Direction = "E-W",
-                        Boundary = "Yellow"
-                    },
-                    new Rink()
-                    {
-                        Green = "Luba",
                         Direction = "N-S",
                         Boundary = "White"
                     },
                     new Rink()
                     {
-                        Green = "Phillips",
+                        Green = "Luba",
                         Direction = "E-W",
-                        Boundary = "White"
+                        Boundary = "Yellow"
+                    },
+                    new Rink()
+                    {
+                        Green = "Phillips",
+                        Direction = "N-S",
+                        Boundary = "Yellow"
                     }
-
                 };
 
 
@@ -121,16 +102,17 @@ namespace Tournament.Controllers
                 topLine.Append(tline1.Substring(0, tline1.Length - 1) + "\n");
 
                 var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.WeekNumber);
-                var noWeeks = weeks.Count();
-                
-                 foreach (var week in weeks)
+
+                int i = teamsize - 1;
+                 foreach (Schedule week in weeks)
                 {
                     var matches = db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink);
                     var weekLine = new StringBuilder();
                     string grn = string.Empty;
                     string dir = string.Empty;
                     string bound = string.Empty;
-                    int index = (week.WeekNumber + teamsize - 1) % (RinkList.Count() - 1);
+                    int index = i % RinkList.Count();
+                    i++;
                     var rinklist = RinkList[index];
                     var date = $"'{week.GameDate.Month}/{week.GameDate.Day}'";
                     weekLine.Append($"{week.WeekNumber},{date},{rinklist.Green},{rinklist.Direction},{rinklist.Boundary},");

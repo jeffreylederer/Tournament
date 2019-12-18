@@ -2,71 +2,72 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI;
 using Elmah;
 using Tournament.Models;
 
 namespace Tournament.Controllers
 {
-    
-    public class PlayersController : Controller
+
+    public class MembershipController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
 
-        [Authorize]
-        // GET: Players
+        [Authorize(Roles = "Admin")]
+        // GET: Memberships
         public ActionResult Index(string sortOrder)
         {
-            var leagueid = (int) HttpContext.Session["leagueid"];
-
+            
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = from s in db.Players where s.Leagueid == leagueid
-                       select s;
+            var list = db.Memberships;
+            IOrderedQueryable<Membership> newlist; 
             switch (sortOrder)
             {
                 case "name_desc":
-                    list = list.OrderByDescending(s => s.Membership.LastName + " " + s.Membership.FirstName);
+                    newlist = list.OrderByDescending(x => x.LastName);
+                    break;
+                
+                case "firstname_desc":
+                    newlist = list.OrderByDescending(x => x.FirstName);
+                    break;
+                case "firstname":
+                    newlist = list.OrderBy(x => x.FirstName);
                     break;
                 default:
-                    list = list.OrderBy(s => s.Membership.LastName + " " + s.Membership.FirstName);
+                    newlist = list.OrderBy(x => x.LastName);
                     break;
+
             }
             ViewBag.Count = list.Count();
+            
 
-            return View(list);
+            return View(newlist);
         }
 
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        // GET: Players/Create
+       
+        // GET: Memberships/Create
         public ActionResult Create()
         {
-            var leagueid = (int)HttpContext.Session["leagueid"];
-            var item = new Player()
-            {
-                Leagueid = leagueid
-            };
-
-            ViewBag.List = GetRemainingMembers.OrderBy(x => x.LastName);
-            return View(item);
+            
+            return View();
         }
 
-
-        // POST: Players/Create
+        // POST: Memberships/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueId,MembershipId")] Player player)
+        public ActionResult Create([Bind(Include = "id,FirstName,LastName,FullName,shortname,NickName,Wheelchair")] Membership membership)
         {
             if (ModelState.IsValid)
             {
-                db.Players.Add(player);
+                db.Memberships.Add(membership);
                 try
                 {
                     db.SaveChanges();
@@ -86,43 +87,38 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Insert failed");
                 }
             }
-
-            ViewBag.List = GetRemainingMembers.OrderBy(x => x.LastName);
-            return View(player);
+            return View(membership);
         }
 
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        // GET: Players/Edit/5
+        // GET: Memberships/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Player player = db.Players.Find(id);
-            if (player == null)
+            Membership membership = db.Memberships.Find(id);
+            if (membership == null)
             {
                 return HttpNotFound();
             }
-
-            ViewBag.List = GetRemainingMembers.OrderBy(x => x.LastName);
-            return View(player);
+            return View(membership);
         }
 
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        // POST: Players/Edit/5
+        // POST: Memberships/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueId,MembershipId,rowversion")] Player player)
+        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,FullName,shortname,NickName,Wheelchair,rowversion")] Membership membership)
         {
+
             try
             {
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(player).State = EntityState.Modified;
+                    db.Entry(membership).State = EntityState.Modified;
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
@@ -130,32 +126,42 @@ namespace Tournament.Controllers
             catch (DbUpdateConcurrencyException ex)
             {
                 var entry = ex.Entries.Single();
-                var clientValues = (Player)entry.Entity;
+                var clientValues = (Membership) entry.Entity;
                 var databaseEntry = entry.GetDatabaseValues();
                 if (databaseEntry == null)
                 {
                     ModelState.AddModelError(string.Empty,
-                        "Unable to save changes. The player was deleted by another user.");
+                        "Unable to save changes. The member was deleted by another user.");
                 }
                 else
                 {
-                    var databaseValues = (Player)databaseEntry.ToObject();
+                    var databaseValues = (Membership) databaseEntry.ToObject();
 
-                    if (databaseValues.Leagueid != clientValues.Leagueid)
-                        ModelState.AddModelError("League", "Current value: "
-                                                               + databaseValues.Leagueid);
-                    if (databaseValues.MembershipId != clientValues.MembershipId)
-                        ModelState.AddModelError("Member", "Current value: "
-                                                              + databaseValues.MembershipId);
-                    
+                    if (databaseValues.FirstName != clientValues.FirstName)
+                        ModelState.AddModelError("First Name", "Current value: "
+                                                               + databaseValues.FirstName);
+                    if (databaseValues.LastName != clientValues.LastName)
+                        ModelState.AddModelError("Last Name", "Current value: "
+                                                              + databaseValues.LastName);
+                    if (databaseValues.shortname != clientValues.shortname)
+                        ModelState.AddModelError("Short Name", "Current value: "
+                                                               + databaseValues.shortname);
+                    if (databaseValues.Wheelchair != clientValues.Wheelchair)
+                        ModelState.AddModelError("Wheelchair", "Current value: "
+                                                               + databaseValues.Wheelchair);
 
                     ModelState.AddModelError(string.Empty, "The record you attempted to edit "
                                                            + "was modified by another user after you got the original value. The "
                                                            + "edit operation was canceled and the current values in the database "
                                                            + "have been displayed. If you still want to edit this record, click "
                                                            + "the Save button again. Otherwise click the Back to List hyperlink.");
-                    player.rowversion = databaseValues.rowversion;
+                    membership.rowversion = databaseValues.rowversion;
                 }
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("",
+                    "Unable to save changes. Cannot have duplicate names.");
             }
             catch (Exception dex)
             {
@@ -164,20 +170,39 @@ namespace Tournament.Controllers
                     "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
-
-            return View(player);
+            return View(membership);
         }
 
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        // GET: Players/Delete/5
+        /// <summary>
+        /// determine if a player is in any league
+        /// </summary>
+        /// <param name="id">record id of the player</param>
+        /// <returns>true if player is in some league</returns>
+        private bool InUse(int? id)
+        {
+            var players = db.Players.Where(x => x.MembershipId == id.Value);
+            bool inUse = false;
+            foreach (var player in players)
+            {
+                if (db.Leagues.Any(x => x.id == player.Leagueid ))
+                {
+                    inUse = true;
+                    break;
+                }
+            }
+            return inUse;
+        }
+
+        [Authorize(Roles = "Admin")]
+        // GET: Memberships/Delete/5
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var player = db.Players.Find(id);
-            if (player == null)
+            var membership = db.Memberships.Find(id);
+            if (membership == null)
             {
                 if (concurrencyError.GetValueOrDefault())
                 {
@@ -196,45 +221,48 @@ namespace Tournament.Controllers
                                                   + "click the Back to List hyperlink.";
             }
 
-            return View(player);
+            return View(membership);
         }
 
-        // POST: Players/Delete/5
+        // POST: Memberships/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
+            
+            var membership = db.Memberships.Find(id);
+            if (membership == null)
+            {
+                ViewBag.Message = "Record was deleted by another user";
+            }
+            else if (InUse(membership.id))
+            {
+                @ViewBag.Error = "Unable to delete. Member is a player in a league";
+                return View(membership);
+            }
+            else
+            {
+                try
+                {
+                    db.Entry(membership).Property("rowversion").OriginalValue = rowversion;
+                    db.Entry(membership).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    return RedirectToAction("Delete", new { concurrencyError = true, id = id });
+                }
+                catch (Exception dex)
+                {
+                    //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
+                    ViewBag.Error =
+                        "Unable to delete. Try again, and if the problem persists contact your system administrator.";
+                    ErrorSignal.FromCurrentContext().Raise(dex);
 
-            var player = db.Players.Find(id);
-            if (player == null)
-            {
-                ViewBag.Message = "Record was delete by another user";
-                return View(player);
+                }
             }
-            if(db.Teams.Any(x=>x.Skip == player.id) || db.Teams.Any(x => x.ViceSkip == player.id) || db.Teams.Any(x => x.Lead == player.id))
-            {
-                ViewBag.Error = "Record was not deleted, the player is on a team.";
-                return View(player);
-            }
-            try
-            {
-                db.Entry(player).Property("rowversion").OriginalValue = rowversion;
-                db.Entry(player).State = EntityState.Deleted;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = id });
-            }
-            catch (DataException dex)
-            {
-                //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                ViewBag.Error = "Unable to delete record. Try again, and if the problem persists contact your system administrator.";
-                ErrorSignal.FromCurrentContext().Raise(dex);
-    
-                return View(player);
-            }
+            return View(membership);
         }
 
         protected override void Dispose(bool disposing)
@@ -244,21 +272,6 @@ namespace Tournament.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private List<Membership> GetRemainingMembers
-        {
-            get
-            {
-                var players = db.Players;
-                var list = new List<Membership>();
-                foreach (var member in db.Memberships)
-                {
-                    if (!players.Any(x => x.MembershipId == member.id))
-                        list.Add(member);
-                }
-                return list;
-            }
         }
     }
 }

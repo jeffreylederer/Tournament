@@ -3,7 +3,7 @@
     ViewBag.Title = "Welcome";
 }
 
-<h2>Welcome to @ViewBag.League</h2>
+<h2>Welcome to @HttpContext.Current.Session["LeagueName"].ToString()</h2>
 
 <p>League Administrators can add additional administrators and scorers</p>
 <p>League Administrators can also add players to the league, setup teams, and create matches.</p>

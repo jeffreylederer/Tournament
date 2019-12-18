@@ -115,76 +115,65 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, byte[] rowVersion)
+        public ActionResult Edit([Bind(Include = "id,UserId,LeagueId,Roles,rowversion")] UserLeague userLeague)
         {
-            string[] fieldsToBind = new string[] {"UserId", "LeagueId", "Roles", "rowversion"};
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var userLeagueToUpdate = db.UserLeagues.Find(id);
-            if (userLeagueToUpdate == null)
-            {
-                var deleteUserLeague = new UserLeague();
-                TryUpdateModel(deleteUserLeague, fieldsToBind);
-                ModelState.AddModelError(string.Empty,
-                    "Unable to save changes. The user league record was deleted by another user.");
-                return View(deleteUserLeague);
-            }
 
-            if (TryUpdateModel(userLeagueToUpdate, fieldsToBind))
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    db.Entry(userLeagueToUpdate).OriginalValues["rowversion"] = rowVersion;
+                    db.Entry(userLeague).State = EntityState.Modified;
                     db.SaveChanges();
-
-                    return RedirectToAction("Index", new {id= userLeagueToUpdate.LeagueId});
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    var entry = ex.Entries.Single();
-                    var clientValues = (UserLeague)entry.Entity;
-                    var databaseEntry = entry.GetDatabaseValues();
-                    if (databaseEntry == null)
-                    {
-                        ModelState.AddModelError(string.Empty,
-                            "Unable to save changes. The league was deleted by another user.");
-                    }
-                    else
-                    {
-                        var databaseValues = (UserLeague)databaseEntry.ToObject();
-
-                        if (databaseValues.UserId != clientValues.UserId)
-                            ModelState.AddModelError("User", "Current value: "
-                                                                    + databaseValues.User.username);
-                        if (databaseValues.LeagueId != clientValues.LeagueId)
-                            ModelState.AddModelError("Team Size", "Current value: "
-                                                                  + databaseValues.League.LeagueName);
-                        if (databaseValues.Roles != clientValues.Roles)
-                            ModelState.AddModelError("Team Size", "Current value: "
-                                                                  + databaseValues.Roles);
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                                               + "was modified by another user after you got the original value. The "
-                                                               + "edit operation was canceled and the current values in the database "
-                                                               + "have been displayed. If you still want to edit this record, click "
-                                                               + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        userLeagueToUpdate.rowversion = databaseValues.rowversion;
-                    }
-                }
-                catch (RetryLimitExceededException dex)
-                {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                    ErrorSignal.FromCurrentContext().Raise(dex);
+                    return RedirectToAction("Index");
                 }
             }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var entry = ex.Entries.Single();
+                var clientValues = (UserLeague)entry.Entity;
+                var databaseEntry = entry.GetDatabaseValues();
+                if (databaseEntry == null)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The member was deleted by another user.");
+                }
+                else
+                {
+                    var databaseValues = (UserLeague)databaseEntry.ToObject();
+
+                    if (databaseValues.UserId != clientValues.UserId)
+                        ModelState.AddModelError("User", "Current value: "
+                                                         + databaseValues.User.username);
+                    if (databaseValues.LeagueId != clientValues.LeagueId)
+                        ModelState.AddModelError("League", "Current value: "
+                                                              + databaseValues.League.LeagueName);
+                    if (databaseValues.Roles != clientValues.Roles)
+                        ModelState.AddModelError("Roles", "Current value: "
+                                                              + databaseValues.Roles);
+
+
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                           + "was modified by another user after you got the original value. The "
+                                                           + "edit operation was canceled and the current values in the database "
+                                                           + "have been displayed. If you still want to edit this record, click "
+                                                           + "the Save button again. Otherwise click the Back to List hyperlink.");
+                    userLeague.rowversion = databaseValues.rowversion;
+                }
+            }
+            catch (Exception dex)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.)
+                ModelState.AddModelError("",
+                    "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                ErrorSignal.FromCurrentContext().Raise(dex);
+            }
+  
             var dict = new List<Role>();
             dict.Add(new Role("", "No Roles"));
             dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
             dict.Add(new Role("Scorer", "Scorer"));
-            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeagueToUpdate.Roles);
-            return View(userLeagueToUpdate);
+            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
+            return View(userLeague);
         }
 
         // GET: UserLeagues/Delete/5
@@ -206,7 +195,7 @@ namespace Tournament.Controllers
 
             if (concurrencyError.GetValueOrDefault())
             {
-                ViewBag.ConcurrencyErrorMessage = "The record you attempted to delete "
+                ViewBag.Error = "The record you attempted to delete "
                                                   + "was modified by another user after you got the original values. "
                                                   + "The delete operation was canceled and the current values in the "
                                                   + "database have been displayed. If you still want to delete this "
@@ -220,26 +209,33 @@ namespace Tournament.Controllers
         // POST: UserLeagues/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(UserLeague userLeague)
+        public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
+            var userLeague = db.UserLeagues.Find(id);
+            if (userLeague == null)
+            {
+                ViewBag.Message = "Record was delete by another user";
+            }
             try
             {
-                var id = userLeague.LeagueId;
+                db.Entry(userLeague).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(userLeague).State = EntityState.Deleted;
                 db.SaveChanges();
-                return RedirectToAction("Index", new {id=id});
+                return RedirectToAction("Index");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = userLeague.id });
+                return RedirectToAction("Delete", new { concurrencyError = true, id = id });
             }
-            catch (DataException dex)
+            catch (Exception dex)
             {
                 //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                ModelState.AddModelError(string.Empty, "Unable to delete. Try again, and if the problem persists contact your system administrator.");
+                ViewBag.Error =
+                    "Unable to delete. Try again, and if the problem persists contact your system administrator.";
                 ErrorSignal.FromCurrentContext().Raise(dex);
-                return View(userLeague);
+
             }
+            return View(userLeague);
         }
 
         protected override void Dispose(bool disposing)

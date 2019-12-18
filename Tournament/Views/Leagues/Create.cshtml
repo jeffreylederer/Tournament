@@ -9,6 +9,7 @@
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(model=>model.Active)
     
     <div class="form-horizontal">
         <h4>League</h4>
@@ -29,6 +30,8 @@
                 @Html.ValidationMessageFor(model => model.TeamSize, "", new { @class = "text-danger" })
             </div>
         </div>
+
+      
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

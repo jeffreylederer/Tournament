@@ -12,28 +12,24 @@ namespace Tournament.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Player
+    public partial class Membership
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Player()
+        public Membership()
         {
-            this.Teams = new HashSet<Team>();
-            this.Teams1 = new HashSet<Team>();
-            this.Teams2 = new HashSet<Team>();
+            this.Players = new HashSet<Player>();
         }
     
         public int id { get; set; }
-        public int Leagueid { get; set; }
-        public int MembershipId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FullName { get; set; }
+        public string shortname { get; set; }
+        public string NickName { get; set; }
         public byte[] rowversion { get; set; }
+        public bool Wheelchair { get; set; }
     
-        public virtual League League { get; set; }
-        public virtual Membership Membership { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Team> Teams { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Team> Teams1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Team> Teams2 { get; set; }
+        public virtual ICollection<Player> Players { get; set; }
     }
 }

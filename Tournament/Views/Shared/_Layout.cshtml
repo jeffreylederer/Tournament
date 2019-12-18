@@ -21,43 +21,49 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                   
-                    <li>@Html.ActionLink("Players", "Index", "Players")</li>
-                    <li class="menu-item dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tournament<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Schedule", "Index", "Schedules")</li>
-                            <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
-                            <li>@Html.ActionLink("Matches", "Index", "Matches")</li>
-                            <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches")</li>
-                            <li>@Html.ActionLink("Schedule Report", "ExportToExcel", "GetSchedule")</li>
+                    <li>@Html.ActionLink("Membership", "Index", "Membership")</li>
 
-                            @{
-                                if (HttpContext.Current.User.IsInRole("Admin") ||
-                                    HttpContext.Current.User.IsInRole("LeagueAdmin"))
+                    @if (HttpContext.Current.Session["leagueid"] != null)
+                    {
+
+                        <li class="menu-item dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">League Play<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Players", "Index", "Players")</li>
+                                <li>@Html.ActionLink("Schedule", "Index", "Schedules")</li>
+                                <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
+                                <li>@Html.ActionLink("Matches", "Index", "Matches")</li>
+                                <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches")</li>
+                                <li>@Html.ActionLink("Schedule Report", "ExportToExcel", "GetSchedule")</li>
+
+
+                                @if (HttpContext.Current.User.IsInRole("Admin") ||
+                                     HttpContext.Current.User.IsInRole("LeagueAdmin"))
                                 {
                                     <li>----------------------------</li>
                                     <li>@Html.ActionLink("Clear Schedule", "ClearSchedule", "Matches")</li>
                                     <li>@Html.ActionLink("Create Matches", "CreateMatches", "Matches")</li>
                                 }
-                            }
+                            </ul>
+                        </li>
+                    }
 
-                        </ul>
 
-                        @if (HttpContext.Current.User.IsInRole("Admin"))
-                        {
-                            <li class="menu-item dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li>@Html.ActionLink("Users", "Index", "Users")</li>
-                                    <li>@Html.ActionLink("Leagues", "Index", "Leagues")</li>
-                                    <li>@Html.ActionLink("Error Log", "Index", "Elmah", new {type = ""}, new {target = "_blank"})</li>
-                                </ul>
-                            </li>
-                        }
-                        <li>@Html.ActionLink("About", "About", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    </ul>
+
+                    @if (HttpContext.Current.User.IsInRole("Admin"))
+                    {
+                        <li class="menu-item dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Users", "Index", "Users")</li>
+                                <li>@Html.ActionLink("Leagues", "Index", "Leagues")</li>
+                                <li>@Html.ActionLink("Error Log", "Index", "Elmah", new { type = "" }, new { target = "_blank" })</li>
+                            </ul>
+                        </li>
+                    }
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>

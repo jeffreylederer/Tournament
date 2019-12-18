@@ -1,32 +1,52 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Policy;
 
 namespace Tournament.Models
 {
-    [MetadataType(typeof(PlayerMetaData))]
-    public partial class Player
+
+    [MetadataType(typeof(MembershipMetaData))]
+    public partial class Membership
     {
     }
-    public class PlayerMetaData
+
+    public class MembershipMetaData
     {
 
         [Display(Name = "First Name")]
+        [Required]
         [StringLength(30)]
         public string FirstName { get; set; }
 
         [Display(Name = "Last Name")]
+        [Required]
         [StringLength(30)]
         public string LastName { get; set; }
 
         [Display(Name = "Shorten Name")]
         [StringLength(25)]
         public string shortname { get; set; }
-
-        [Display(Name = "Player")]
-        public string FullName { get; set; }
-
+        
         [Display(Name = "Nickname")]
         public string NickName { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
+    }
+
+    [MetadataType(typeof(PlayerMetaData))]
+    public partial class Player
+    {
+    }
+    public class PlayerMetaData
+    {
+        [Required]
+        [Display(Name="Player")]
+        public int MembershipId { get; set; }
+        [Timestamp]
+        public byte[] rowversion { get; set; }
+
     }
 
     [MetadataType(typeof(TeamMetaData))]
@@ -44,6 +64,9 @@ namespace Tournament.Models
 
         [Display(Name = "League Name")]
         public string Leagueid { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 
 
@@ -58,10 +81,15 @@ namespace Tournament.Models
 
         [Display(Name = "Game Date")]
         [DisplayFormat(DataFormatString = "{0:d}")]
+        [Required]
         public DateTime GameDate { get; set; }
 
         [Display(Name = "Week Number")]
+        [Required]
         public int WeekNumber { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 
     [MetadataType(typeof(MatchMetaData))]
@@ -76,11 +104,14 @@ namespace Tournament.Models
         public int id { get; set; }
 
         [Display(Name = "Date")]
+        [Required]
         public int WeekId { get; set; }
 
+        [Required]
         public int Rink { get; set; }
 
         [Display(Name = "Team 1")]
+        [Required]
         public int TeamNo1 { get; set; }
 
         [Display(Name = "Team 2")]
@@ -94,6 +125,9 @@ namespace Tournament.Models
 
         [Display(Name = "Team Forfeiting")]
         public int ForFeitId { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 
     [MetadataType(typeof(LeagueMetaData))]
@@ -104,11 +138,19 @@ namespace Tournament.Models
     public partial class LeagueMetaData
     {
         [Display(Name = "League Name")]
+        [Required]
         public string LeagueName { get; set; }
+
+        [Display(Name = "Still Playing")]
+        public bool Active { get; set; }
 
         [Display(Name = "Team Size")]
         [Range(1,3,ErrorMessage = "Teams may have 1,2, or 3 players")]
+        [Required]
         public int TeamSize { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 
     [MetadataType(typeof(UserLeagueMetaData))]
@@ -126,6 +168,9 @@ namespace Tournament.Models
 
         [Display(Name = "Role")]
         public string Roles { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 
     [MetadataType(typeof(UserMetaData))]
@@ -141,5 +186,8 @@ namespace Tournament.Models
 
         [Display(Name = "Role")]
         public string Roles { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
     }
 }

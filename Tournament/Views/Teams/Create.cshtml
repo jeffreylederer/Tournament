@@ -12,7 +12,7 @@
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>@ViewBag.LeagueName Team</h4>
+    <h4>@HttpContext.Current.Session["LeagueName"].ToString() Team</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model=>model.Leagueid)
@@ -25,21 +25,23 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.Skip, "Skip", htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model=>model.Skip, new SelectList(ViewBag.List, "id", "FullName"), "--Select Skip--",  htmlAttributes: new { @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Skip, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Skip, "Skip", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Skip, new SelectList(ViewBag.List, "id", "FullName", Model.Skip),"--Select Skip--", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Skip, "", new { @class = "text-danger" })
+            </div>
         </div>
     </div>
 
     @{
-        if ((int) ViewBag.TeamSize > 2)
+        if ((int)ViewBag.TeamSize > 2)
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.ViceSkip, "Vice Skip", htmlAttributes: new {@class = "control-label col-md-2"})
+                @Html.LabelFor(model => model.ViceSkip, "Vice Skip", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model=>model.ViceSkip, new SelectList(ViewBag.List,"id","FullName"), "--Select Vice Skip--",  htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.ViceSkip, "", new {@class = "text-danger"})
+                    @Html.DropDownListFor(model => model.ViceSkip, new SelectList(ViewBag.List, "id", "FullName", Model.ViceSkip), "--Select Vice Skip--", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ViceSkip, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
@@ -51,12 +53,12 @@
     }
 
     @{
-        if ((int) ViewBag.TeamSize > 1)
+        if ((int)ViewBag.TeamSize > 1)
         {
             <div class="form-group">
                 @Html.LabelFor(model => model.Lead, "Lead", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model=>model.Lead, new SelectList(ViewBag.List, "id", "FullName"), "--Select Lead--",  htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.Lead, new SelectList(ViewBag.List, "id", "FullName", Model.Lead), "--Select Lead--", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Lead, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -112,14 +114,14 @@
                 @Html.DisplayFor(modelItem => item.TeamNo)
             </th>
             <td>
-                @Html.DisplayFor(modelItem => item.Player.FullName)
+                @Html.DisplayFor(modelItem => item.Player.Membership.FullName)
             </td>
     
             @if ((int) ViewBag.TeamSize > 2)
             {
 
             <td>
-                @Html.DisplayFor(modelItem => item.Player1.FullName)
+                @Html.DisplayFor(modelItem => item.Player1.Membership.FullName)
             </td>
             }
 
@@ -127,7 +129,7 @@
             {
 
             <td>
-                @Html.DisplayFor(modelItem => item.Player2.FullName)
+                @Html.DisplayFor(modelItem => item.Player2.Membership.FullName)
             </td>
             }
 

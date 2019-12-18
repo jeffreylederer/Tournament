@@ -25,6 +25,7 @@ namespace Tournament.Models
     
         public int id { get; set; }
         public string LeagueName { get; set; }
+        public bool Active { get; set; }
         public int TeamSize { get; set; }
         public byte[] rowversion { get; set; }
     

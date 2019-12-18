@@ -4,43 +4,20 @@
     ViewBag.Title = "Index";
 }
 
-<h2>@ViewBag.LeagueName Players</h2>
+<h2>@HttpContext.Current.Session["LeagueName"].ToString() Players</h2>
 
 <p>
-@{
-    if (HttpContext.Current.User.IsInRole("Admin") ||
-        HttpContext.Current.User.IsInRole("LeagueAdmin"))
-    {
         @Html.ActionLink("Add a Player", "Create")
-    }
-}
-</
-
-        p>
-<p> Total Players: @ViewBag.Count<br/>
-    Active Players: @ViewBag.Active
+</p>
+<p>Number of Players in League: @ViewBag.Count
 </p>
 <table class="table">
     <tr>
         <th>
             @Html.ActionLink("Last Name", "Index", new { sortOrder=ViewBag.FullNameSortParm })
         </th>
-
-        <th>
-            @Html.ActionLink("First Name", "Index", new { sortOrder = ViewBag.FirstNameSortParm })
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Active)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FullName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.shortname)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NickName)
-        </th>
+        
+        
         <th></th>
     </tr>
 
@@ -48,34 +25,20 @@
 {
     <tr>
     <td>
-        @Html.DisplayFor(modelItem => item.LastName)
+        @Html.DisplayFor(modelItem => item.Membership.FullName)
     </td>
+    
     <td>
-        @Html.DisplayFor(modelItem => item.FirstName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Active)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.FullName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.shortname)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.NickName)
-    </td>
-    <td>
-    @{
-        if (HttpContext.Current.User.IsInRole("Admin") ||
-            HttpContext.Current.User.IsInRole("LeagueAdmin"))
-        {
-            @Html.ActionLink("Edit", "Edit", new {id = item.id});  
-            @Html.Raw(" | ");
-            @Html.ActionLink("Delete", "Delete", new {id = item.id});
+        @{
+            if (HttpContext.Current.User.IsInRole("Admin") ||
+                HttpContext.Current.User.IsInRole("LeagueAdmin"))
+            {
+                @Html.ActionLink("Edit", "Edit", new { id = item.id })
+                @Html.Raw(" | ")
+                @Html.ActionLink("Delete", "Delete", new { id = item.id });
+            }
         }
-    }
-</td>
+    </td>
     </tr>
 }
 

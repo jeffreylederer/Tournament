@@ -23,13 +23,14 @@ namespace Tournament.Controllers
             var leagues = new List<League>();
             if (!string.IsNullOrWhiteSpace(user.Roles) &&  user.Roles.Contains("Admin"))
             {
-                leagues = db.Leagues.ToList();
+                leagues = db.Leagues.Where(x=>x.Active).ToList();
             }
             else
             {
                 var userleagues = db.UserLeagues.Include(u => u.League).Where(x => x.UserId == user.id);
                 foreach (var item in userleagues)
-                    leagues.Add(item.League);
+                    if(item.League.Active)
+                        leagues.Add(item.League);
             }
             if (!leagues.Any())
             {
@@ -113,7 +114,6 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult Welcome()
         {
-            ViewBag.League = HttpContext.Session["leaguename"];
             return View();
         }
 

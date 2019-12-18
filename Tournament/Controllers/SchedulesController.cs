@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Elmah;
+using System;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using Elmah;
 using Tournament.Models;
 
 namespace Tournament.Controllers
 {
-   
+
     public class SchedulesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
@@ -22,7 +20,7 @@ namespace Tournament.Controllers
         public ActionResult Index()
         {
             int leagueid = (int) this.HttpContext.Session["leagueid"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+
             var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.WeekNumber).ToList();
             return View(list);
         }
@@ -49,7 +47,7 @@ namespace Tournament.Controllers
                 Leagueid = leagueid,
                 Cancelled = false
             };
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+
             return View(item);
         }
 
@@ -82,7 +80,7 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Insert failed");
                 }
             }
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+
             return View(schedule);
         }
 
@@ -99,7 +97,7 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+
             return View(schedule);
         }
 
@@ -108,72 +106,64 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, byte[] rowVersion)
+        public ActionResult Edit([Bind(Include = "id,GameDate,WeekNumber,Leagueid,Cancelled,rowversion")] Schedule schedule)
         {
-            string[] fieldsToBind = new string[] {"GameDate","Cancelled","WeekNumber", "rowversion" };
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var scheduleToUpdate = db.Schedules.Find(id);
-            if (scheduleToUpdate == null)
-            {
-                var scheduleToDelete = new Schedule();
-                TryUpdateModel(scheduleToDelete, fieldsToBind);
-                ModelState.AddModelError(string.Empty,
-                    "Unable to save changes. The schedule item was deleted by another user.");
-                return View(scheduleToDelete);
-            }
 
-            if (TryUpdateModel(scheduleToUpdate, fieldsToBind))
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    db.Entry(scheduleToUpdate).OriginalValues["rowversion"] = rowVersion;
+                    db.Entry(schedule).State = EntityState.Modified;
                     db.SaveChanges();
-
                     return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException ex)
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var entry = ex.Entries.Single();
+                var clientValues = (Schedule)entry.Entity;
+                var databaseEntry = entry.GetDatabaseValues();
+                if (databaseEntry == null)
                 {
-                    var entry = ex.Entries.Single();
-                    var clientValues = (Schedule)entry.Entity;
-                    var databaseEntry = entry.GetDatabaseValues();
-                    if (databaseEntry == null)
-                    {
-                        ModelState.AddModelError(string.Empty,
-                            "Unable to save changes. The schedule item was deleted by another user.");
-                    }
-                    else
-                    {
-                        var databaseValues = (Schedule)databaseEntry.ToObject();
-
-                        if (databaseValues.WeekDate != clientValues.WeekDate)
-                            ModelState.AddModelError("Game Date", "Current value: "
-                                                                    + databaseValues.GameDate.ToShortDateString());
-                        if (databaseValues.Cancelled != clientValues.Cancelled)
-                            ModelState.AddModelError("Cancelled", "Current value: "
-                                                                  + databaseValues.Cancelled);
-                        if (databaseValues.WeekNumber != clientValues.WeekNumber)
-                            ModelState.AddModelError("Week Number", "Current value: "
-                                                                  + databaseValues.WeekNumber.ToString());
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                                               + "was modified by another user after you got the original value. The "
-                                                               + "edit operation was canceled and the current values in the database "
-                                                               + "have been displayed. If you still want to edit this record, click "
-                                                               + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        scheduleToUpdate.rowversion = databaseValues.rowversion;
-                    }
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The schedule record was deleted by another user.");
                 }
-                catch (RetryLimitExceededException dex)
+                else
                 {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                    ErrorSignal.FromCurrentContext().Raise(dex);
+                    var databaseValues = (Schedule)databaseEntry.ToObject();
+
+                    if (databaseValues.WeekDate != clientValues.WeekDate)
+                        ModelState.AddModelError("Game Date", "Current value: "
+                                                              + databaseValues.GameDate.ToShortDateString());
+                    if (databaseValues.Cancelled != clientValues.Cancelled)
+                        ModelState.AddModelError("Cancelled", "Current value: "
+                                                              + databaseValues.Cancelled);
+                    if (databaseValues.WeekNumber != clientValues.WeekNumber)
+                        ModelState.AddModelError("Week Number", "Current value: "
+                                                                + databaseValues.WeekNumber);
+                    if (databaseValues.Leagueid != clientValues.Leagueid)
+                        ModelState.AddModelError("League", "Current value: "
+                                                                + databaseValues.Leagueid);
+
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                           + "was modified by another user after you got the original value. The "
+                                                           + "edit operation was canceled and the current values in the database "
+                                                           + "have been displayed. If you still want to edit this record, click "
+                                                           + "the Save button again. Otherwise click the Back to List hyperlink.");
+                    schedule.rowversion = databaseValues.rowversion;
                 }
             }
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
-            return View(scheduleToUpdate); ;
+            catch (Exception dex)
+            {
+                while (dex.InnerException != null)
+                    dex = dex.InnerException;
+                //Log the error (uncomment dex variable name and add a line here to write a log.)
+                ModelState.AddModelError("",
+                    $"Unable to save changes. {dex.Message}");
+                ErrorSignal.FromCurrentContext().Raise(dex);
+            }
+
+            return View(schedule);
         }
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
@@ -196,40 +186,54 @@ namespace Tournament.Controllers
 
             if (concurrencyError.GetValueOrDefault())
             {
-                ViewBag.ConcurrencyErrorMessage = "The record you attempted to delete "
+                ViewBag.Error = "The record you attempted to delete "
                                                   + "was modified by another user after you got the original values. "
                                                   + "The delete operation was canceled and the current values in the "
                                                   + "database have been displayed. If you still want to delete this "
                                                   + "record, click the Delete button again. Otherwise "
                                                   + "click the Back to List hyperlink.";
             }
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+
             return View(schedule);
         }
 
         // POST: Schedules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(Schedule schedule)
+        public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
+
+            var schedule = db.Schedules.Find(id);
+            if (schedule == null)
+            {
+                ViewBag.Error = "Unable to delete this record, another user deleted this record";
+                return View(new Schedule());
+            }
+           if(db.Matches.Any(x=>x.WeekId == schedule.id))
+            {
+                ViewBag.Error = "Unable to delete this record, there are matches scheduled to play on this date";
+                return View(schedule);
+            }
             try
             {
+                db.Entry(schedule).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(schedule).State = EntityState.Deleted;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = schedule.id });
+                return RedirectToAction("Delete", new { concurrencyError = true, id = id });
             }
-            catch (DataException dex)
+            catch (Exception dex)
             {
                 //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                ModelState.AddModelError(string.Empty, "Unable to delete. Try again, and if the problem persists contact your system administrator.");
+                ViewBag.Error =
+                    "Unable to delete. Try again, and if the problem persists contact your system administrator.";
                 ErrorSignal.FromCurrentContext().Raise(dex);
-                ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
-                return View(schedule);
+
             }
+            return View(schedule);
         }
 
         protected override void Dispose(bool disposing)

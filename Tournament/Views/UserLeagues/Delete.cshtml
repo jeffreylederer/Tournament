@@ -5,6 +5,7 @@
 }
 
 <h2>Delete</h2>
+<div class="validation-summary-errors text-danger"><ul><li>@ViewBag.Error</li></ul></div>
 <p class="error">@ViewBag.ConcurrencyErrorMessage</p>
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -19,7 +20,7 @@
             @Html.DisplayFor(model => model.Roles)
         </dd>
 
-       
+
         <dt>
             @Html.DisplayNameFor(model => model.League.LeagueName)
         </dt>
@@ -46,7 +47,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index", new {id=Model.LeagueId})
+            @Html.ActionLink("Back to List", "Index", new { id = Model.LeagueId })
         </div>
     }
 </div>

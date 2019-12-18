@@ -7,7 +7,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2> Matches for @ViewBag.LeagueName</h2>
+<h2> Matches for @HttpContext.Current.Session["LeagueName"].ToString()</h2>
 @using (Html.BeginForm("Index", "Matches", FormMethod.Post))
 {
     <div>
@@ -85,16 +85,29 @@
             </td>
             <td>
                 @{
+                    var style = "";
                     switch ((int)ViewBag.TeamSize)
                     {
                         case 1:
-                            @Html.Raw($"{item.Team.TeamNo} ({item.Team.Player.NickName})");
+                            if (item.Team.Player.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName})</span>");
                             break;
                         case 2:
-                            @Html.Raw($"{item.Team.TeamNo} ({item.Team.Player.NickName}, {item.Team.Player2.NickName})");
+                            if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
                             break;
                         case 3:
-                            @Html.Raw($"{item.Team.TeamNo} ({item.Team.Player.NickName}, {item.Team.Player1.NickName}, {item.Team.Player2.NickName})");
+                            if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair || item.Team.Player1.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player1.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
                             break;
                     }
                 }
@@ -103,16 +116,29 @@
 
             <td>
                 @{
+                    style = "";
                     switch ((int)ViewBag.TeamSize)
                     {
                         case 1:
-                            @Html.Raw($"{item.Team1.TeamNo} ({item.Team1.Player.NickName})");
+                            if (item.Team1.Player.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName})</span>");
                             break;
                         case 2:
-                            @Html.Raw($"{item.Team1.TeamNo} ({item.Team1.Player.NickName}, {item.Team1.Player2.NickName})");
+                            if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
                             break;
                         case 3:
-                            @Html.Raw($"{item.Team1.TeamNo} ({item.Team1.Player.NickName}, {item.Team1.Player1.NickName}, {item.Team1.Player2.NickName})");
+                            if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair || item.Team1.Player1.Membership.Wheelchair)
+                            {
+                                style = "color:red;";
+                            }
+                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player1.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
                             break;
                     }
                 }
@@ -128,7 +154,7 @@
             <td>
                 @if (item.ForFeitId != 0)
                 {
-                    if (item.Team.id == item.ForFeitId)
+                    if (item.Team.TeamNo == item.ForFeitId)
                     {
                         @Html.Raw(item.Team.TeamNo)
                     }
@@ -155,7 +181,7 @@
     }
 
 </table>
-
+<span style="color: red;">Teams with players in wheelchairs are highlighted in red</span>
 
 
 

@@ -29,6 +29,7 @@ namespace Tournament.Models
     
         public virtual DbSet<League> Leagues { get; set; }
         public virtual DbSet<Match> Matches { get; set; }
+        public virtual DbSet<Membership> Memberships { get; set; }
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Team> Teams { get; set; }

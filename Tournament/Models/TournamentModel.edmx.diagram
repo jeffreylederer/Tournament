@@ -4,14 +4,15 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="e640dd32871a4552a05d2762a4e0f9af" Name="Diagram1">
-        <EntityTypeShape EntityType="TournamentModel.League" Width="1.5" PointX="0.75" PointY="5.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.Match" Width="1.5" PointX="7.5" PointY="4" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.Player" Width="1.5" PointX="3" PointY="2.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.Schedule" Width="1.5" PointX="3" PointY="7.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.Team" Width="1.5" PointX="5.25" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.User" Width="1.5" PointX="3.75" PointY="11.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="TournamentModel.UserLeague" Width="1.5" PointX="6" PointY="8.25" IsExpanded="true" />
+      <Diagram DiagramId="d1533ad8286c48afba96e2f57fe087a8" Name="Diagram1">
+        <EntityTypeShape EntityType="TournamentModel.League" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Match" Width="1.5" PointX="10.5" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Membership" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Player" Width="1.5" PointX="3" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Schedule" Width="1.5" PointX="3" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Team" Width="1.5" PointX="8.25" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.User" Width="1.5" PointX="3.75" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.UserLeague" Width="1.5" PointX="6" PointY="5.25" IsExpanded="true" />
         <AssociationConnector Association="TournamentModel.FK__Player__leagueid__4E88ABD4" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Schedule__League__4F7CD00D" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Team__leagueid__4D94879B" ManuallyRouted="false" />
@@ -19,6 +20,7 @@
         <AssociationConnector Association="TournamentModel.FK_Match_Schedule" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK_Match_Team" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK_Match_Team1" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_Player_Membership" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players1" ManuallyRouted="false" />
         <AssociationConnector Association="TournamentModel.FK__Players2" ManuallyRouted="false" />

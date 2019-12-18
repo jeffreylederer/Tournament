@@ -22,7 +22,7 @@ namespace Tournament.Models
         }
     
         public int id { get; set; }
-        public int Skip { get; set; }
+        public Nullable<int> Skip { get; set; }
         public Nullable<int> ViceSkip { get; set; }
         public Nullable<int> Lead { get; set; }
         public int Leagueid { get; set; }

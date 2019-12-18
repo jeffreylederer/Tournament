@@ -91,6 +91,9 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -99,6 +102,12 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -192,6 +201,7 @@
     <Compile Include="App_Start\ElmahMVCErrorFilter.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Code\CalculateStandings.cs" />
     <Compile Include="Code\CreateSchedule.cs" />
     <Compile Include="Code\Secret.cs" />
@@ -201,6 +211,7 @@
     <Compile Include="Controllers\GetScheduleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaguesController.cs" />
+    <Compile Include="Controllers\MembershipController.cs" />
     <Compile Include="Controllers\PlayersController.cs" />
     <Compile Include="Controllers\SchedulesController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
@@ -211,25 +222,27 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\ChangePasswordViewModel.cs" />
-    <Compile Include="Models\Forfeit.cs" />
-    <Compile Include="Models\ForgotPasswordViewModel.cs" />
+    <Compile Include="ViewModel\ChangePasswordViewModel.cs" />
+    <Compile Include="ViewModel\ForgotPasswordViewModel.cs" />
     <Compile Include="Models\GetMatchAll_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\League.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LeagueViewModel.cs" />
-    <Compile Include="Models\LogUserViewModel.cs" />
+    <Compile Include="ViewModel\LeagueViewModel.cs" />
+    <Compile Include="ViewModel\LogUserViewModel.cs" />
     <Compile Include="Models\Match.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Membership.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MetaData.cs" />
     <Compile Include="Models\Player.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ResetPasswordViewModel.cs" />
+    <Compile Include="ViewModel\ResetPasswordViewModel.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Schedule.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
@@ -265,6 +278,7 @@
       <DependentUpon>TournamentDS.xsd</DependentUpon>
     </Compile>
     <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="ViewModel\PlayerViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -519,6 +533,10 @@
     <Content Include="Views\Accounts\ResetPassword.cshtml" />
     <Content Include="Views\Accounts\SentEmail.cshtml" />
     <Content Include="Views\GetSchedule\Index.cshtml" />
+    <Content Include="Views\Membership\Create.cshtml" />
+    <Content Include="Views\Membership\Delete.cshtml" />
+    <Content Include="Views\Membership\Edit.cshtml" />
+    <Content Include="Views\Membership\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -11,7 +11,9 @@
 
     This will erase all matches for the Wednesday League and create a new round robin set of matches using the
     Wednesday schedule and Wednesday's teams.
-    <br /><br />
+    <br />
+    <div style="color: red;">@ViewBag.Error</div>
+    <br />
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -19,7 +21,7 @@
         <div class="form-actions no-color">
             @Html.Hidden("DeleteIT", "Yes")
             <input type="submit" value="Create Matches" class="btn btn-default" /> |
-            @Html.ActionLink("Back to Home Page", "Index", "Home")
+            @Html.ActionLink("Back to Home Page", "Welcome", "Home")
         </div>
     }
 </div>

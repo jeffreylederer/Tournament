@@ -4,16 +4,10 @@
     ViewBag.Title = "Index";
 }
 
-<h2>@ViewBag.LeagueName Teams</h2>
+<h2>@HttpContext.Current.Session["LeagueName"].ToString() Teams</h2>
 
 <p>
-@{
-    if (HttpContext.Current.User.IsInRole("Admin") ||
-        HttpContext.Current.User.IsInRole("LeagueAdmin"))
-    {
-        @Html.ActionLink("Add Team", "Create")<br/>
-    }
-}
+    @Html.ActionLink("Add Team", "Create")<br/>
     @Html.ActionLink("Team Report", "TeamReport")
 </p>
 <table class="table-condensed table-striped">
@@ -49,18 +43,18 @@
             @Html.DisplayFor(modelItem => item.TeamNo)
         </th>
         <td>
-            @Html.DisplayFor(modelItem => item.Player.FullName)
+            @Html.DisplayFor(modelItem => item.Player.Membership.FullName)
         </td>
     @if ((int) ViewBag.TeamSize > 2)
     {
         <td>
-            @Html.DisplayFor(modelItem => item.Player1.FullName)
+            @Html.DisplayFor(modelItem => item.Player1.Membership.FullName)
         </td>
     }
     @if ((int) ViewBag.TeamSize > 1)
     {
         <td>
-            @Html.DisplayFor(modelItem => item.Player2.FullName)
+            @Html.DisplayFor(modelItem => item.Player2.Membership.FullName)
         </td>
     }
         <td>
@@ -68,33 +62,9 @@
             if (HttpContext.Current.User.IsInRole("Admin") ||
                 HttpContext.Current.User.IsInRole("LeagueAdmin"))
             {
-                if ((int) ViewBag.TeamSize > 1)
-                 {
-                     @Html.ActionLink("Edit", "Edit", new {id = item.id})
-                 }
-                if ((int) ViewBag.TeamSize > 1)
-                 {
-                     @Html.Raw(" | ")
-                 }
-
-                @Html.ActionLink("Delete", "Delete", new {id = item.id}) 
+                @Html.ActionLink("Edit", "Edit", new {id = item.id})
                 @Html.Raw(" | ")
-
-
-                if((int) ViewBag.TeamSize > 2)
-                {
-                    @Html.ActionLink("Remove Vice Skip", "RemoveViceSkip", new {id = item.id, rowversion = System.Text.Encoding.Default.GetString(item.rowversion)})
-                }
-                if((int) ViewBag.TeamSize > 2)
-                {
-                    @Html.Raw(" | ")
-                }
-
-
-                if((int) ViewBag.TeamSize > 1)
-                {
-                    @Html.ActionLink("Remove Lead", "RemoveLead", new {id = item.id, rowversion = System.Text.Encoding.Default.GetString(item.rowversion)})
-                }
+                @Html.ActionLink("Delete", "Delete", new {id = item.id}) 
             }
         }
             </td>

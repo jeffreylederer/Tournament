@@ -26,13 +26,13 @@ namespace Tournament.Code
                     switch (teamsize)
                     {
                         case 1:
-                            players = team.Player.NickName;
+                            players = team.Player.Membership.NickName;
                             break;
                         case 2:
-                            players = $"{team.Player.NickName}, {team.Player2.NickName}";
+                            players = $"{team.Player.Membership.NickName}, {team.Player2.Membership.NickName}";
                             break;
                         case 3:
-                            players = $"{team.Player.NickName}, {team.Player1.NickName}, {team.Player2.NickName}";
+                            players = $"{team.Player.Membership.NickName}, {team.Player1.Membership.NickName}, {team.Player2.Membership.NickName}";
                             break;
                     }
                     list.Add(new Standing()

@@ -17,7 +17,11 @@
         <th>
             @Html.DisplayNameFor(model => model.TeamSize)
         </th>
-        
+
+        <th>
+            @Html.DisplayNameFor(model => model.Active)
+        </th>
+
         <th></th>
     </tr>
 
@@ -28,6 +32,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.TeamSize)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Active)
         </td>
         
         <td>

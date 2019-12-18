@@ -1,21 +1,21 @@
 ﻿using Elmah;
+using Microsoft.Reporting.WebForms;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
-using Microsoft.Reporting.WebForms;
+using Tournament.Model;
 using Tournament.Models;
 using Tournament.ReportFiles;
-using System.Data.Entity.Infrastructure;
-using System.Text;
 
 namespace Tournament.Controllers
 {
-   
+
     public class TeamsController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
@@ -26,76 +26,12 @@ namespace Tournament.Controllers
         public ActionResult Index()
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+           
             ViewBag.TeamSize = (int) HttpContext.Session["teamsize"];
             return View(db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo).ToList());
         }
 
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        public ActionResult RemoveLead(int? id, string rowversion)
-        {
-            byte[] bytes = Encoding.ASCII.GetBytes(rowversion);
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Team team = db.Teams.Find(id);
-            if (team == null)
-            {
-                return HttpNotFound();
-            }
-            team.Lead = null;
-            db.Entry(team).State = EntityState.Modified;
-            try
-            {
-                db.Entry(team).OriginalValues["rowversion"] = bytes;
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex); ;
-            }
-            catch (RetryLimitExceededException dex)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.)
-                //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                ErrorSignal.FromCurrentContext().Raise(dex);
-            }
-            return RedirectToAction("Index");
-        }
-
-        [Authorize(Roles = "Admin,LeagueAdmin")]
-        public ActionResult RemoveViceSkip(int? id, string rowversion)
-        {
-            byte[] bytes = Encoding.ASCII.GetBytes(rowversion);
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Team team = db.Teams.Find(id);
-            if (team == null)
-            {
-                return HttpNotFound();
-            }
-            team.ViceSkip = null;
-            db.Entry(team).State = EntityState.Modified;
-            try
-            {
-                db.Entry(team).OriginalValues["rowversion"] = bytes;
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                ErrorSignal.FromCurrentContext().Raise(ex); ;
-            }
-            catch (RetryLimitExceededException dex)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.)
-                //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                ErrorSignal.FromCurrentContext().Raise(dex);
-            }
-            return RedirectToAction("Index");
-        }
+        
 
         [Authorize]
         public ActionResult TeamReport()
@@ -128,7 +64,7 @@ namespace Tournament.Controllers
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
-                ds.Team.AddTeamRow(team.TeamNo, team.Player.FullName,  team.Lead== null? "" : team.Player2.FullName, team.ViceSkip == null ? "" : team.Player1.FullName);
+                ds.Team.AddTeamRow(team.TeamNo, team.Player.Membership.FullName,  team.Lead== null? "" : team.Player2.Membership.FullName, team.ViceSkip == null ? "" : team.Player1.Membership.FullName);
             }
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
 
@@ -142,7 +78,6 @@ namespace Tournament.Controllers
         public ActionResult Create()
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
             var items = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.TeamNo).ToList();
             int TeamNo = 1;
             if (items.Any())
@@ -151,25 +86,19 @@ namespace Tournament.Controllers
                 TeamNo = items[items.Count - 1].TeamNo + 1;
             }
 
-            var item = new Team()
+            var team = new Team()
             {
                 TeamNo = TeamNo,
                 Leagueid = leagueid
             };
+
             var teams = db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
-            var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == leagueid))
-            {
-                if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
-                    list.Add(player);
-            }
-            ViewBag.List = list.OrderBy(x => x.LastName);
-            //ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
-            //ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
-            //ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName");
+            var list = RemainingPlayers(team, teams);
+            
+            ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            return View(item);
+            return View(team);
         }
 
         // POST: Teams/Create
@@ -182,11 +111,19 @@ namespace Tournament.Controllers
             var leagueid = (int)HttpContext.Session["leagueid"];
             if (ModelState.IsValid)
             {
-                db.Teams.Add(team);
-                try
-                {
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    db.Teams.Add(team);
+                    try
+                    {
+                        if (CheckTeam(team))
+                        {
+                            ModelState.AddModelError(string.Empty,
+                                "Unable to create record, a player cannot be on a team in multiple positions");
+                        }
+                        else
+                        {
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
                 {
@@ -204,20 +141,12 @@ namespace Tournament.Controllers
                 }
 
             }
-
-            var teams = db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
-            var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == leagueid))
-            {
-                if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
-                    list.Add(player);
-            }
-            ViewBag.Skip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Skip);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.ViceSkip);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Lead);
+            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var list = RemainingPlayers(team, teams);
+            ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+           
             return View(team);
         }
 
@@ -225,7 +154,7 @@ namespace Tournament.Controllers
         public ActionResult Edit(int? id)
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+           
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -236,124 +165,96 @@ namespace Tournament.Controllers
                 return HttpNotFound();
             }
             var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
-            var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == leagueid))
-            {
-                if(!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
-                    list.Add(player);
-            }
-            if (team.ViceSkip != null)
-                list.Add(team.Player1);
-            if (team.Lead != null)
-                list.Add(team.Player2);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.Lead);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", team.ViceSkip);
+
+            var list = RemainingPlayers(team, teams);
+            ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"]; 
             return View(team);
         }
+
+        
 
         // POST: Teams/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, byte[] rowVersion)
+        public ActionResult Edit([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo,rowversion")] Team team)
         {
-            string[] fieldsToBind = new string[] {"Skip", "Lead", "ViceSkip", "LeagueId", "TeamNo", "rowversion"};
-            var leagueid = (int)HttpContext.Session["leagueid"];
-            if (id == null)
+            
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var update = db.Teams.Find(id);
-            if (update == null)
-            {
-                var delete = new Team();
-                TryUpdateModel(delete, fieldsToBind);
-                ModelState.AddModelError(string.Empty,
-                    "Unable to save changes. The team was deleted by another user.");
-                return View(delete);
-            }
-
-            if (TryUpdateModel(update, fieldsToBind))
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    db.Entry(update).OriginalValues["rowversion"] = rowVersion;
-                    db.SaveChanges();
-
-                    return RedirectToAction("Index");
-                }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    var entry = ex.Entries.Single();
-                    var clientValues = (Team)entry.Entity;
-                    var databaseEntry = entry.GetDatabaseValues();
-                    if (databaseEntry == null)
+                    if (CheckTeam(team))
                     {
                         ModelState.AddModelError(string.Empty,
-                            "Unable to save changes. The team was deleted by another user.");
+                            "Unable to save record, a player cannot be on a team in multiple positions");
                     }
                     else
                     {
-                        var databaseValues = (Team)databaseEntry.ToObject();
 
-                        if (databaseValues.Skip != clientValues.Skip)
-                            ModelState.AddModelError("Skip", "Current value: "
-                                                                    + databaseValues.Skip);
-                        if (databaseValues.ViceSkip != clientValues.ViceSkip)
-                            ModelState.AddModelError("Vice Skip", "Current value: "
-                                                             + databaseValues.ViceSkip);
-                        if (databaseValues.Lead != clientValues.Lead)
-                            ModelState.AddModelError("Lead", "Current value: "
-                                                                  + databaseValues.Lead);
-                        if (databaseValues.Leagueid != clientValues.Leagueid)
-                            ModelState.AddModelError("League", "Current value: "
-                                                             + databaseValues.Leagueid);
-                        if (databaseValues.TeamNo != clientValues.TeamNo)
-                            ModelState.AddModelError("Team Number", "Current value: "
-                                                               + databaseValues.TeamNo);
-
-                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                                               + "was modified by another user after you got the original value. The "
-                                                               + "edit operation was canceled and the current values in the database "
-                                                               + "have been displayed. If you still want to edit this record, click "
-                                                               + "the Save button again. Otherwise click the Back to List hyperlink.");
-                        update.rowversion = databaseValues.rowversion;
+                        db.Entry(team).State = EntityState.Modified;
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
                     }
                 }
-                catch (RetryLimitExceededException dex)
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var entry = ex.Entries.Single();
+                var clientValues = (Team)entry.Entity;
+                var databaseEntry = entry.GetDatabaseValues();
+                if (databaseEntry == null)
                 {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-                    ErrorSignal.FromCurrentContext().Raise(dex);
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The member was deleted by another user.");
+                }
+                else
+                {
+                    var databaseValues = (Team)databaseEntry.ToObject();
+
+                    if (databaseValues.Skip != clientValues.Skip)
+                        ModelState.AddModelError("Skip", "Current value: "
+                                                         + databaseValues.Skip);
+                    if (databaseValues.ViceSkip != clientValues.ViceSkip)
+                        ModelState.AddModelError("Vice Skip", "Current value: "
+                                                              + databaseValues.ViceSkip);
+                    if (databaseValues.Lead != clientValues.Lead)
+                        ModelState.AddModelError("Lead", "Current value: "
+                                                         + databaseValues.Lead);
+                    if (databaseValues.Leagueid != clientValues.Leagueid)
+                        ModelState.AddModelError("League", "Current value: "
+                                                           + databaseValues.Leagueid);
+                    if (databaseValues.TeamNo != clientValues.TeamNo)
+                        ModelState.AddModelError("Team Number", "Current value: "
+                                                                + databaseValues.TeamNo);
+
+
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                                           + "was modified by another user after you got the original value. The "
+                                                           + "edit operation was canceled and the current values in the database "
+                                                           + "have been displayed. If you still want to edit this record, click "
+                                                           + "the Save button again. Otherwise click the Back to List hyperlink.");
+                    team.rowversion = databaseValues.rowversion;
                 }
             }
-            var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
-            var list = new List<Player>();
-            foreach (var player in db.Players.Where(x => x.Active && x.Leagueid == leagueid))
-            {
-                if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
-                    list.Add(player);
-            }
-            if (update.ViceSkip != null)
-                list.Add(update.Player1);
-            if (update.Lead != null)
-                list.Add(update.Player2);
-            ViewBag.Lead = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", update.Lead);
-            ViewBag.ViceSkip = new SelectList(list.OrderBy(x => x.LastName), "id", "FullName", update.ViceSkip);
+
+            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+
+            var list = RemainingPlayers(team, teams);
+            ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
-            return View(update);
+            return View(team);
         }
 
         // GET: Teams/Delete/5
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+           
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -370,7 +271,7 @@ namespace Tournament.Controllers
 
             if (concurrencyError.GetValueOrDefault())
             {
-                ViewBag.ConcurrencyErrorMessage = "The record you attempted to delete "
+                ViewBag.Error = "The record you attempted to delete "
                                                   + "was modified by another user after you got the original values. "
                                                   + "The delete operation was canceled and the current values in the "
                                                   + "database have been displayed. If you still want to delete this "
@@ -384,27 +285,111 @@ namespace Tournament.Controllers
         // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(Team team)
+        public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
-            ViewBag.LeagueName = (string)HttpContext.Session["leaguename"];
+           
+
+            var team = db.Teams.Find(id);
+            if (team == null)
+            {
+                ViewBag.Error = "Unable to delete this record, another user deleted this record";
+                return View(new Team());
+            }
+            if (db.Matches.Any(x => x.TeamNo1 == team.id || x.TeamNo2 == team.id))
+            {
+                ViewBag.Error = "Unable to delete this record, this team is scheduled to play matches";
+                return View(team);
+            }
             try
             {
+                db.Entry(team).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(team).State = EntityState.Deleted;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = team.id });
+                return RedirectToAction("Delete", new { concurrencyError = true, id = id });
             }
-            catch (DataException dex)
+            catch (Exception dex)
             {
                 //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                ModelState.AddModelError(string.Empty, "Unable to delete. Try again, and if the problem persists contact your system administrator.");
+                ViewBag.Error =
+                    "Unable to delete. Try again, and if the problem persists contact your system administrator.";
                 ErrorSignal.FromCurrentContext().Raise(dex);
-                return View(team);
+
             }
+
+            return View(team);
+        }
+
+        /// <summary>
+        /// Generate an order list of remaining players including members of the current team
+        /// </summary>
+        /// <param name="team">current team</param>
+        /// <param name="leagueid">league number</param>
+        /// <param name="teams">order list of all teas</param>
+        /// <returns></returns>
+        private List<PlayerViewModel> RemainingPlayers(Team team, IOrderedQueryable<Team> teams)
+        {
+            var list = new List<PlayerViewModel>();
+            foreach (var player in db.Players.Where(x => x.Leagueid == team.Leagueid))
+            {
+                if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
+                {
+                    list.Add(new PlayerViewModel()
+                    {
+                        id = player.id,
+                        FullName = player.Membership.FullName,
+                        LastName = player.Membership.LastName
+                    });
+                }
+            }
+
+            if (team.id != 0)
+            {
+                if (team.Player != null)
+                {
+                    list.Add(new PlayerViewModel()
+                    {
+                        id = team.Player.id,
+                        FullName = team.Player.Membership.FullName,
+                        LastName = team.Player.Membership.LastName
+                    });
+                }
+
+                if (team.Player2 != null)
+                {
+                    list.Add(new PlayerViewModel()
+                    {
+                        id = team.Player2.id,
+                        FullName = team.Player2.Membership.FullName,
+                        LastName = team.Player2.Membership.LastName
+                    });
+                }
+
+                if (team.Player1 != null)
+                {
+                    list.Add(new PlayerViewModel()
+                    {
+                        id = team.Player1.id,
+                        FullName = team.Player1.Membership.FullName,
+                        LastName = team.Player1.Membership.LastName
+                    });
+                }
+            }
+
+            list.Sort((a, b) => String.Compare(a.LastName, b.LastName, StringComparison.Ordinal));
+            return list;
+        }
+
+        private bool CheckTeam(Team team)
+        {
+            if (team.Skip.HasValue && (team.Skip == team.ViceSkip || team.Skip == team.Lead))
+                    return true;
+            if (team.ViceSkip.HasValue && team.ViceSkip == team.Lead)
+                return true;
+            return false;
         }
 
         protected override void Dispose(bool disposing)

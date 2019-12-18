@@ -1,4 +1,5 @@
-﻿@model Tournament.Models.Match
+﻿@using Tournament.Models
+@model Tournament.Models.Match
 
 @{
     ViewBag.Title = "Scoring";
@@ -46,13 +47,13 @@
             switch ((int)ViewBag.TeamSize)
             {
                 case 1:
-                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.Membership.NickName})";
                     break;
                 case 2:
-                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName}, {Model.Team.Player2.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.Membership.NickName}, {Model.Team.Player2.Membership.NickName})";
                     break;
                 case 3:
-                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.NickName}, {Model.Team.Player1.NickName}, {Model.Team.Player2.NickName})";
+                    players = $"Team {Model.Team.TeamNo} ({Model.Team.Player.Membership.NickName}, {Model.Team.Player1.Membership.NickName}, {Model.Team.Player2.Membership.NickName})";
                     break;
             }
         }
@@ -69,13 +70,13 @@
             switch ((int)ViewBag.TeamSize)
             {
                 case 1:
-                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.Membership.NickName})";
                     break;
                 case 2:
-                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName}, {Model.Team1.Player2.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.Membership.NickName}, {Model.Team1.Player2.Membership.NickName})";
                     break;
                 case 3:
-                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.NickName}, {Model.Team1.Player1.NickName}, {Model.Team.Player2.NickName})";
+                    players1 = $"Team {Model.Team1.TeamNo} ({Model.Team1.Player.Membership.NickName}, {Model.Team1.Player1.Membership.NickName}, {Model.Team.Player2.Membership.NickName})";
                     break;
             }
         }
@@ -90,6 +91,7 @@
         @Html.LabelFor(model => model.ForFeitId, "Team Forfeiting", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("ForFeitId", null, htmlAttributes: new { @class = "form-control" })
+
             @Html.ValidationMessageFor(model => model.ForFeitId, "", new { @class = "text-danger" })
         </div>
     </div>
