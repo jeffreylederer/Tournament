@@ -537,6 +537,7 @@
     <Content Include="Views\Membership\Delete.cshtml" />
     <Content Include="Views\Membership\Edit.cshtml" />
     <Content Include="Views\Membership\Index.cshtml" />
+    <Content Include="Views\Shared\_LeagueLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

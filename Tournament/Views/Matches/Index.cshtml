@@ -5,9 +5,10 @@
 
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
-<h2> Matches for @HttpContext.Current.Session["LeagueName"].ToString()</h2>
+<h2> Matches</h2>
 @using (Html.BeginForm("Index", "Matches", FormMethod.Post))
 {
     <div>
@@ -185,6 +186,4 @@
 
 
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+

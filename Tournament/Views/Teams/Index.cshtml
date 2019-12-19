@@ -2,9 +2,10 @@
 
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
-<h2>@HttpContext.Current.Session["LeagueName"].ToString() Teams</h2>
+<h2>Teams</h2>
 
 <p>
     @Html.ActionLink("Add Team", "Create")<br/>

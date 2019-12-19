@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "ScoreCardReport";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
 <h2>Score Card Report</h2>
@@ -9,7 +10,7 @@
 <table>
     <tr>
         <td>
-            @Html.ActionLink("Back to List", "Index", new { RoundId = ViewBag.RoundId })
+            @Html.ActionLink("Back to List", "Index", new { scheduleid = ViewBag.RoundId })
         </td>
     </tr>
     <tr>

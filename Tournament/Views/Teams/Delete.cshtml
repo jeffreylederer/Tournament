@@ -2,13 +2,14 @@
 
 @{
     ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
 <h2>Delete</h2>
-<div class="validation-summary-errors text-danger"><ul><li>@ViewBag.Error</li></ul></div>
+<div class="validation-summary-errors text-danger">@ViewBag.Error</div>
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>@HttpContext.Current.Session["LeagueName"].ToString() Team</h4>
+    <h4>Team</h4>
     <span style="color: red;">@ViewBag.Error</span>
     <hr />
     <dl class="dl-horizontal">

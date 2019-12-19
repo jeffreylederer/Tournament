@@ -287,8 +287,8 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
-           
 
+            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             var team = db.Teams.Find(id);
             if (team == null)
             {

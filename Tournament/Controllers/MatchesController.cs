@@ -412,7 +412,7 @@ namespace Tournament.Controllers
                 {
                     db.Entry(match).State = EntityState.Modified;
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new { scheduleId = match.WeekId });
                 }
             }
             catch (DbUpdateConcurrencyException ex)

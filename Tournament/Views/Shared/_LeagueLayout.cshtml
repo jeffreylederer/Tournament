@@ -1,0 +1,14 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>@HttpContext.Current.Session["LeagueName"].ToString()</h2>
+
+@RenderBody()
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+@RenderSection("scripts", required: false)
+
+

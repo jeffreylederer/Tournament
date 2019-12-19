@@ -104,8 +104,10 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-
-            ViewBag.List = GetRemainingMembers.OrderBy(x => x.LastName);
+            var list = GetRemainingMembers;
+            list.Add(player.Membership);
+            list.Sort((a, b) => a.LastName.CompareTo(b.LastName));
+            ViewBag.List = list;
             return View(player);
         }
 

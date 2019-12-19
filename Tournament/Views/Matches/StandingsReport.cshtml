@@ -2,13 +2,14 @@
 
 @{
     ViewBag.Title = "ScoringReport";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
 <h2>Standings Report</h2>
 <table>
     <tr>
         <td>
-            @Html.ActionLink("Back to List", "Index", new { RoundId = ViewBag.RoundId })
+            @Html.ActionLink("Back to List", "Index", new { scheduleid = ViewBag.RoundId })
         </td>
     </tr>
     <tr>

@@ -2,9 +2,8 @@
 
 @{
     ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
-
-<h2>@HttpContext.Current.Session["LeagueName"].ToString() Players</h2>
 
 <p>
         @Html.ActionLink("Add a Player", "Create")
