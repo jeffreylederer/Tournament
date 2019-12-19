@@ -180,20 +180,21 @@ namespace Tournament.Controllers
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
             }
-            else if (db.Players.Any(x => x.Leagueid == league.id))
-            {
-                ViewBag.Error = "Unable to delete. This league still has players on its roster.";
-            }
             else
             {
                 try
                 {
+                    
+                    db.Matches.RemoveRange(db.Matches.Where(x => x.Team.Leagueid == league.id).ToList());
+                    db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == league.id).ToList());
+                    db.Players.RemoveRange(db.Players.Where(x => x.Leagueid == league.id).ToList());
+                    db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == league.id).ToList());
                     db.Entry(league).Property("rowversion").OriginalValue = rowversion;
                     db.Entry(league).State = EntityState.Deleted;
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateConcurrencyException)
                 {
                     return RedirectToAction("Delete", new { concurrencyError = true, id = id });
                 }

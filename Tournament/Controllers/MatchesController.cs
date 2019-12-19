@@ -75,29 +75,66 @@ namespace Tournament.Controllers
 
             //first check to make sure teams are complete
             bool complete = true;
-            foreach (var team in db.Teams.Where(x => x.Leagueid == leagueid))
+            var teams = db.Teams.Where(x => x.Leagueid == leagueid);
+            var playerList = new List<int>();
+            foreach (var team in teams)
             {
                 switch ((int)HttpContext.Session["teamsize"])
                 {
                     case 1:
+                        
                         if (!team.Skip.HasValue)
                             complete = false;
+                        else
+                        {
+                            playerList.Add(team.Skip.Value);
+                        }
                         break;
                     case 2:
                         if (!team.Lead.HasValue || !team.Skip.HasValue)
                             complete = false;
+                        else
+                        {
+                            playerList.Add(team.Skip.Value);
+                            playerList.Add(team.Lead.Value);
+                           
+                        }
                         break;
                     case 3:
                         if (!team.Skip.HasValue || !team.Lead.HasValue || !team.ViceSkip.HasValue)
                             complete = false;
+                        else
+                        {
+                            playerList.Add(team.Skip.Value);
+                            playerList.Add(team.Lead.Value);
+                            playerList.Add(team.ViceSkip.Value);
+                        }
+
                         break;
                 }
-            }
+             }
             if (!complete)
             {
                 ViewBag.Error = "No matches created, some teams have empty slots";
                 return View();
             }
+
+            // check to make each player in the league is assigned to a team
+            bool onteam = true;
+            foreach (var player in db.Players.Where(x => x.Leagueid == leagueid))
+            {
+                if (!playerList.Contains(player.id))
+                {
+                    onteam = false;
+                }
+            }
+            if(!onteam)
+            {
+                ViewBag.Error = "No matches created, some players are not assigned to a team";
+                return View();
+            }
+
+            
 
             foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
             {
@@ -414,6 +451,7 @@ namespace Tournament.Controllers
                 //Log the error (uncomment dex variable name and add a line here to write a log.)
                 ModelState.AddModelError("",
                     "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                ErrorSignal.FromCurrentContext().Raise(dex);
 
             }
             var forfeits = new List<SelectListItem>

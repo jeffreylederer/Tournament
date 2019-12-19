@@ -4,15 +4,13 @@
 }
 
 <h2>Create Matches for Tournament</h2>
-
+<div class="validation-summary-errors text-danger">@ViewBag.Error</div>
 <h3 style="color: red;">Are you sure you want to erase all matches and create a new set of matches?</h3>
 <div>
 
 
-    This will erase all matches for the Wednesday League and create a new round robin set of matches using the
+    This will erase all matches for the @HttpContext.Current.Session["LeagueName"].ToString() and create a new round robin set of matches using the
     Wednesday schedule and Wednesday's teams.
-    <br />
-    <div style="color: red;">@ViewBag.Error</div>
     <br />
     @using (Html.BeginForm())
     {

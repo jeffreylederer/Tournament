@@ -79,6 +79,7 @@ namespace Tournament.Models
         [Required]
         public int id { get; set; }
 
+        [DataType(DataType.Date)]
         [Display(Name = "Game Date")]
         [DisplayFormat(DataFormatString = "{0:d}")]
         [Required]

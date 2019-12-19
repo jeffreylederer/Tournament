@@ -252,9 +252,10 @@ namespace Tournament.Controllers
             {
                 var players = db.Players;
                 var list = new List<Membership>();
+                int leagueid = (int)HttpContext.Session["leagueid"];
                 foreach (var member in db.Memberships)
                 {
-                    if (!players.Any(x => x.MembershipId == member.id))
+                    if (!players.Any(x => x.MembershipId == member.id && x.Leagueid==leagueid))
                         list.Add(member);
                 }
                 return list;

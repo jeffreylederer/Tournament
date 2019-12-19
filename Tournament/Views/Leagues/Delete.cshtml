@@ -7,9 +7,17 @@
 <h2>Delete</h2>
 
 <div class="validation-summary-errors text-danger"><ul><li>@ViewBag.Error</li></ul></div>
-<p class="error">@ViewBag.ConcurrencyErrorMessage</p>
 
 <h3>Are you sure you want to delete this?</h3>
+Deleting a leagues will:
+<ul>
+    <li>Delete all matches</li>
+    <li>Delete all teams</li>
+    <li>Delete all players in the league (but keep in membership)</li>
+    <li>Delete this league's schedule</li>
+</ul>
+
+
 <div>
     <h4>League</h4>
     <hr />

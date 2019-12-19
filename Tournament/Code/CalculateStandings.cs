@@ -12,14 +12,20 @@ namespace Tournament.Code
     {
 
         
-
+        /// <summary>
+        /// Determine the standings based on all the games played so far
+        /// </summary>
+        /// <param name="weekid">the record id of the week in the schedule table</param>
+        /// <param name="teamsize">number of players per team</param>
+        /// <param name="leagueid">the record id of the league table</param>
+        /// <returns></returns>
         public static TournamentDS.StandingDataTable Doit(int weekid, int teamsize, int leagueid)
         {
             var ds = new TournamentDS();
             var list = new List<Standing>();
             using (var db = new TournamentEntities())
             {
-
+                // get the names of the player for each team
                 foreach (var team in db.Teams.Where(x=>x.Leagueid== leagueid))
                 {
                     string players = "";
@@ -44,8 +50,12 @@ namespace Tournament.Code
                         Players = players
                     });
                 }
+
+                // determine the total score and wins and loses for each team for each week
                 foreach(var week in db.Schedules.Where(x => x.id <= weekid && x.Leagueid == leagueid))
                 {
+
+                    //cancelled weeks do not count
                     if (week.Cancelled)
                         continue;
                     var total = 0;
@@ -96,6 +106,8 @@ namespace Tournament.Code
                         }
 
                     }
+
+                    // for byes or forfeit (the team that did not forfeit), the team gets the average score of all winning games that week and a win
                     if (bye || forfeit)
                     {
 
@@ -119,10 +131,23 @@ namespace Tournament.Code
                 }
             }
             int place = 1;
-            list.Sort((a, b) => (b.Wins * 1000 + b.TotalScore).CompareTo(a.Wins * 1000 + a.TotalScore));
+            int nextplace = 1;
+            Standing previous = new Standing()
+            {
+                Loses = 0,
+                TotalScore = 0,
+                Wins = 0
+            };
+            list.Sort((a, b) => (b.standScore).CompareTo(a.standScore));
             foreach (var item in list)
             {
-                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place++, item.Wins, item.Loses);
+                if (item.standScore != previous.standScore)
+                {
+                    place = nextplace;
+                }
+                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place, item.Wins, item.Loses);
+                previous = item;
+                nextplace++;
             }
             return ds.Standing;
         }
@@ -136,6 +161,14 @@ namespace Tournament.Code
         public int Loses { get; set; }
         public int TotalScore { get; set; }
         public string Players { get; set; }
+
+        public int standScore
+        {
+            get
+            {
+                return Wins * 1000 + TotalScore;
+            }
+        }
         
     }
 }
