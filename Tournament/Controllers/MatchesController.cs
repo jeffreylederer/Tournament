@@ -62,7 +62,17 @@ namespace Tournament.Controllers
         [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult CreateMatches()
         {
-            return View();
+            var leagueid = (int)HttpContext.Session["leagueid"];
+            var missing = Missing(leagueid);
+            if (missing.Count > 0)
+            {
+                ViewBag.Error = "Some players not assigned to a team";
+                return View(missing);
+            }
+            var complete = Complete(leagueid);
+            if (!complete)
+                ViewBag.Error = "Not all teams are complete";
+            return View(missing);
         }
 
         [HttpPost]
@@ -73,83 +83,40 @@ namespace Tournament.Controllers
             var numOfWeeks = db.Schedules.Count(x => x.Leagueid == leagueid);
             var numofTeams = db.Teams.Count(x => x.Leagueid == leagueid);
 
-            //first check to make sure teams are complete
-            bool complete = true;
-            var teams = db.Teams.Where(x => x.Leagueid == leagueid);
-            var playerList = new List<int>();
-            foreach (var team in teams)
+            var missing = Missing(leagueid);
+            if (missing.Count > 0)
             {
-                switch ((int)HttpContext.Session["teamsize"])
-                {
-                    case 1:
-                        
-                        if (!team.Skip.HasValue)
-                            complete = false;
-                        else
-                        {
-                            playerList.Add(team.Skip.Value);
-                        }
-                        break;
-                    case 2:
-                        if (!team.Lead.HasValue || !team.Skip.HasValue)
-                            complete = false;
-                        else
-                        {
-                            playerList.Add(team.Skip.Value);
-                            playerList.Add(team.Lead.Value);
-                           
-                        }
-                        break;
-                    case 3:
-                        if (!team.Skip.HasValue || !team.Lead.HasValue || !team.ViceSkip.HasValue)
-                            complete = false;
-                        else
-                        {
-                            playerList.Add(team.Skip.Value);
-                            playerList.Add(team.Lead.Value);
-                            playerList.Add(team.ViceSkip.Value);
-                        }
+                ViewBag.Error = "Some players not assigned to a team";
+                return View(missing);
+            }
 
-                        break;
-                }
-             }
+            var complete = Complete(leagueid);
             if (!complete)
             {
-                ViewBag.Error = "No matches created, some teams have empty slots";
-                return View();
+                ViewBag.Error = "Not all teams are complete";
+                return View(missing);
             }
 
-            // check to make each player in the league is assigned to a team
-            bool onteam = true;
-            foreach (var player in db.Players.Where(x => x.Leagueid == leagueid))
+            var matches = db.Matches.Where(x => x.Team.Leagueid == leagueid).ToList();
+            foreach (var match in matches)
             {
-                if (!playerList.Contains(player.id))
+                if (match.Team1Score != 0 || match.Team2Score != 0 || match.ForFeitId != 0)
                 {
-                    onteam = false;
+                    ViewBag.Error = "Matches cannot be delete, some matches have scores";
+                    return View(missing);
                 }
             }
-            if(!onteam)
-            {
-                ViewBag.Error = "No matches created, some players are not assigned to a team";
-                return View();
-            }
 
-            
+            db.Matches.RemoveRange(matches);
 
-            foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
-            {
-                foreach(var match in db.Matches.Where(x => x.WeekId == item.id).ToList())
-                    db.Matches.Remove(match);
-            }
-            db.SaveChanges();
             var cs = new CreateSchedule();
 
-            var matches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
+            var newMatches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
             
             var scheduleList = db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
             var teamList = db.Teams.Where(x => x.Leagueid == leagueid).ToList();
 
-            foreach (var match in matches)
+            foreach (var match in newMatches)
             {
                 var team1 = teamList.Find(x => x.TeamNo == match.Team1 + 1);
                 var team2 = teamList.Find(x => x.TeamNo == match.Team2 + 1);
@@ -174,9 +141,72 @@ namespace Tournament.Controllers
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+                ViewBag.Error = $"No matches were created, Error {e.Message}";
+                return View(new List<Player>());
             }
             var round1 = db.Schedules.Where(x => x.Leagueid == leagueid).First();
-            return RedirectToAction("index", new { RoundId = round1.id });
+            return RedirectToAction("index", new { scheduleid = round1.id });
+        }
+
+        private bool Complete(int leagueid)
+        {
+            var teamsize = db.Leagues.Find(leagueid).TeamSize;
+            var complete = true;
+            foreach (var team in db.Teams.Where(x => x.Leagueid == leagueid).ToList())
+            {
+                switch (teamsize)
+                {
+                    case 1:
+                        if (!team.Skip.HasValue)
+                        {
+                            ViewBag.Error = "Not all teams are complete";
+                            complete = false;
+                        }
+                        break;
+
+                    case 2:
+                        if (!team.Skip.HasValue || !team.Lead.HasValue)
+                        {
+                            ViewBag.Error = "Not all teams are complete";
+                            complete = false;
+                        }
+                        break;
+                    case 3:
+                        if (!team.Skip.HasValue || !team.Lead.HasValue || !team.ViceSkip.HasValue)
+                        {
+                            ViewBag.Error = "Not all teams are complete";
+                            complete = false;
+                        }
+                        break;
+                }
+                if (!complete)
+                    break;
+
+            }
+            return complete;
+        }
+
+        private List<Player> Missing(int leagueid)
+        {
+            var teams = db.Teams.Where(x => x.Leagueid == leagueid);
+            var playerList = db.Players.Where(x => x.Leagueid == leagueid).ToList();
+            foreach (var team in teams)
+            {
+                if (team.Skip.HasValue)
+                {
+                    playerList.Remove(team.Player);
+                }
+                if (team.Lead.HasValue )
+                {
+                    playerList.Remove(team.Player2);
+                }
+                if (team.ViceSkip.HasValue)
+                {
+                    playerList.Remove(team.Player1);
+                }
+
+            }
+            return playerList;
         }
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
@@ -190,23 +220,28 @@ namespace Tournament.Controllers
         public ActionResult ClearSchedule(string DeleteIT)
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
-            foreach (var item in db.Schedules.Where(x => x.Leagueid == leagueid))
+            var matches = db.Matches.Where(x=>x.Team.Leagueid == leagueid).ToList();
+            foreach (var match in matches)
             {
-                foreach (var match in db.Matches.Where(x => x.WeekId == item.id).ToList())
-                    db.Matches.Remove(match);
+                if (match.Team1Score != 0 || match.Team2Score != 0 || match.ForFeitId != 0)
+                {
+                    ViewBag.Error = "Matches cannot be delete, some matches have scores";
+                    return View();
+                }
             }
-            db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == leagueid));
-            db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == leagueid));
             try
             {
+                db.Matches.RemoveRange(matches);
                 db.SaveChanges();
             }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
+                ViewBag.Error = $"Matches were not removed, Error: {e.Message}";
+                return View();
             }
             
-            return RedirectToAction("index", "Home");
+            return RedirectToAction("Welcome", "Home");
         }
 
         [Authorize]

@@ -2,17 +2,19 @@
     ViewBag.Title = "ClearSchedule";
 }
 
-<h2>Clear Schedule</h2>
+<h2>Delete Matches</h2>
+<div class="validation-summary-errors text-danger">@ViewBag.Error</div>
+    <h3 style="color: red;">Are you sure you want to delete the matches for this league?</h3>
+    <div>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
 
-<h3 style="color: red;">Are you sure you want to delete the scheduled weeks, teams, and matches for the Wednesday League?</h3>
-<div>
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
+            <div class="form-actions no-color">
+                <input type="submit" value="Delete" class="btn btn-default" />
 
-        <div class="form-actions no-color">
-            @Html.Hidden("DeleteIT","");
-            <input type="submit" value="Delete" class="btn btn-default"/> |
-            @Html.ActionLink("Return to Home page", "Index", "Home")
-        </div>
-    }
-</div>
+            </div>
+        }
+    </div>
+
+
