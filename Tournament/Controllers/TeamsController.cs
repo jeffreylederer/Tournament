@@ -73,7 +73,7 @@ namespace Tournament.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Teams/Create
         public ActionResult Create()
         {
@@ -151,6 +151,7 @@ namespace Tournament.Controllers
         }
 
         // GET: Teams/Edit/5
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Edit(int? id)
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
@@ -251,6 +252,7 @@ namespace Tournament.Controllers
         }
 
         // GET: Teams/Delete/5
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];

@@ -215,6 +215,7 @@ namespace Tournament.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ClearSchedule(string DeleteIT)

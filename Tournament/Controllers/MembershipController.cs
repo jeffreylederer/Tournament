@@ -18,8 +18,9 @@ namespace Tournament.Controllers
     {
         private TournamentEntities db = new TournamentEntities();
 
-        [Authorize(Roles = "Admin")]
+
         // GET: Memberships
+        [Authorize]
         public ActionResult Index(string sortOrder)
         {
             
@@ -50,8 +51,9 @@ namespace Tournament.Controllers
             return View(newlist);
         }
 
-       
+
         // GET: Memberships/Create
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Create()
         {
             
@@ -91,6 +93,7 @@ namespace Tournament.Controllers
         }
 
         // GET: Memberships/Edit/5
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -193,8 +196,8 @@ namespace Tournament.Controllers
             return inUse;
         }
 
-        [Authorize(Roles = "Admin")]
         // GET: Memberships/Delete/5
+        [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
             if (id == null)

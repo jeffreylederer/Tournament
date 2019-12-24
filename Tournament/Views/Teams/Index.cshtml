@@ -8,7 +8,12 @@
 <h2>Teams</h2>
 
 <p>
-    @Html.ActionLink("Add Team", "Create")<br/>
+@{
+    if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("LeagueAdmin"))
+    {
+        @Html.ActionLink("Add Team", "Create")<br/>
+    }
+}
     @Html.ActionLink("Team Report", "TeamReport")
 </p>
 <table class="table-condensed table-striped">

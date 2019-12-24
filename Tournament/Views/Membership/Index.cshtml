@@ -8,7 +8,7 @@
 
 <p>
 @{
-    if (HttpContext.Current.User.IsInRole("Admin"))
+    if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("LeagueAdmin"))
     {
         @Html.ActionLink("Add a Membership", "Create")
     }
@@ -66,7 +66,7 @@
         </td>
     <td>
     @{
-        if (HttpContext.Current.User.IsInRole("Admin"))
+        if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("LeagueAdmin"))
         {
             @Html.ActionLink("Edit", "Edit", new {id = item.id});  
             @Html.Raw(" | ");
