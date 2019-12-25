@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Tournament.Code;
 using Tournament.Models;
+using System.Configuration;
 
 namespace Tournament.Controllers
 {
@@ -167,52 +168,48 @@ namespace Tournament.Controllers
                     return View(forgotPassword);
                 }
                 var user = users.First();
-                var activationCode = HttpUtility.UrlEncode(Secret.Protect($"{user.id},{DateTime.Now.AddMinutes(15).ToString("M/d/yyyy hh:mm:ss tt")}"));
+                var activationCode =
+                    HttpUtility.UrlEncode(Secret.Protect(
+                        $"{user.id},{DateTime.Now.AddMinutes(15).ToString("M/d/yyyy hh:mm:ss tt")}"));
 
                 var verifyUrl = $"/Accounts/ResetPassword/{activationCode}";
                 var link = $"http://{Request.Url.Host}:{Request.Url.Port}{verifyUrl}";
 
-                var fromEmail = new MailAddress("mailer@lawnbowlingpittsburgh.org", "Lawn Bowling Pittsburgh");
+                var emailUser =db.Users.First(x => x.Roles == "Mailer");
+                var fromEmail = new MailAddress(emailUser.username, "Lawn Bowling Pittsburgh");
                 var toEmail = new MailAddress(forgotPassword.EmailId);
-                var fromEmailPassword = "burnt#End1"; // Replace with actual password
+                var fromEmailPassword = emailUser.password; 
 
                 var subject = "Reset Password for League Application";
                 var body =
                     $"Hi,<br/><br/>We got request for reset your account password. Please click on the below link to reset your password<br/><br/><a href={link}>Reset Password link</a>";
+                using (var smtp = new SmtpClient())
+                {
 
-                var smtp = new SmtpClient
-                {
-                    Host = "smtp.ionos.com",
-                    Port = 587,
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword)
-                };
+                    smtp.Host = ConfigurationManager.AppSettings["smtp"];
+                    smtp.Port = 587;
+                    smtp.EnableSsl = true;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(fromEmail.Address, fromEmailPassword);
 
-                var message = new MailMessage(fromEmail, toEmail)
-                {
-                    Subject = subject,
-                    Body = body,
-                    IsBodyHtml = true
-                };
-                try
-                {
-                    smtp.Send(message);
-                    return RedirectToAction("SentEmail", "Accounts");
+                    using (var message = new MailMessage(fromEmail, toEmail))
+                    {
+
+                        message.Subject = subject;
+                        message.Body = body;
+                        message.IsBodyHtml = true;
+                        try
+                        {
+                            smtp.Send(message);
+                            return RedirectToAction("SentEmail", "Accounts");
+                        }
+                        catch (Exception ex)
+                        {
+                            ViewBag.Error = $"Could not send request, Error {ex.Message}";
+                        }
+                    }
                 }
-                catch (Exception ex)
-                {
-                    ViewBag.Error = $"Could not send request, Error {ex.Message}";
-                }
-                finally
-                {
-                    message.Dispose();
-                    smtp.Dispose();
-                }
-
-                
-
             }
             return View(forgotPassword);
         }
