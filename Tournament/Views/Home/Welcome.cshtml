@@ -5,7 +5,25 @@
 
 <h2>Welcome to @HttpContext.Current.Session["LeagueName"].ToString()</h2>
 
-<p>League Administrators can add additional administrators and scorers</p>
-<p>League Administrators can also add players to the league, setup teams, and create matches.</p>
-<p>Scorers can set the score of matches for the league</p>
+<p style="font-size: large; font-weight:200">@ViewBag.Info</p>
+
+<h2>Roles</h2>
+
+<dl >
+    <dt>Observers</dt>
+    <dd>They can view all screens and reports in the league </dd>
+</dl>
+<dl >
+    <dt>Scorers</dt>
+    <dd>They can score matches and view all screens and reports in the league </dd>
+</dl>
+<dl >
+    <dt>League Administrators</dt>
+    <dd>They can edit the membership, players and schedule in the league, create and score matches </dd>
+</dl>
+<dl >
+    <dt>Site Administrators</dt>
+    <dd>They can be league administrator for any league and create leagues and users. </dd>
+</dl>
+
 

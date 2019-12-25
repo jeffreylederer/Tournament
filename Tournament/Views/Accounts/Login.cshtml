@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
 }
 
 <h2>Login for FPLBC Leagues Application</h2>
@@ -38,9 +39,11 @@
         </div>
     </div>
 }
-<p>
-    @Html.ActionLink("Forgot your password?", "ForgotPassword","Accounts")
-</p>
+    <p>
+        @Html.ActionLink("Forgot your password?", "ForgotPassword", "Accounts") <br />
+
+        @Html.ActionLink("Change password?", "ChangePassword", "Accounts")
+    </p>
 
 
 

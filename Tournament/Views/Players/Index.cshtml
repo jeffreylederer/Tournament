@@ -4,41 +4,46 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
-
-<p>
-        @Html.ActionLink("Add a Player", "Create")
-</p>
-<p>Number of Players in League: @ViewBag.Count
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink("Last Name", "Index", new { sortOrder=ViewBag.FullNameSortParm })
-        </th>
-        
-        
-        <th></th>
-    </tr>
-
-@foreach (var item in Model)
-{
-    <tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.Membership.FullName)
-    </td>
-    
-    <td>
-        @{
-            if (HttpContext.Current.User.IsInRole("Admin") ||
-                HttpContext.Current.User.IsInRole("LeagueAdmin"))
-            {
-                @Html.ActionLink("Edit", "Edit", new { id = item.id })
-                @Html.Raw(" | ")
-                @Html.ActionLink("Delete", "Delete", new { id = item.id });
-            }
-        }
-    </td>
-    </tr>
+@{
+    if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("LeagueAdmin"))
+    {
+        <p>
+            @Html.ActionLink("Add a Player", "Create")
+        </p>
+    }
 }
+        <p>
+            Number of Players in League: @ViewBag.Count
+        </p>
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.FullNameSortParm })
+                </th>
 
-</table>
+
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Membership.FullName)
+                    </td>
+
+                    <td>
+                        @{
+                            if (HttpContext.Current.User.IsInRole("Admin") ||
+                                HttpContext.Current.User.IsInRole("LeagueAdmin"))
+                            {
+                                @Html.ActionLink("Edit", "Edit", new { id = item.id })
+                                @Html.Raw(" | ")
+                                @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>

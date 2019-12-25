@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Microsoft.Ajax.Utilities;
 using Tournament.Models;
 
 namespace Tournament.Controllers
@@ -18,6 +19,18 @@ namespace Tournament.Controllers
         public ActionResult Index()
         {
             var username = (string) HttpContext.Session["user"];
+            if(HttpContext.Session["teamsize"] != null)
+                HttpContext.Session["teamsize"] = null;
+
+            if (HttpContext.Session["leaguename"] != null)
+                HttpContext.Session["leaguename"] = null;
+
+            if (HttpContext.Session["leagueid"] != null)
+                HttpContext.Session["leagueid"] = null;
+
+            if (HttpContext.Session["role"] != null)
+                HttpContext.Session["role"] = null;
+
             var user = db.Users.Where(x => x.username == username).First();
             ViewBag.Error = "";
             var leagues = new List<League>();
@@ -27,10 +40,7 @@ namespace Tournament.Controllers
             }
             else
             {
-                var userleagues = db.UserLeagues.Include(u => u.League).Where(x => x.UserId == user.id);
-                foreach (var item in userleagues)
-                    if(item.League.Active)
-                        leagues.Add(item.League);
+               user.UserLeagues.ForEach((a)=>leagues.Add(a.League));
             }
             if (!leagues.Any())
             {
@@ -91,7 +101,8 @@ namespace Tournament.Controllers
             HttpContext.Session["teamsize"] = league.TeamSize;
             HttpContext.Session["leaguename"] = league.LeagueName;
             HttpContext.Session["leagueid"] = id.Value;
-            HttpContext.Session["leaguerole"] = role;
+            HttpContext.Session["role"] = role;
+
 
             FormsAuthentication.SetAuthCookie(user.username, false);
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
@@ -114,6 +125,21 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult Welcome()
         {
+            switch (HttpContext.Session["role"].ToString())
+            {
+                case "Admin":
+                    ViewBag.Info = "You are a site administrator";
+                    break;
+                case "LeagueAdmin":
+                    ViewBag.Info = "You are a league administrator";
+                    break;
+                case "Scorer":
+                    ViewBag.Info = "You are a league scorer";
+                    break;
+                default:
+                    ViewBag.Info = "You are a league observer";
+                    break;
+            }
             return View();
         }
 
