@@ -539,6 +539,7 @@
     <Content Include="Views\Membership\Index.cshtml" />
     <Content Include="Views\Shared\_LeagueLayout.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
+    <Content Include="Views\GetSchedule\GenerateReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

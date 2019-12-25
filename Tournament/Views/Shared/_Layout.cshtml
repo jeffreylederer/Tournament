@@ -34,7 +34,7 @@
                                 <li>@Html.ActionLink("Teams", "Index", "Teams")</li>
                                 <li>@Html.ActionLink("Matches", "Index", "Matches")</li>
                                 <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches")</li>
-                                <li>@Html.ActionLink("Schedule Report", "ExportToExcel", "GetSchedule")</li>
+                                <li>@Html.ActionLink("Schedule Report", "GenerateReport", "GetSchedule")</li>
 
 
                                 @if (HttpContext.Current.User.IsInRole("Admin") ||

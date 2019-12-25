@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -13,24 +14,34 @@ namespace Tournament.Controllers
         /// <summary>
         /// Gets the object to be serialized to XML.
         /// </summary>
-        public FileResult ExportToExcel()
+        public ActionResult GenerateReport()
         {
             var topLine = new StringBuilder();
+
             var leagueid = (int)HttpContext.Session["leagueid"];
             var teamsize = (int) HttpContext.Session["teamsize"];
             using (var db = new TournamentEntities())
             {
-                var tline = new StringBuilder();
+                topLine.AppendLine("<table class='table table-striped table-sm'>");
+
                 var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.TeamNo).ToList();
                 
 
                 var rinks = teams.Count / 2;
+                topLine.AppendLine("<thead class='thead dark'>");
+                topLine.AppendLine("<th>WK</th>");
+                topLine.AppendLine("<th>Date</th>");
+                topLine.AppendLine("<th>GRN</th>");
+                topLine.AppendLine("<th>DIR</th>");
+                topLine.AppendLine("<th>Bound</th>");
+                if (db.Matches.Where(x => x.Rink == -1).Any())
+                    topLine.AppendLine("<th>Bye</th>");
 
-                tline.Append("WK,Date,GRN,DIR,Bound,");
                 for (var rink = 0; rink < rinks; rink++)
                 {
-                    tline.Append($"{rink + 1},");
+                    topLine.AppendLine($"<th>{rink + 1}</th>");
                 }
+                topLine.AppendLine("</thead>");
 
                 var RinkList = new List<Rink>()
                 {
@@ -98,37 +109,42 @@ namespace Tournament.Controllers
                 };
 
 
-                var tline1 = tline.ToString();
-                topLine.Append(tline1.Substring(0, tline1.Length - 1) + "\n");
-
                 var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.WeekNumber);
 
                 int i = teamsize - 1;
                  foreach (Schedule week in weeks)
-                {
-                    var matches = db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink);
-                    var weekLine = new StringBuilder();
-                    string grn = string.Empty;
-                    string dir = string.Empty;
-                    string bound = string.Empty;
+                 {
+                    topLine.AppendLine("<tr>");
+                    var matches = db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink).ToList();
+                    var matchesByes = db.Matches.Where(x => x.Rink == -1 && x.WeekId == week.id).ToList();
+                     
+
                     int index = i % RinkList.Count();
                     i++;
                     var rinklist = RinkList[index];
-                    var date = $"'{week.GameDate.Month}/{week.GameDate.Day}'";
-                    weekLine.Append($"{week.WeekNumber},{date},{rinklist.Green},{rinklist.Direction},{rinklist.Boundary},");
+                    
+                    topLine.AppendLine($"<td>{week.WeekNumber}</td>");
+                    topLine.AppendLine($"<td>{week.GameDate.Month}/{week.GameDate.Day}</td>");
+                    topLine.AppendLine($"<td>{rinklist.Green}</td>");
+                    topLine.AppendLine($"<td>{rinklist.Direction}</td>");
+                    topLine.AppendLine($"<td>{rinklist.Boundary}</td>");
+                     if (matchesByes.Any())
+                         topLine.AppendLine($"<td>{matchesByes.First().Team.TeamNo}</td>");
                     foreach (var match in matches)
                     {
                         if (match.Rink != -1)
-                            weekLine.Append($"'{match.Team.TeamNo}-{match.Team1.TeamNo}',");
+                            topLine.AppendLine($"<td>{match.Team.TeamNo}-{match.Team1.TeamNo}</td>");
+                        
                     }
-                    var wline = weekLine.ToString();
-
-                    topLine.Append(wline.Substring(0, wline.Length - 1) + "\n");
+                     topLine.AppendLine("</tr>");
                 }
+                topLine.AppendLine("</table>");
+                ViewBag.Report = topLine.ToString();
             }
-            byte[] bytes = Encoding.ASCII.GetBytes(topLine.ToString());
-            return File(bytes, "application/csv", "Grid.csv");
-       }
+            return View();
+        }
+
+
     }
 
     internal class Rink
