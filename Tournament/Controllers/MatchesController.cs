@@ -262,6 +262,7 @@ namespace Tournament.Controllers
             var ds = new TournamentDS();
             bool IsBye = false;
             bool isCancelled = false;
+  
 
            
             var week = db.Schedules.Find(id);
@@ -281,6 +282,18 @@ namespace Tournament.Controllers
                             forfeit = item.Team1.TeamNo.ToString();
                         }
                     }
+                    else
+                    {
+                        if (item.Team1Score + item.Team2Score == 0)
+                        {
+                            ViewBag.Error = "Some matches were not scored";
+                            reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Empty.rdlc");
+                            var p11 = new ReportParameter("Message", "Some matches were not scored");
+                            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p11 });
+                            ViewBag.ReportViewer = reportViewer;
+                            return View();
+                        }
+                    }
                     ds.Game.AddGameRow(item.Team.TeamNo,
                         Players(item.Team),
                         item.Team1.TeamNo,
@@ -289,6 +302,8 @@ namespace Tournament.Controllers
                         item.Team2Score, item.Rink, forfeit);
                 }
 
+
+                // check for byes
                 var matches = db.Matches.Where(x => x.Rink == -1 && x.WeekId == id);
                 if (matches.Any())
                 {
@@ -302,8 +317,8 @@ namespace Tournament.Controllers
                 else
                 {
                     reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
+                    
                 }
-                reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", ds.Game.Rows));
             }
             else
             {
@@ -311,15 +326,19 @@ namespace Tournament.Controllers
                 reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", new System.Data.DataTable()));
                 reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
             }
-
-            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(id, (int)HttpContext.Session["teamsize"], (int)HttpContext.Session["leagueid"]).Rows));
+            var league = db.Leagues.Find((int)HttpContext.Session["leagueid"]);
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(id, (int)HttpContext.Session["teamsize"], league).Rows));
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Standings.rdlc");
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", ds.Game.Rows));
 
             var p1 = new ReportParameter("WeekDate", WeekDate);
             var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
             var p3 = new ReportParameter("IsBye", IsBye ? "1" : "0");
             var p4 = new ReportParameter("IsCancelled", isCancelled ? "1" : "0");
-            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3, p4 });
+            var p5 = new ReportParameter("PointsCount", league.PointsCount ? "1" : "0");
+            var p6 = new ReportParameter("TiesAllowed", league.TiesAllowed ? "1" : "0");
+
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3, p4, p5, p6 });
             
 
             ViewBag.ReportViewer = reportViewer;
@@ -345,7 +364,7 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult ScoreCardReport(int id)
         {
-
+           
             var reportViewer = new ReportViewer()
             {
                 ProcessingMode = ProcessingMode.Local,
@@ -446,9 +465,17 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(match).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index", new { scheduleId = match.WeekId });
+                    var league = db.Leagues.Find((int) HttpContext.Session["leagueid"]);
+                    if (!league.TiesAllowed && match.Team1Score == match.Team2Score && match.ForFeitId == 0 && (match.Team1Score + match.Team2Score > 0 ))
+                    {
+                        ModelState.AddModelError(string.Empty, "Matched not scored, ties not allowed");
+                    }
+                    else
+                    {
+                        db.Entry(match).State = EntityState.Modified;
+                        db.SaveChanges();
+                        return RedirectToAction("Index", new { scheduleId = match.WeekId });
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -490,25 +517,31 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(dex);
 
             }
+
+            var newmatch = db.Matches.Find(match.id);
+            newmatch.Team1Score = match.Team1Score;
+            newmatch.Team2Score = match.Team2Score;
+            newmatch.ForFeitId = match.ForFeitId;
+
             var forfeits = new List<SelectListItem>
             {
                 new SelectListItem {Value = "0", Text = "No Forfeit", Selected = match.ForFeitId == 0},
                 new SelectListItem
                 {
-                    Value = match.Team.TeamNo.ToString(),
-                    Text = $"Team No. {match.Team.TeamNo}",
-                    Selected = match.ForFeitId == match.Team.TeamNo
+                    Value = newmatch.Team.TeamNo.ToString(),
+                    Text = $"Team No. {newmatch.Team.TeamNo}",
+                    Selected = match.ForFeitId == newmatch.Team.TeamNo
                 },
                 new SelectListItem
                 {
-                    Value = match.Team1.TeamNo.ToString(),
-                    Text = $"Team No. {match.Team1.TeamNo}",
-                    Selected = match.ForFeitId == match.Team1.TeamNo
+                    Value = newmatch.Team1.TeamNo.ToString(),
+                    Text = $"Team No. {newmatch.Team1.TeamNo}",
+                    Selected = match.ForFeitId == newmatch.Team1.TeamNo
                 }
             };
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             ViewBag.ForFeitId = forfeits;
-            return View(match);
+            return View(newmatch);
         }
 
 

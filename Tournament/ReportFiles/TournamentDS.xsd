@@ -82,6 +82,8 @@
               <xs:element name="Place" msprop:Generator_ColumnVarNameInTable="columnPlace" msprop:Generator_ColumnPropNameInRow="Place" msprop:Generator_ColumnPropNameInTable="PlaceColumn" msprop:Generator_UserColumnName="Place" type="xs:int" minOccurs="0" />
               <xs:element name="WIns" msprop:Generator_ColumnVarNameInTable="columnWIns" msprop:Generator_ColumnPropNameInRow="WIns" msprop:Generator_ColumnPropNameInTable="WInsColumn" msprop:Generator_UserColumnName="WIns" type="xs:int" minOccurs="0" />
               <xs:element name="Loses" msprop:Generator_ColumnVarNameInTable="columnLoses" msprop:Generator_ColumnPropNameInRow="Loses" msprop:Generator_ColumnPropNameInTable="LosesColumn" msprop:Generator_UserColumnName="Loses" type="xs:int" minOccurs="0" />
+              <xs:element name="Ties" msprop:Generator_ColumnVarNameInTable="columnTies" msprop:Generator_ColumnPropNameInRow="Ties" msprop:Generator_ColumnPropNameInTable="TiesColumn" msprop:Generator_UserColumnName="Ties" type="xs:int" minOccurs="0" />
+              <xs:element name="Byes" msprop:Generator_ColumnVarNameInTable="columnByes" msprop:Generator_ColumnPropNameInRow="Byes" msprop:Generator_ColumnPropNameInTable="ByesColumn" msprop:Generator_UserColumnName="Byes" type="xs:int" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

@@ -150,6 +150,31 @@ namespace Tournament.Models
         [Required]
         public int TeamSize { get; set; }
 
+        [Required]
+        [Display(Name = "Are ties allowed")]
+        public bool TiesAllowed { get; set; }
+
+        [Required]
+        [Display(Name = "Do scores count")]
+        public bool PointsCount { get; set; }
+
+        [Range(1,3)]
+        [Required]
+        [Display(Name = "Multliplier for a win")]
+        public Nullable<short> WinPoints { get; set; }
+
+        [Range(1, 3)]
+        [Required]
+        [Display(Name = "Multliplier for a tie")]
+        public Nullable<short> TiePoints { get; set; }
+
+        [Range(1, 3)]
+        [Required]
+        [Display(Name = "Multliplier for a bye")]
+        public Nullable<short> ByePoints { get; set; }
+
+        
+
         [Timestamp]
         public byte[] rowversion { get; set; }
     }

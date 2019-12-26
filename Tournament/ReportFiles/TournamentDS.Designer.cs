@@ -2068,6 +2068,10 @@ namespace Tournament.ReportFiles {
             
             private global::System.Data.DataColumn columnLoses;
             
+            private global::System.Data.DataColumn columnTies;
+            
+            private global::System.Data.DataColumn columnByes;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public StandDataTable() {
@@ -2151,6 +2155,22 @@ namespace Tournament.ReportFiles {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public global::System.Data.DataColumn TiesColumn {
+                get {
+                    return this.columnTies;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public global::System.Data.DataColumn ByesColumn {
+                get {
+                    return this.columnByes;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -2186,7 +2206,7 @@ namespace Tournament.ReportFiles {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public StandRow AddStandRow(int Team, string Players, int TotalScore, int Place, int WIns, int Loses) {
+            public StandRow AddStandRow(int Team, string Players, int TotalScore, int Place, int WIns, int Loses, int Ties, int Byes) {
                 StandRow rowStandRow = ((StandRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Team,
@@ -2194,7 +2214,9 @@ namespace Tournament.ReportFiles {
                         TotalScore,
                         Place,
                         WIns,
-                        Loses};
+                        Loses,
+                        Ties,
+                        Byes};
                 rowStandRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowStandRow);
                 return rowStandRow;
@@ -2223,6 +2245,8 @@ namespace Tournament.ReportFiles {
                 this.columnPlace = base.Columns["Place"];
                 this.columnWIns = base.Columns["WIns"];
                 this.columnLoses = base.Columns["Loses"];
+                this.columnTies = base.Columns["Ties"];
+                this.columnByes = base.Columns["Byes"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2240,6 +2264,10 @@ namespace Tournament.ReportFiles {
                 base.Columns.Add(this.columnWIns);
                 this.columnLoses = new global::System.Data.DataColumn("Loses", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnLoses);
+                this.columnTies = new global::System.Data.DataColumn("Ties", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTies);
+                this.columnByes = new global::System.Data.DataColumn("Byes", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnByes);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3421,6 +3449,38 @@ namespace Tournament.ReportFiles {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public int Ties {
+                get {
+                    try {
+                        return ((int)(this[this.tableStand.TiesColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Ties\' in table \'Stand\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStand.TiesColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public int Byes {
+                get {
+                    try {
+                        return ((int)(this[this.tableStand.ByesColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Byes\' in table \'Stand\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableStand.ByesColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public bool IsTeamNull() {
                 return this.IsNull(this.tableStand.TeamColumn);
             }
@@ -3489,6 +3549,30 @@ namespace Tournament.ReportFiles {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public void SetLosesNull() {
                 this[this.tableStand.LosesColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public bool IsTiesNull() {
+                return this.IsNull(this.tableStand.TiesColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public void SetTiesNull() {
+                this[this.tableStand.TiesColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public bool IsByesNull() {
+                return this.IsNull(this.tableStand.ByesColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public void SetByesNull() {
+                this[this.tableStand.ByesColumn] = global::System.Convert.DBNull;
             }
         }
         

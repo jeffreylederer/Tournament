@@ -28,6 +28,11 @@ namespace Tournament.Models
         public bool Active { get; set; }
         public int TeamSize { get; set; }
         public byte[] rowversion { get; set; }
+        public bool TiesAllowed { get; set; }
+        public bool PointsCount { get; set; }
+        public short WinPoints { get; set; }
+        public short TiePoints { get; set; }
+        public short ByePoints { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Player> Players { get; set; }

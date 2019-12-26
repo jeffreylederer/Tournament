@@ -14,6 +14,11 @@
           <Property Name="Active" Type="bit" Nullable="false" />
           <Property Name="TeamSize" Type="int" Nullable="false" />
           <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="TiesAllowed" Type="bit" Nullable="false" />
+          <Property Name="PointsCount" Type="bit" Nullable="false" />
+          <Property Name="WinPoints" Type="smallint" Nullable="false" />
+          <Property Name="TiePoints" Type="smallint" Nullable="false" />
+          <Property Name="ByePoints" Type="smallint" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -317,6 +322,11 @@
           <NavigationProperty Name="Schedules" Relationship="Self.FK__Schedule__League__4F7CD00D" FromRole="League" ToRole="Schedule" />
           <NavigationProperty Name="Teams" Relationship="Self.FK__Team__leagueid__4D94879B" FromRole="League" ToRole="Team" />
           <NavigationProperty Name="UserLeagues" Relationship="Self.FK_UserLeague_League" FromRole="League" ToRole="UserLeague" />
+          <Property Name="TiesAllowed" Type="Boolean" Nullable="false" />
+          <Property Name="PointsCount" Type="Boolean" Nullable="false" />
+          <Property Name="WinPoints" Type="Int16" Nullable="false" />
+          <Property Name="TiePoints" Type="Int16" Nullable="false" />
+          <Property Name="ByePoints" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -645,6 +655,11 @@
           <EntitySetMapping Name="Leagues">
             <EntityTypeMapping TypeName="TournamentModel.League">
               <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="ByePoints" ColumnName="ByePoints" />
+                <ScalarProperty Name="TiePoints" ColumnName="TiePoints" />
+                <ScalarProperty Name="WinPoints" ColumnName="WinPoints" />
+                <ScalarProperty Name="PointsCount" ColumnName="PointsCount" />
+                <ScalarProperty Name="TiesAllowed" ColumnName="TiesAllowed" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
                 <ScalarProperty Name="Active" ColumnName="Active" />

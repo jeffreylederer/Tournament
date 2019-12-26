@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Delete";
+
 }
 
 <h2>Delete</h2>
@@ -46,8 +47,48 @@ Deleting a leagues will:
             @Html.DisplayFor(model => model.Active)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.TiesAllowed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TiesAllowed)
+        </dd>
+        
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PointsCount)
+        </dt>
+        <dd >
+            @Html.DisplayFor(model => model.PointsCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WinPoints)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.WinPoints)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TiePoints)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TiePoints)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ByePoints)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ByePoints)
+        </dd>
+
 
     </dl>
+    </div>
 
     @using (Html.BeginForm())
     {

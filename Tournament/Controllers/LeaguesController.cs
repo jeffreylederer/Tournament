@@ -31,7 +31,7 @@ namespace Tournament.Controllers
             {
                 Active = true
             };
-
+            
             return View(item);
         }
 
@@ -40,7 +40,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active")] League league)
+        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints")] League league)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +64,7 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Insert failed");
                 }
             }
+            
 
             return View(league);
         }
@@ -88,7 +89,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion")] League league)
+        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints")] League league)
         {
             try
             {

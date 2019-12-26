@@ -22,6 +22,27 @@
             @Html.DisplayNameFor(model => model.Active)
         </th>
 
+        <th>
+            @Html.DisplayNameFor(model => model.TiesAllowed)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.PointsCount)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.WinPoints)
+        </th>
+
+        
+        <th>
+            @Html.DisplayNameFor(model => model.TiePoints)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.ByePoints)
+        </th>
+
         <th></th>
     </tr>
 
@@ -36,11 +57,27 @@
         <td>
             @Html.DisplayFor(modelItem => item.Active)
         </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TiesAllowed)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PointsCount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.WinPoints)
+        </td>
         
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
+            @Html.DisplayFor(modelItem => item.TiePoints)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ByePoints)
+        </td>
+
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
             @Html.ActionLink("League Users", "Index", "UserLeagues", new { id = item.id }, null) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @Html.ActionLink("Delete", "Delete", new { id = item.id })
         </td>
     </tr>
 }

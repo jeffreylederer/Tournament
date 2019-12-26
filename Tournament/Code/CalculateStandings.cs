@@ -19,14 +19,15 @@ namespace Tournament.Code
         /// <param name="teamsize">number of players per team</param>
         /// <param name="leagueid">the record id of the league table</param>
         /// <returns></returns>
-        public static TournamentDS.StandingDataTable Doit(int weekid, int teamsize, int leagueid)
+        public static TournamentDS.StandDataTable Doit(int weekid, int teamsize, League league)
         {
+            
             var ds = new TournamentDS();
             var list = new List<Standing>();
             using (var db = new TournamentEntities())
             {
                 // get the names of the player for each team
-                foreach (var team in db.Teams.Where(x=>x.Leagueid== leagueid))
+                foreach (var team in db.Teams.Where(x=>x.Leagueid==league.id))
                 {
                     string players = "";
                     switch (teamsize)
@@ -47,12 +48,14 @@ namespace Tournament.Code
                         Wins = 0,
                         Loses = 0,
                         TotalScore = 0,
+                        Ties = 0,
+                        Byes = 0,
                         Players = players
                     });
                 }
 
                 // determine the total score and wins and loses for each team for each week
-                foreach(var week in db.Schedules.Where(x => x.id <= weekid && x.Leagueid == leagueid))
+                foreach(var week in db.Schedules.Where(x => x.id <= weekid && x.Leagueid == league.id))
                 {
 
                     //cancelled weeks do not count
@@ -64,8 +67,20 @@ namespace Tournament.Code
                     bool forfeit = false;
                     foreach (var match in db.Matches.Where(x => x.WeekId == week.id))
                     {
+                        // tie game
+                        if(match.Team1Score == match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
+                        {
+                            var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
+                            var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
+                            winner.Ties++;
+                            loser.Ties++;
+                            winner.TotalScore += Math.Min(20, match.Team1Score);
+                            loser.TotalScore += Math.Min(20, match.Team2Score);
+                            total += Math.Min(20, match.Team1Score);
+                            numMatches++;
+                        }
                         //team 1 wins
-                        if (match.Team1Score > match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
+                        else if (match.Team1Score > match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
                         {
                             var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                             var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
@@ -101,7 +116,7 @@ namespace Tournament.Code
                         else
                         {
                             var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
-                            winner.Wins++;
+                            winner.Byes++;
                             bye = true;
                         }
 
@@ -136,20 +151,36 @@ namespace Tournament.Code
             {
                 Loses = 0,
                 TotalScore = 0,
-                Wins = 0
+                Wins = 0,
+                Ties = 0,
+                Byes = 0
             };
-            list.Sort((a, b) => (b.standScore).CompareTo(a.standScore));
             foreach (var item in list)
             {
-                if (item.standScore != previous.standScore)
+                var points = item.Wins * league.WinPoints + 
+                                   item.Ties * league.TiePoints + item.Byes * league.ByePoints;
+                if (league.PointsCount)
+                    item.TotalPoints = points * 1000 + item.TotalScore;
+                else
+                {
+                    item.TotalPoints = points;
+                    item.TotalScore = points;
+                }
+
+            }
+            ds.Stand.Clear();
+            list.Sort((a, b) => (b.TotalPoints).CompareTo(a.TotalPoints));
+            foreach (var item in list)
+            {
+                if (item.TotalPoints != previous.TotalPoints)
                 {
                     place = nextplace;
                 }
-                ds.Standing.AddStandingRow(item.TeamNumber, item.Players, item.TotalScore, place, item.Wins, item.Loses);
+                ds.Stand.AddStandRow(item.TeamNumber,item.Players, item.TotalScore, place, item.Wins, item.Loses, item.Ties, item.Byes);
                 previous = item;
                 nextplace++;
             }
-            return ds.Standing;
+            return ds.Stand;
         }
     }
 
@@ -161,14 +192,13 @@ namespace Tournament.Code
         public int Loses { get; set; }
         public int TotalScore { get; set; }
         public string Players { get; set; }
+        public int Ties { get; set; }
+        public int Byes { get; set; }
+       
+        public int TotalPoints { get; set; }
 
-        public int standScore
-        {
-            get
-            {
-                return Wins * 1000 + TotalScore;
-            }
-        }
+        
+        
         
     }
 }

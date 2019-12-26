@@ -565,6 +565,7 @@
     <EmbeddedResource Include="ReportFiles\Byes.rdlc">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="ReportFiles\Empty.rdlc" />
     <EmbeddedResource Include="ReportFiles\SingleTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\PairsTeams.rdlc" />
     <EmbeddedResource Include="ReportFiles\Standings.rdlc" />
