@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Tournament.Models;
+using Tournament.Code;
 
 namespace Tournament.Controllers
 {
@@ -18,7 +19,7 @@ namespace Tournament.Controllers
         // GET: Users
         public ActionResult Index()
         {
-            return View(db.Users.ToList());
+            return View(db.Users.Where(x => x.Roles != "Mailer").ToList());
         }
 
        
@@ -64,6 +65,9 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
+            var sharedSecret = DateTime.Now.TimeOfDay.ToString();
+            TempData["Secret"] = sharedSecret;
+            user.password = Crypto.EncryptStringAES(user.password, sharedSecret);
             var dict = new List<Role>();
             dict.Add(new Role("", "No Roles"));
             dict.Add(new Role("Admin", "Admin"));
@@ -76,10 +80,12 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,username,Roles")] User user)
+        public ActionResult Edit([Bind(Include = "id,username,Roles,password,rowversion")] User user)
         {
             if (ModelState.IsValid)
             {
+                var sharedSecret = (string) TempData["Secret"];
+                user.password = Crypto.DecryptStringAES(user.password, sharedSecret);
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -126,5 +132,7 @@ namespace Tournament.Controllers
             }
             base.Dispose(disposing);
         }
+
+
     }
 }

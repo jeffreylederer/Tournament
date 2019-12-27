@@ -204,6 +204,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Code\CalculateStandings.cs" />
     <Compile Include="Code\CreateSchedule.cs" />
+    <Compile Include="Code\Crypto.cs" />
     <Compile Include="Code\Secret.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ElmahController.cs" />

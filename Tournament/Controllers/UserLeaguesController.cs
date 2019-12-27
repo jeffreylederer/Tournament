@@ -34,7 +34,13 @@ namespace Tournament.Controllers
             var league = db.Leagues.Find(id);
             ViewBag.LeagueName = league.LeagueName;
             ViewBag.LeagueId = league.id;
-            ViewBag.UserId = new SelectList(db.Users.Where(x=>x.Roles != "Mailer").ToList(), "id", "username");
+            var list = db.Users.Where(x=>x.Roles != "Mailer" || x.Roles != "Admin" ).ToList();
+            foreach (var userLeague in db.UserLeagues.Where(x=>x.LeagueId == id))
+            {
+                if(list.Any(x=>x.id == userLeague.UserId))
+                    list.RemoveAll(x => x.id == userLeague.UserId);
+            }
+            ViewBag.UserId = new SelectList(list, "id", "username");
             var userleague = new UserLeague()
             {
                 LeagueId = id
@@ -72,8 +78,14 @@ namespace Tournament.Controllers
                 }
             }
 
-            
-            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
+
+            var list = db.Users.Where(x => x.Roles != "Mailer" || x.Roles != "Admin").ToList();
+            foreach (var item in db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId))
+            {
+                if (list.Any(x => x.id == item.UserId))
+                    list.RemoveAll(x => x.id == item.UserId);
+            }
+            ViewBag.UserId = new SelectList(list, "id", "username");
             var league = db.Leagues.Find(userLeague.LeagueId);
             ViewBag.LeagueName = league.LeagueName;
             ViewBag.LeagueId = league.id;
