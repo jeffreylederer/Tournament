@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Users of @HttpContext.Current.Session["LeagueName"].ToString()</h2>
+<h2>Users of @ViewBag.LeagueName</h2>
 
 <p>
     @Html.ActionLink("Add User", "Create", new {id=ViewBag.LeagueId})
@@ -23,9 +23,11 @@
     </tr>
 
     @foreach (var item in Model) {
+       
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Roles)
+                @{var role =  string.IsNullOrWhiteSpace(item.Roles)?"Observer": item.Roles;}
+                @role
             </td>
         
            

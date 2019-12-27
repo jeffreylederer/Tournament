@@ -17,7 +17,8 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Roles)
+            @{var role =  string.IsNullOrWhiteSpace(Model.Roles)?"Observer": Model.Roles;}
+            @role
         </dd>
 
 
@@ -47,7 +48,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index", new { id = Model.LeagueId })
+            @Html.ActionLink("Back to List", "Index", new {id=Model.LeagueId })
         </div>
     }
 </div>

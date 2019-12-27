@@ -23,7 +23,7 @@ namespace Tournament.Controllers
         {
             var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
             ViewBag.LeagueId = id;
-            ViewBag.LeagueName = (string) HttpContext.Session["leaguename"];
+            ViewBag.LeagueName = db.Leagues.Find(id).LeagueName;
             return View(userLeagues.ToList());
         }
 
@@ -33,17 +33,12 @@ namespace Tournament.Controllers
         {
             var league = db.Leagues.Find(id);
             ViewBag.LeagueName = league.LeagueName;
-            ViewBag.UserId = new SelectList(db.Users, "id", "username");
+            ViewBag.LeagueId = league.id;
+            ViewBag.UserId = new SelectList(db.Users.Where(x=>x.Roles != "Mailer").ToList(), "id", "username");
             var userleague = new UserLeague()
             {
                 LeagueId = id
             };
-            var dict = new List<Role>();
-            dict.Add(new Role("","No Roles"));
-            dict.Add(new Role("LeagueAdmin","LeagueAdmin"));
-            dict.Add(new Role("Scorer","Scorer"));
-            ViewBag.Roles = new SelectList(dict, "RoleValue","RoleText","");
-
             return View(userleague);
         }
 
@@ -78,15 +73,10 @@ namespace Tournament.Controllers
             }
 
             
-            ViewBag.UserId = new SelectList(db.Users, "id", "username", userLeague.UserId);
-            ViewBag.LeagueId = userLeague.LeagueId;
-            var dict = new List<Role>();
-            dict.Add(new Role("", "No Roles"));
-            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
-            dict.Add(new Role("Scorer", "Scorer"));
-            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
+            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
             var league = db.Leagues.Find(userLeague.LeagueId);
-            //ViewBag.LeagueName = league.LeagueName;
+            ViewBag.LeagueName = league.LeagueName;
+            ViewBag.LeagueId = league.id;
             return View(userLeague);
         }
 
@@ -102,11 +92,7 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            var dict = new List<Role>();
-            dict.Add(new Role("", "No Roles"));
-            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
-            dict.Add(new Role("Scorer", "Scorer"));
-            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
+            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
             return View(userLeague);
         }
 
@@ -124,7 +110,7 @@ namespace Tournament.Controllers
                 {
                     db.Entry(userLeague).State = EntityState.Modified;
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new {id=userLeague.LeagueId});
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -168,11 +154,6 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
   
-            var dict = new List<Role>();
-            dict.Add(new Role("", "No Roles"));
-            dict.Add(new Role("LeagueAdmin", "LeagueAdmin"));
-            dict.Add(new Role("Scorer", "Scorer"));
-            ViewBag.Roles = new SelectList(dict, "RoleValue", "RoleText", userLeague.Roles);
             return View(userLeague);
         }
 
@@ -216,24 +197,28 @@ namespace Tournament.Controllers
             {
                 ViewBag.Message = "Record was delete by another user";
             }
-            try
+            else
             {
-                db.Entry(userLeague).Property("rowversion").OriginalValue = rowversion;
-                db.Entry(userLeague).State = EntityState.Deleted;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return RedirectToAction("Delete", new { concurrencyError = true, id = id });
-            }
-            catch (Exception dex)
-            {
-                //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
-                ViewBag.Error =
-                    "Unable to delete. Try again, and if the problem persists contact your system administrator.";
-                ErrorSignal.FromCurrentContext().Raise(dex);
+                try
+                {
+                    db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId));
+                    db.Entry(userLeague).Property("rowversion").OriginalValue = rowversion;
+                    db.Entry(userLeague).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    return RedirectToAction("Index","Home");
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    return RedirectToAction("Delete", new {concurrencyError = true, id = id});
+                }
+                catch (Exception dex)
+                {
+                    //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
+                    ViewBag.Error =
+                        "Unable to delete. Try again, and if the problem persists contact your system administrator.";
+                    ErrorSignal.FromCurrentContext().Raise(dex);
 
+                }
             }
             return View(userLeague);
         }

@@ -29,7 +29,13 @@ namespace Tournament.Controllers
         {
             var item = new League()
             {
-                Active = true
+                Active = true,
+                TiesAllowed = false,
+                PointsCount =  true,
+                WinPoints = 1,
+                TiePoints = 1,
+                ByePoints = 1,
+                TeamSize=2
             };
             
             return View(item);
@@ -194,10 +200,11 @@ namespace Tournament.Controllers
                     db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == league.id).ToList());
                     db.Players.RemoveRange(db.Players.Where(x => x.Leagueid == league.id).ToList());
                     db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == league.id).ToList());
+                    db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.LeagueId == id));
                     db.Entry(league).Property("rowversion").OriginalValue = rowversion;
                     db.Entry(league).State = EntityState.Deleted;
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index","Home");
                 }
                 catch (DbUpdateConcurrencyException)
                 {

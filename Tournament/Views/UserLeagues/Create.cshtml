@@ -2,6 +2,12 @@
 
 @{
     ViewBag.Title = "Create";
+    var dict = new List<SelectListItem>()
+    {
+        new SelectListItem() {Value = "", Text = "Observer"},
+        new SelectListItem() {Value = "Scorer", Text = "Scorer"},
+        new SelectListItem() {Value = "LeagueAdmin", Text = "League Administrator"}
+    }; 
 }
 
 <h2>Create</h2>
@@ -11,7 +17,7 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>User/League</h4>
+        <h4>User League</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model=>model.LeagueId)
@@ -26,14 +32,14 @@
         <div class="form-group">
             @Html.LabelFor(model => model.LeagueId, "League Name", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @HttpContext.Current.Session["LeagueName"].ToString()
+               @ViewBag.LeagueName
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Roles, "Role", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("Roles", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("Roles", dict, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Roles, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -47,5 +53,5 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {id=Model.LeagueId})
+    @Html.ActionLink("Back to List", "Index", new {id=ViewBag.LeagueId})
 </div>
