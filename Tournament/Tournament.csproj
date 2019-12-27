@@ -563,17 +563,29 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ReportFiles\Byes.rdlc">
+    <Content Include="ReportFiles\Byes.rdlc">
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ReportFiles\Empty.rdlc" />
-    <EmbeddedResource Include="ReportFiles\SingleTeams.rdlc" />
-    <EmbeddedResource Include="ReportFiles\PairsTeams.rdlc" />
-    <EmbeddedResource Include="ReportFiles\Standings.rdlc" />
-    <EmbeddedResource Include="ReportFiles\TriplesTeams.rdlc" />
-    <EmbeddedResource Include="ReportFiles\ScoreCard.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\Empty.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\SingleTeams.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\PairsTeams.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\Standings.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\TriplesTeams.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReportFiles\ScoreCard.rdlc">
       <SubType>Designer</SubType>
-    </EmbeddedResource>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

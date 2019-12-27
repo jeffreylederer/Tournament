@@ -189,9 +189,11 @@ namespace Tournament.Models
         [Display(Name = "User")]
         public int UserId { get; set; }
 
+        [Required]
         [Display(Name = "League Name")]
         public int LeagueId { get; set; }
 
+        [Required]
         [Display(Name = "Role")]
         public string Roles { get; set; }
 

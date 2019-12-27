@@ -136,7 +136,7 @@ namespace Tournament.Controllers
                 case "Scorer":
                     ViewBag.Info = "You are a league scorer";
                     break;
-                default:
+                case "Observer":
                     ViewBag.Info = "You are a league observer";
                     break;
             }

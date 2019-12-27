@@ -26,8 +26,7 @@
        
         <tr>
             <td>
-                @{var role =  string.IsNullOrWhiteSpace(item.Roles)?"Observer": item.Roles;}
-                @role
+                @Html.DisplayFor(modelItem => item.Roles)
             </td>
         
            

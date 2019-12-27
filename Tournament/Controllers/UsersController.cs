@@ -76,7 +76,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,username,password,Roles")] User user)
+        public ActionResult Edit([Bind(Include = "id,username,Roles")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -112,6 +112,7 @@ namespace Tournament.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             User user = db.Users.Find(id);
+            db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.UserId == id));
             db.Users.Remove(user);
             db.SaveChanges();
             return RedirectToAction("Index");

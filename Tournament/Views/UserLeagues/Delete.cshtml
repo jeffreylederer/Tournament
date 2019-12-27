@@ -17,8 +17,7 @@
         </dt>
 
         <dd>
-            @{var role =  string.IsNullOrWhiteSpace(Model.Roles)?"Observer": Model.Roles;}
-            @role
+            @Html.DisplayFor(model => model.Roles)
         </dd>
 
 

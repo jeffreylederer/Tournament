@@ -28,7 +28,7 @@
                 @Html.ValidationMessageFor(model => model.WeekNumber, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        <br/><br/>
         <div class="form-group">
             @Html.LabelFor(model => model.GameDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -67,8 +67,9 @@
             $('#GameDate').datepicker({
                 changeMonth: true,
                 changeYear: true,
-                format: "dd/mm/yyyy",
-                language: "tr"
+                showButtonPanel: true,
+                format: "mm/dd/yyyy",
+                language: "en"
             });
         });
     </script>

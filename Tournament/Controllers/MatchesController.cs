@@ -27,11 +27,29 @@ namespace Tournament.Controllers
             var leagueid = (int)HttpContext.Session["leagueid"];
             var league = db.Leagues.Find(leagueid);
             ViewBag.TeamSize = league.TeamSize;
+            
             if (!scheduleId.HasValue)
-                scheduleId = db.Schedules.Where(x => x.Leagueid == leagueid).First().id;
+            {
+
+                var count = db.Schedules.Where(x => x.Leagueid == leagueid).Count();
+                if (count > 0)
+                {
+                    scheduleId = db.Schedules.Where(x => x.Leagueid == leagueid).First().id;
+                }
+                else
+                {
+                    scheduleId = 0;
+                    ViewBag.Error = "No dates have been scheduled";
+                }
+
+            }
             var matches = db.Matches.Where(x => x.WeekId == scheduleId.Value && x.Rink != -1).OrderBy(x=>x.Rink);
             ViewBag.scheduleId = new SelectList(db.Schedules.Where(x=>x.Leagueid == leagueid).OrderBy(x=>x.WeekNumber).ToList(), "id", "WeekDate", scheduleId);
-            ViewBag.Date = db.Schedules.Find(scheduleId.Value).WeekDate;
+            if (scheduleId.Value > 0)
+                ViewBag.Date = db.Schedules.Find(scheduleId.Value).WeekDate;
+            else
+                ViewBag.Date = DateTime.Now.ToShortDateString();
+           
             ViewBag.WeekID = scheduleId;
             return View(matches);
 
