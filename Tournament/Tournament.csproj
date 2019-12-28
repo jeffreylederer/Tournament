@@ -434,7 +434,6 @@
     <Content Include="Models\TournamentModel.edmx.diagram">
       <DependentUpon>TournamentModel.edmx</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\BowlsTournaments - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\LawnBowlingMS - Web Deploy.pubxml" />
     <None Include="ReportFiles\TournamentDS.xsd">
       <SubType>Designer</SubType>
@@ -477,12 +476,6 @@
     </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -542,6 +535,9 @@
     <Content Include="Views\Shared\_LeagueLayout.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\GetSchedule\GenerateReport.cshtml" />
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
