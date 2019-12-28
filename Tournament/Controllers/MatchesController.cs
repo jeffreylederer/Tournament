@@ -162,8 +162,13 @@ namespace Tournament.Controllers
                 ViewBag.Error = $"No matches were created, Error {e.Message}";
                 return View(new List<Player>());
             }
-            var round1 = db.Schedules.Where(x => x.Leagueid == leagueid).First();
-            return RedirectToAction("index", new { scheduleid = round1.id });
+            var rounds = db.Schedules.Where(x => x.Leagueid == leagueid);
+            if (!rounds.Any())
+            {
+                ViewBag.Error = "No matches created becuse no weeks have been scheduled";
+                return View(missing);
+            }
+            return RedirectToAction("index", new { scheduleid = rounds.First().id});
         }
 
         private bool Complete(int leagueid)
