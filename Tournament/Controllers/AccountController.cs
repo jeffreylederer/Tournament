@@ -92,7 +92,7 @@ namespace Tournament.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult ChangePassword()
         {
             var item = new ChangePasswordViewModel()
