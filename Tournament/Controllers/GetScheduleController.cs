@@ -124,7 +124,7 @@ namespace Tournament.Controllers
                     var rinklist = RinkList[index];
                     
                     topLine.AppendLine($"<td>{week.WeekNumber}</td>");
-                    topLine.AppendLine($"<td>{week.GameDate.Month}/{week.GameDate.Day}</td>");
+                    topLine.AppendLine($"<td>'{week.GameDate.Month}/{week.GameDate.Day}'</td>");
                     topLine.AppendLine($"<td>{rinklist.Green}</td>");
                     topLine.AppendLine($"<td>{rinklist.Direction}</td>");
                     topLine.AppendLine($"<td>{rinklist.Boundary}</td>");
@@ -133,7 +133,7 @@ namespace Tournament.Controllers
                     foreach (var match in matches)
                     {
                         if (match.Rink != -1)
-                            topLine.AppendLine($"<td>{match.Team.TeamNo}-{match.Team1.TeamNo}</td>");
+                            topLine.AppendLine($"<td>'{match.Team.TeamNo}-{match.Team1.TeamNo}'</td>");
                         
                     }
                      topLine.AppendLine("</tr>");
