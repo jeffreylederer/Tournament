@@ -16,7 +16,7 @@
     <h4>Team</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model=>model.Leagueid)
+    @Html.HiddenFor(model => model.Leagueid)
     <div class="form-group">
         @Html.LabelFor(model => model.TeamNo, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
@@ -29,7 +29,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Skip, "Skip", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Skip, new SelectList(ViewBag.List, "id", "FullName", Model.Skip),"--Select Skip--", htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.Skip, new SelectList(ViewBag.List, "id", "FullName", Model.Skip), " ", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Skip, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -41,7 +41,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ViceSkip, "Vice Skip", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.ViceSkip, new SelectList(ViewBag.List, "id", "FullName", Model.ViceSkip), "--Select Vice Skip--", htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.ViceSkip, new SelectList(ViewBag.List, "id", "FullName", Model.ViceSkip), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.ViceSkip, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -59,7 +59,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Lead, "Lead", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.Lead, new SelectList(ViewBag.List, "id", "FullName", Model.Lead), "--Select Lead--", htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.Lead, new SelectList(ViewBag.List, "id", "FullName", Model.Lead), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Lead, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -70,14 +70,17 @@
             @Html.HiddenFor(model => model.Lead)
         }
     }
+   
 
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
         </div>
-    </div>
 </div>
 }
+
+<p class="h4">You can leave some positions open while considering the makeup of the teams</p>
 
 <h2>Teams So Far</h2>
 <table class="table-condensed table-striped">
