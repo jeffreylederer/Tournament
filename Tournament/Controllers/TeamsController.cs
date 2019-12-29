@@ -78,25 +78,24 @@ namespace Tournament.Controllers
         public ActionResult Create()
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
-            var items = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.TeamNo).ToList();
             int TeamNo = 1;
-            if (items.Any())
+            var list = db.Teams.Where(x => x.Leagueid == leagueid).ToList().OrderBy(x=>x.TeamNo).ToList();
+            
+            if (list.Any())
             {
-                items.Sort((a, b) => a.TeamNo.CompareTo(b.TeamNo));
-                TeamNo = items[items.Count - 1].TeamNo + 1;
+                TeamNo = list.Last().TeamNo + 1;
             }
-
             var team = new Team()
             {
                 TeamNo = TeamNo,
-                Leagueid = leagueid
+                Leagueid = leagueid,
+                Skip=0,
+                ViceSkip = 0,
+                Lead=0
             };
-
-            var teams = db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
-            var list = RemainingPlayers(team, teams);
-            
-            ViewBag.List = list;
+            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             ViewBag.Teams = teams;
+            ViewBag.List = RemainingPlayers(team, teams.ToList());
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
             return View(team);
         }
@@ -109,8 +108,13 @@ namespace Tournament.Controllers
         public ActionResult Create([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo")] Team team)
         {
             var leagueid = (int)HttpContext.Session["leagueid"];
+            team.Skip = team.Skip == 0 ? (int ?) null : team.Skip;
+            team.ViceSkip = team.ViceSkip == 0 ? (int?)null : team.ViceSkip;
+            team.Lead = team.Lead == 0 ? (int?)null : team.Lead;
             if (ModelState.IsValid)
             {
+                
+
                     db.Teams.Add(team);
                     try
                     {
@@ -142,7 +146,7 @@ namespace Tournament.Controllers
 
             }
             var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
-            var list = RemainingPlayers(team, teams);
+            var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
@@ -167,7 +171,7 @@ namespace Tournament.Controllers
             }
             var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
 
-            var list = RemainingPlayers(team, teams);
+            var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"]; 
@@ -188,6 +192,9 @@ namespace Tournament.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    team.Skip = team.Skip == 0 ? (int?)null : team.Skip;
+                    team.ViceSkip = team.ViceSkip == 0 ? (int?)null : team.ViceSkip;
+                    team.Lead = team.Lead == 0 ? (int?)null : team.Lead;
                     if (CheckTeam(team))
                     {
                         ModelState.AddModelError(string.Empty,
@@ -244,7 +251,7 @@ namespace Tournament.Controllers
 
             var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
 
-            var list = RemainingPlayers(team, teams);
+            var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
@@ -306,6 +313,12 @@ namespace Tournament.Controllers
             {
                 db.Entry(team).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(team).State = EntityState.Deleted;
+                int teamno = 1;
+                foreach(var item in db.Teams.Where(x=>x.Leagueid==team.Leagueid && x.id != team.id).OrderBy(x=>x.TeamNo))
+                {
+                    item.TeamNo = teamno++;
+                    db.Entry(item).State = EntityState.Modified;
+                }
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -332,7 +345,7 @@ namespace Tournament.Controllers
         /// <param name="leagueid">league number</param>
         /// <param name="teams">order list of all teas</param>
         /// <returns></returns>
-        private List<PlayerViewModel> RemainingPlayers(Team team, IOrderedQueryable<Team> teams)
+        private List<PlayerViewModel> RemainingPlayers(Team team, List<Team> teams)
         {
             var list = new List<PlayerViewModel>();
             foreach (var player in db.Players.Where(x => x.Leagueid == team.Leagueid))
@@ -380,7 +393,11 @@ namespace Tournament.Controllers
                     });
                 }
             }
-
+            list.Add(new PlayerViewModel()
+            {
+                id = 0,
+                LastName = ""
+            });
             list.Sort((a, b) => String.Compare(a.LastName, b.LastName, StringComparison.Ordinal));
             return list;
         }

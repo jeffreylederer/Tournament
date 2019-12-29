@@ -30,25 +30,24 @@ namespace Tournament.Controllers
         // GET: Schedules/Create
         public ActionResult Create()
         {
-            var id =1;
             var leagueid = (int)this.HttpContext.Session["leagueid"];
             DateTime date = DateTime.Now;
-            var items = db.Schedules.Where(x=>x.Leagueid==leagueid).OrderByDescending(x => x.WeekNumber);
-            if (items.Count() > 0)
+            int WeekNumber = 1;
+            var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.GameDate).ToList();
+            if (list.Any())
             {
-                date = items.First().GameDate.AddDays(7);
-                id=items.Max(x => x.WeekNumber)+1;
+                WeekNumber = list.Last().WeekNumber + 1;
+                date = list.Last().GameDate.AddDays(7);
             }
-
-            var item = new Schedule()
+            var schedule = new Schedule()
             {
-                WeekNumber = id,
+                WeekNumber = WeekNumber,
                 GameDate = date,
                 Leagueid = leagueid,
                 Cancelled = false
             };
-
-            return View(item);
+            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.GameDate);
+            return View(schedule);
         }
 
         // POST: Schedules/Create
@@ -60,11 +59,31 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Schedules.Add(schedule);
+                int WeekNumber = 1;
                 try
                 {
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    if (ModelState.IsValid)
+                    {
+                        var list = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).ToList();
+                        if(list.Any(x=>x.GameDate == schedule.GameDate))
+                        {
+                            ModelState.AddModelError(string.Empty,"Insert failed, Game date already in list");
+                        }
+                        list.Add(schedule);
+                        list.Sort((a, b) => a.GameDate.CompareTo(b.GameDate));
+                        foreach (var item in list)
+                        {
+                            item.WeekNumber = WeekNumber++;
+                            if (item.GameDate == schedule.GameDate)
+                                db.Schedules.Add(item);
+                            else
+                            {
+                                db.Entry(item).State = EntityState.Modified;
+                            }
+                        }
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
                 {
@@ -80,7 +99,7 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Insert failed");
                 }
             }
-
+            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).OrderBy(x => x.GameDate);
             return View(schedule);
         }
 
@@ -97,7 +116,7 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-
+            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).OrderBy(x => x.GameDate);
             return View(schedule);
         }
 
@@ -162,7 +181,7 @@ namespace Tournament.Controllers
                     $"Unable to save changes. {dex.Message}");
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
-
+            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).OrderBy(x => x.GameDate);
             return View(schedule);
         }
 
@@ -216,10 +235,18 @@ namespace Tournament.Controllers
             }
             try
             {
+                var list = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid && x.GameDate != schedule.GameDate)
+                    .OrderBy(x => x.GameDate);
                 db.Entry(schedule).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(schedule).State = EntityState.Deleted;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                int WeekNo = 1;
+                foreach (var item in list)
+                {
+                    item.WeekNumber = WeekNo++;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+               db.SaveChanges();
+               return RedirectToAction("Index");
             }
             catch (DbUpdateConcurrencyException ex)
             {

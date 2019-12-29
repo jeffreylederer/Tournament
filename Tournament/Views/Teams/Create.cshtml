@@ -1,4 +1,5 @@
-﻿@model Tournament.Models.Team
+﻿@using Newtonsoft.Json.Linq
+@model Tournament.Models.Team
 
 @{
     ViewBag.Title = "Create";
@@ -17,11 +18,11 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.Leagueid)
+    @Html.HiddenFor(model=>model.TeamNo);
     <div class="form-group">
         @Html.LabelFor(model => model.TeamNo, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.TeamNo, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.TeamNo, "", new { @class = "text-danger" })
+            @Html.DisplayFor(model => model.TeamNo, new { htmlAttributes = new { @class = "form-control" } })
         </div>
     </div>
 
@@ -29,7 +30,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Skip, "Skip", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Skip, new SelectList(ViewBag.List, "id", "FullName", Model.Skip), " ", htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.Skip, new SelectList(ViewBag.List, "id", "FullName",Model.Skip), htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Skip, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -41,7 +42,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ViceSkip, "Vice Skip", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.ViceSkip, new SelectList(ViewBag.List, "id", "FullName", Model.ViceSkip), " ", htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.ViceSkip, new SelectList(ViewBag.List, "id", "FullName",Model.ViceSkip), htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.ViceSkip, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -59,7 +60,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Lead, "Lead", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.Lead, new SelectList(ViewBag.List, "id", "FullName", Model.Lead), " ", htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.Lead, new SelectList(ViewBag.List, "id", "FullName",Model.Lead),  htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Lead, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -81,6 +82,10 @@
 }
 
 <p class="h4">You can leave some positions open while considering the makeup of the teams</p>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
 
 <h2>Teams So Far</h2>
 <table class="table-condensed table-striped">
@@ -141,8 +146,6 @@
         </tr>
     }
 </table>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 

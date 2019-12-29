@@ -20,15 +20,15 @@
         @Html.HiddenFor(model => model.id)
         @Html.HiddenFor(model => model.Leagueid)
         @Html.HiddenFor(model => model.rowversion)
+        @Html.HiddenFor(model => model.WeekNumber)
 
         <div class="form-group">
             @Html.LabelFor(model => model.WeekNumber, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.WeekNumber, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.WeekNumber, "", new { @class = "text-danger" })
+                @Html.DisplayFor(model => model.WeekNumber, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        <br/><br/>
+        <br /><br />
         <div class="form-group">
             @Html.LabelFor(model => model.GameDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -54,10 +54,43 @@
         </div>
     </div>
 }
-
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+<h2>Schedule So Far</h2>
+<table class="table-condensed table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.WeekNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GameDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cancelled)
+        </th>
+    </tr>
+
+    @foreach (var item in (IEnumerable<Tournament.Models.Schedule>)ViewBag.Schedule)
+    {
+        <tr>
+            <th>
+                @Html.DisplayFor(modelItem => item.WeekNumber)
+            </th>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cancelled)
+            </td>
+
+
+
+        </tr>
+    }
+</table>
+
 
 @section Scripts {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" type="text/css" />

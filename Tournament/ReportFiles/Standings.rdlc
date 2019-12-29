@@ -959,9 +959,6 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox17</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Parameters!TiesAllowed.Value="0"</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -994,9 +991,6 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox21</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Parameters!IsBye.Value="0"</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -1214,9 +1208,6 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Ties</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Parameters!TiesAllowed.Value="0"</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -1247,9 +1238,6 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Byes</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Parameters!IsBye.Value="0"</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -1304,8 +1292,16 @@
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
-                <TablixMember />
-                <TablixMember />
+                <TablixMember>
+                  <Visibility>
+                    <Hidden>=Parameters!TiesAllowed.Value="0"</Hidden>
+                  </Visibility>
+                </TablixMember>
+                <TablixMember>
+                  <Visibility>
+                    <Hidden>=Parameters!IsBye.Value="1"</Hidden>
+                  </Visibility>
+                </TablixMember>
                 <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
@@ -1584,7 +1580,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>

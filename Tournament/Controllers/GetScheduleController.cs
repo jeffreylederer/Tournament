@@ -34,12 +34,12 @@ namespace Tournament.Controllers
                 topLine.AppendLine("<th>GRN</th>");
                 topLine.AppendLine("<th>DIR</th>");
                 topLine.AppendLine("<th>Bound</th>");
-                if (db.Matches.Where(x => x.Rink == -1).Any())
+                if (db.Matches.Any(x => x.Rink == -1))
                     topLine.AppendLine("<th>Bye</th>");
 
                 for (var rink = 0; rink < rinks; rink++)
                 {
-                    topLine.AppendLine($"<th>{rink + 1}</th>");
+                    topLine.AppendLine($"<th align='center'>{rink + 1}</th>");
                 }
                 topLine.AppendLine("</thead>");
 
@@ -124,7 +124,7 @@ namespace Tournament.Controllers
                     var rinklist = RinkList[index];
                     
                     topLine.AppendLine($"<td>{week.WeekNumber}</td>");
-                    topLine.AppendLine($"<td>'{week.GameDate.Month}/{week.GameDate.Day}'</td>");
+                    topLine.AppendLine($"<td>{week.GameDate.Month}/{week.GameDate.Day}</td>");
                     topLine.AppendLine($"<td>{rinklist.Green}</td>");
                     topLine.AppendLine($"<td>{rinklist.Direction}</td>");
                     topLine.AppendLine($"<td>{rinklist.Boundary}</td>");
@@ -133,7 +133,7 @@ namespace Tournament.Controllers
                     foreach (var match in matches)
                     {
                         if (match.Rink != -1)
-                            topLine.AppendLine($"<td>'{match.Team.TeamNo}-{match.Team1.TeamNo}'</td>");
+                            topLine.AppendLine($"<td>{match.Team.TeamNo}-{match.Team1.TeamNo}</td>");
                         
                     }
                      topLine.AppendLine("</tr>");
