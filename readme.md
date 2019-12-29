@@ -20,9 +20,9 @@ Site administrators can assign other users to a league. A non-site administrativ
    
 - **Scorer** can view all items associated with that league, edit scores for matches in that league and run all reports.
    
- - **Observer** can view all items associated with the league and run all reports.
+- **Observer** can view all items associated with the league and run all reports.
    
- A league cannot be deleted if there are any players or scheduled weeks assigned to that league.
+A league cannot be deleted if there are any players or scheduled weeks assigned to that league.
 
 Each league has the following properties:
 
@@ -38,7 +38,7 @@ Each league has the following properties:
 
 - Bye Multiplier – how many points a bye is worth to the team with a bye in the standings.
 
-- Loses are always worth 0 points
+- Loses are always worth 0 points. Forfeits is a losa for the team that forfeits and a win for the other team.
 
 A league’s properties can only be set when the league is created. The only property that can be changed later is the league’s title.
 
@@ -69,8 +69,6 @@ A scheduled week cannot be deleted if there are one or more matches scheduled fo
 Players are assigned to a league by selecting a member from the membership list. The same member cannot be assigned to the same league more than once. You can edit the player by selecting another player from the list of members. By making the change, that newly selected member will be automatically substituted for the original player on teams and matches.
 
 A player cannot be deleted from a league’s player list once that player is assigned to a team.
-
-<![endif]-->
 
 # Teams
 
