@@ -18,8 +18,8 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var username = (string) HttpContext.Session["user"];
-            if(HttpContext.Session["teamsize"] != null)
+            var username = User.Identity.Name;
+            if (HttpContext.Session["teamsize"] != null)
                 HttpContext.Session["teamsize"] = null;
 
             if (HttpContext.Session["leaguename"] != null)
@@ -27,9 +27,6 @@ namespace Tournament.Controllers
 
             if (HttpContext.Session["leagueid"] != null)
                 HttpContext.Session["leagueid"] = null;
-
-            if (HttpContext.Session["role"] != null)
-                HttpContext.Session["role"] = null;
 
             var user = db.Users.Where(x => x.username == username).First();
             ViewBag.Error = "";
@@ -65,12 +62,12 @@ namespace Tournament.Controllers
         /// <returns></returns>
         public ActionResult Register(int? id)
         {
+            var username = User.Identity.Name;
             if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var username = (string)HttpContext.Session["user"];
             var user = db.Users.Where(x => x.username == username).First();
             if(user == null)
             {
@@ -101,8 +98,7 @@ namespace Tournament.Controllers
             HttpContext.Session["teamsize"] = league.TeamSize;
             HttpContext.Session["leaguename"] = league.LeagueName;
             HttpContext.Session["leagueid"] = id.Value;
-            HttpContext.Session["role"] = role;
-
+  
 
             FormsAuthentication.SetAuthCookie(user.username, false);
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
@@ -125,21 +121,14 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult Welcome()
         {
-            switch (HttpContext.Session["role"].ToString())
-            {
-                case "Admin":
-                    ViewBag.Info = "You are a site administrator";
-                    break;
-                case "LeagueAdmin":
-                    ViewBag.Info = "You are a league administrator";
-                    break;
-                case "Scorer":
-                    ViewBag.Info = "You are a league scorer";
-                    break;
-                case "Observer":
-                    ViewBag.Info = "You are a league observer";
-                    break;
-            }
+            if(User.IsInRole("Admin"))
+                ViewBag.Info = "You are a site administrator";
+            else if(User.IsInRole("LeagueAdmin"))
+                ViewBag.Info = "You are a league administrator";
+            else if(User.IsInRole("Scorer"))
+                ViewBag.Info = "You are a league scorer";
+            else
+                ViewBag.Info = "You are a league observer";
             return View();
         }
 

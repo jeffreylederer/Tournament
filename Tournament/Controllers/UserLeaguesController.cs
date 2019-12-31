@@ -38,8 +38,8 @@ namespace Tournament.Controllers
         {
             var league = db.Leagues.Find(id);
             ViewBag.LeagueName = league.LeagueName;
-            var list = db.Users.Where(x=>x.Roles != "Mailer" || x.Roles != "Admin" ).ToList();
-            foreach (var userLeague in db.UserLeagues.Where(x=>x.LeagueId == id))
+            var list = db.Users.Where(x => x.Roles != "Mailer" && x.Roles != "Admin").ToList();
+            foreach (var userLeague in db.UserLeagues.Where(x=>x.LeagueId==id))
             {
                 if(list.Any(x=>x.id == userLeague.UserId))
                     list.RemoveAll(x => x.id == userLeague.UserId);
@@ -107,7 +107,7 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
+            ViewBag.LeagueName = userLeague.League.LeagueName;
             return View(userLeague);
         }
 
@@ -168,7 +168,6 @@ namespace Tournament.Controllers
                     "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
-            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
             return View(userLeague);
         }
 
@@ -198,7 +197,6 @@ namespace Tournament.Controllers
                                                   + "record, click the Delete button again. Otherwise "
                                                   + "click the Back to List hyperlink.";
             }
-
             return View(userLeague);
         }
 

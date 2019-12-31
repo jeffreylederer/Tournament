@@ -70,7 +70,6 @@ namespace Tournament.Controllers
                     //{
                     //    return RedirectToAction("Index", "Home");
                     //}
-                    HttpContext.Session["user"] = username;
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -180,7 +179,7 @@ namespace Tournament.Controllers
                 var toEmail = new MailAddress(forgotPassword.EmailId);
                 var fromEmailPassword = emailUser.password; 
 
-                var subject = "Reset Password for League Application";
+                var subject = "Reset Password for Lawn Bowling League Management Application";
                 var body =
                     $"Hi,<br/><br/>We got request for reset your account password. Please click on the below link to reset your password<br/><br/><a href={link}>Reset Password link</a>";
                 using (var smtp = new SmtpClient())

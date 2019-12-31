@@ -37,8 +37,8 @@
                                 <li>@Html.ActionLink("Schedule Report", "GenerateReport", "GetSchedule")</li>
 
 
-                                @if (HttpContext.Current.User.IsInRole("Admin") ||
-                                     HttpContext.Current.User.IsInRole("LeagueAdmin"))
+                                @if (User.IsInRole("Admin") ||
+                                     User.IsInRole("LeagueAdmin"))
                                 {
                                     <li>----------------------------</li>
                                     <li>@Html.ActionLink("Create Matches", "CreateMatches", "Matches")</li>
@@ -50,7 +50,7 @@
 
 
 
-                    @if (HttpContext.Current.User.IsInRole("Admin"))
+                    @if (User.IsInRole("Admin"))
                     {
                         <li class="menu-item dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>

@@ -36,8 +36,8 @@
     <tr>
         <th>
             @{
-                if (HttpContext.Current.User.IsInRole("Admin") ||
-                    HttpContext.Current.User.IsInRole("LeagueAdmin"))
+                if (User.IsInRole("Admin") ||
+                    User.IsInRole("LeagueAdmin"))
                 {
                     @Html.Raw("Exchange Rink")
                 }
@@ -70,8 +70,8 @@
         <tr>
             <td>
                 @{
-                    if (id > 0 && (HttpContext.Current.User.IsInRole("Admin") ||
-                                    HttpContext.Current.User.IsInRole("LeagueAdmin")))
+                    if (id > 0 && (User.IsInRole("Admin") ||
+                                    User.IsInRole("LeagueAdmin")))
                     {
                         @Html.ActionImage("MoveUp", new { id = item.id }, "~/Content/Images/uparrow.png", "Move Up one rink");
                     }
@@ -163,8 +163,8 @@
             </td>
             <td>
                 @{
-                    if (HttpContext.Current.User.IsInRole("Admin") ||
-                        HttpContext.Current.User.IsInRole("LeagueAdmin") ||
+                    if (User.IsInRole("Admin") ||
+                        User.IsInRole("LeagueAdmin") ||
                         HttpContext.Current.User.IsInRole("Scorer"))
                     {
                         @Html.ActionLink("Scoring", "Scoring", new { id = item.id })
