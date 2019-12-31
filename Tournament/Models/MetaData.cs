@@ -218,4 +218,27 @@ namespace Tournament.Models
         [Timestamp]
         public byte[] rowversion { get; set; }
     }
+
+    [MetadataType(typeof(RinkOrderMetaData))]
+    public partial class RinkOrder
+    {
+    }
+    public partial class RinkOrderMetaData
+    {
+        [Required]
+        [Display(Name = "Rink Order")]
+        public int id { get; set; }
+
+        [Required]
+        public string Green { get; set; }
+
+        [Required]
+        public string Direction { get; set; }
+
+        [Required]
+        public string Boundary { get; set; }
+
+        [Timestamp]
+        public byte[] rowversion { get; set; }
+    }
 }

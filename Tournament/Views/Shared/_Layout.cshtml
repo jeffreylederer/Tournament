@@ -35,7 +35,7 @@
                                 <li>@Html.ActionLink("Matches", "Index", "Matches")</li>
                                 <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches")</li>
                                 <li>@Html.ActionLink("Schedule Report", "GenerateReport", "GetSchedule")</li>
-
+                                
 
                                 @if (User.IsInRole("Admin") ||
                                      User.IsInRole("LeagueAdmin"))
@@ -57,6 +57,7 @@
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Users", "Index", "Users")</li>
                                 <li>@Html.ActionLink("Leagues", "Index", "Leagues")</li>
+                                <li>@Html.ActionLink("Rinks", "Index", "RinkOrders")</li>
                                 <li>@Html.ActionLink("Error Log", "Index", "Elmah", new { type = "" }, new { target = "_blank" })</li>
                             </ul>
                         </li>

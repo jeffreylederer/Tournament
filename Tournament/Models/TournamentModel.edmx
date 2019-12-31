@@ -56,6 +56,16 @@
           <Property Name="MembershipId" Type="int" Nullable="false" />
           <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
+        <EntityType Name="RinkOrder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="Green" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="Direction" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="Boundary" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="id" />
@@ -252,6 +262,7 @@
           <EntitySet Name="Match" EntityType="Self.Match" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Membership" EntityType="Self.Membership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RinkOrder" EntityType="Self.RinkOrder" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Team" EntityType="Self.Team" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
@@ -632,6 +643,7 @@
           <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
           <Parameter Name="WeekId" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="RinkOrders" EntityType="TournamentModel.RinkOrder" />
         </EntityContainer>
         <ComplexType Name="GetMatchAll_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -646,6 +658,16 @@
           <Property Type="String" Name="Date" Nullable="true" MaxLength="10" />
           <Property Type="Int32" Name="Rink" Nullable="false" />
         </ComplexType>
+        <EntityType Name="RinkOrder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="Green" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Direction" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Boundary" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="rowversion" Type="Binary" Nullable="false" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -772,6 +794,17 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="RinkOrders">
+            <EntityTypeMapping TypeName="TournamentModel.RinkOrder">
+              <MappingFragment StoreEntitySet="RinkOrder">
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="Boundary" ColumnName="Boundary" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="Green" ColumnName="Green" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

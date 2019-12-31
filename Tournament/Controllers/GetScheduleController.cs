@@ -11,6 +11,8 @@ namespace Tournament.Controllers
     // GET: GetSchedule
     public class GetScheduleController : Controller
     {
+        private TournamentEntities db = new TournamentEntities();
+
         /// <summary>
         /// Gets the object to be serialized to XML.
         /// </summary>
@@ -18,14 +20,14 @@ namespace Tournament.Controllers
         {
             var topLine = new StringBuilder();
 
-            var leagueid = (int)HttpContext.Session["leagueid"];
+            var leagueid = (int) HttpContext.Session["leagueid"];
             var teamsize = (int) HttpContext.Session["teamsize"];
             using (var db = new TournamentEntities())
             {
                 topLine.AppendLine("<table class='table table-striped table-sm'>");
 
-                var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.TeamNo).ToList();
-                
+                var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo).ToList();
+
 
                 var rinks = teams.Count / 2;
                 topLine.AppendLine("<thead class='thead dark'>");
@@ -43,100 +45,38 @@ namespace Tournament.Controllers
                 }
                 topLine.AppendLine("</thead>");
 
-                var RinkList = new List<Rink>()
-                {
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "E-W",
-                        Boundary = "Red"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "N-S",
-                        Boundary = "Red"
-                    },
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "N-S",
-                        Boundary = "White"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "E-W",
-                        Boundary = "White"
-                    },
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "N-S",
-                        Boundary = "Yellow"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "E-W",
-                        Boundary = "Yellow"
-                    },
-
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "N-S",
-                        Boundary = "Red"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "N-S",
-                        Boundary = "White"
-                    },
-                    new Rink()
-                    {
-                        Green = "Luba",
-                        Direction = "E-W",
-                        Boundary = "Yellow"
-                    },
-                    new Rink()
-                    {
-                        Green = "Phillips",
-                        Direction = "N-S",
-                        Boundary = "Yellow"
-                    }
-                };
+                var RinkList = db.RinkOrders.OrderBy(x => x.id).ToList();
+                
 
 
                 var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.WeekNumber);
 
                 int i = teamsize - 1;
-                 foreach (Schedule week in weeks)
-                 {
+                foreach (Schedule week in weeks)
+                {
                     topLine.AppendLine("<tr>");
                     var matches = db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink).ToList();
                     var matchesByes = db.Matches.Where(x => x.Rink == -1 && x.WeekId == week.id).ToList();
-                     
 
-                    int index = i % RinkList.Count();
+
+                    int index = i % RinkList.Count;
                     i++;
-                    var rinklist = RinkList[index];
-                    
+                    var rinklist = RinkList.Find(x => x.id == index);
+
                     topLine.AppendLine($"<td>{week.WeekNumber}</td>");
                     topLine.AppendLine($"<td>{week.GameDate.Month}/{week.GameDate.Day}</td>");
                     topLine.AppendLine($"<td>{rinklist.Green}</td>");
                     topLine.AppendLine($"<td>{rinklist.Direction}</td>");
                     topLine.AppendLine($"<td>{rinklist.Boundary}</td>");
-                     if (matchesByes.Any())
-                         topLine.AppendLine($"<td>{matchesByes.First().Team.TeamNo}</td>");
+                    if (matchesByes.Any())
+                        topLine.AppendLine($"<td>{matchesByes.First().Team.TeamNo}</td>");
                     foreach (var match in matches)
                     {
                         if (match.Rink != -1)
                             topLine.AppendLine($"<td>{match.Team.TeamNo}-{match.Team1.TeamNo}</td>");
-                        
+
                     }
-                     topLine.AppendLine("</tr>");
+                    topLine.AppendLine("</tr>");
                 }
                 topLine.AppendLine("</table>");
                 ViewBag.Report = topLine.ToString();
@@ -144,13 +84,15 @@ namespace Tournament.Controllers
             return View();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
     }
 
-    internal class Rink
-    {
-        public string Green { get; set; }
-        public string Direction { get; set; }
-        public string Boundary { get; set; }
-    }
 }

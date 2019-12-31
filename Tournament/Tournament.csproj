@@ -214,6 +214,7 @@
     <Compile Include="Controllers\LeaguesController.cs" />
     <Compile Include="Controllers\MembershipController.cs" />
     <Compile Include="Controllers\PlayersController.cs" />
+    <Compile Include="Controllers\RinkOrdersController.cs" />
     <Compile Include="Controllers\SchedulesController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
     <Compile Include="Controllers\MatchesController.cs" />
@@ -222,6 +223,9 @@
     <Compile Include="Extensions\HtmlHelperExtension.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RinkOrder.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ChangePasswordViewModel.cs" />
     <Compile Include="ViewModel\ForgotPasswordViewModel.cs" />
@@ -536,6 +540,10 @@
     <Content Include="Views\Shared\_LeagueLayout.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\GetSchedule\GenerateReport.cshtml" />
+    <Content Include="Views\RinkOrders\Create.cshtml" />
+    <Content Include="Views\RinkOrders\Delete.cshtml" />
+    <Content Include="Views\RinkOrders\Edit.cshtml" />
+    <Content Include="Views\RinkOrders\Index.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
