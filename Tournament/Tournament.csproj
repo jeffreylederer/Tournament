@@ -207,6 +207,7 @@
     <Compile Include="Code\Crypto.cs" />
     <Compile Include="Code\Secret.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ElmahController.cs" />
     <Compile Include="Controllers\ElmanResult.cs" />
     <Compile Include="Controllers\GetScheduleController.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Models\League.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\UserLeagueViewModel.cs" />
     <Compile Include="ViewModel\LeagueViewModel.cs" />
     <Compile Include="ViewModel\LogUserViewModel.cs" />
     <Compile Include="Models\Match.cs">
@@ -541,6 +543,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\Elmah\" />
   </ItemGroup>
   <ItemGroup>

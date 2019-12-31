@@ -1,28 +1,28 @@
-﻿@model IEnumerable<Tournament.Models.UserLeague>
+﻿@model Tournament.Models.UserLeagueViewModel
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Users of @ViewBag.LeagueName</h2>
+<h2>Users of @Model.LeagueName</h2>
 
 <p>
-    @Html.ActionLink("Add User", "Create", new {id=ViewBag.LeagueId})
+    @Html.ActionLink("Add User", "Create", new {id=Model.leagueid})
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Roles)
+            @Html.DisplayNameFor("Role")
         </th>
         
         
         <th>
-            @Html.DisplayNameFor(model => model.User.username)
+            @Html.DisplayNameFor("League Name")
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model) {
+    @foreach (var item in Model.userLeagues) {
        
         <tr>
             <td>

@@ -22,9 +22,14 @@ namespace Tournament.Controllers
         public ActionResult Index(int id)
         {
             var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
-            ViewBag.LeagueId = id;
             ViewBag.LeagueName = db.Leagues.Find(id).LeagueName;
-            return View(userLeagues.ToList());
+            var model = new UserLeagueViewModel()
+            {
+                LeagueName = db.Leagues.Find(id).LeagueName,
+                leagueid = id,
+                userLeagues = userLeagues
+            };
+            return View(model);
         }
 
         
@@ -33,7 +38,6 @@ namespace Tournament.Controllers
         {
             var league = db.Leagues.Find(id);
             ViewBag.LeagueName = league.LeagueName;
-            ViewBag.LeagueId = league.id;
             var list = db.Users.Where(x=>x.Roles != "Mailer" || x.Roles != "Admin" ).ToList();
             foreach (var userLeague in db.UserLeagues.Where(x=>x.LeagueId == id))
             {
@@ -88,7 +92,6 @@ namespace Tournament.Controllers
             ViewBag.UserId = new SelectList(list, "id", "username");
             var league = db.Leagues.Find(userLeague.LeagueId);
             ViewBag.LeagueName = league.LeagueName;
-            ViewBag.LeagueId = league.id;
             return View(userLeague);
         }
 
@@ -165,7 +168,7 @@ namespace Tournament.Controllers
                     "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
-  
+            ViewBag.UserId = new SelectList(db.Users.Where(x => x.Roles != "Mailer").ToList(), "id", "username", userLeague.UserId);
             return View(userLeague);
         }
 
@@ -207,7 +210,7 @@ namespace Tournament.Controllers
             var userLeague = db.UserLeagues.Find(id);
             if (userLeague == null)
             {
-                ViewBag.Message = "Record was delete by another user";
+                ViewBag.Error = "Record was delete by another user";
             }
             else
             {
