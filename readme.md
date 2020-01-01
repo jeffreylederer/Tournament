@@ -26,6 +26,8 @@ A league cannot be deleted if there are any players or scheduled weeks assigned 
 
 Each league has the following properties:
 
+- Start Week - Which order of play week item for the first week of the league. See Order of play chapter below.
+
 - Team Size – how many players on each team
 
 - Allowed Ties – if matches can end in a tie score.
@@ -51,6 +53,11 @@ If points scored are allowed to help determine standings, then the total points 
 - For byes, the team with a bye is awarded the average winning score of all played games that week for determining standings.
 
 - For forfeits, the team not forfeiting is awarded the average winning score of all played games that week for determining standings. The forfeiting team receives no scored points for that week.
+
+# Order of Play
+
+This a list of Greens, Rink Boundary Marker, and Direction for each week of play. The idea is that each week the teams playing use different rinks in order to minimize the wear on any set of rinks.
+
 
 # Membership
 
