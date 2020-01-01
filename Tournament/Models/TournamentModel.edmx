@@ -1,0 +1,918 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="League">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LeagueName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="TeamSize" Type="int" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="TiesAllowed" Type="bit" Nullable="false" />
+          <Property Name="PointsCount" Type="bit" Nullable="false" />
+          <Property Name="WinPoints" Type="smallint" Nullable="false" />
+          <Property Name="TiePoints" Type="smallint" Nullable="false" />
+          <Property Name="ByePoints" Type="smallint" Nullable="false" />
+          <Property Name="StartWeek" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Match">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WeekId" Type="int" Nullable="false" />
+          <Property Name="Rink" Type="int" Nullable="false" />
+          <Property Name="TeamNo1" Type="int" Nullable="false" />
+          <Property Name="TeamNo2" Type="int" />
+          <Property Name="Team1Score" Type="int" Nullable="false" />
+          <Property Name="Team2Score" Type="int" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="ForFeitId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Membership">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FullName" Type="varchar" MaxLength="101" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="shortname" Type="varchar" MaxLength="25" />
+          <Property Name="NickName" Type="varchar" MaxLength="50" StoreGeneratedPattern="Computed" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="Wheelchair" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Leagueid" Type="int" Nullable="false" />
+          <Property Name="MembershipId" Type="int" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RinkOrder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="Green" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="Direction" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="Boundary" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameDate" Type="date" Nullable="false" />
+          <Property Name="WeekNumber" Type="int" Nullable="false" />
+          <Property Name="Leagueid" Type="int" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="Cancelled" Type="bit" Nullable="false" />
+          <Property Name="WeekDate" Type="varchar" MaxLength="10" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="Team">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Skip" Type="int" />
+          <Property Name="ViceSkip" Type="int" />
+          <Property Name="Lead" Type="int" />
+          <Property Name="Leagueid" Type="int" Nullable="false" />
+          <Property Name="TeamNo" Type="int" Nullable="false" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Roles" Type="varchar" MaxLength="50" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserLeague">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="LeagueId" Type="int" Nullable="false" />
+          <Property Name="Roles" Type="varchar" MaxLength="50" />
+          <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="UserLeagueView">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="username" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="LeagueName" Type="varchar" MaxLength="50" />
+          <Property Name="username" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="league role" Type="varchar" MaxLength="50" />
+          <Property Name="site role" Type="varchar" MaxLength="50" />
+          <Property Name="active" Type="bit" />
+        </EntityType>
+        <Association Name="FK__Player__leagueid__4E88ABD4">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Player" Type="Self.Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Skip" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players1">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="ViceSkip" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players2">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Lead" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Schedule__League__4F7CD00D">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Schedule" Type="Self.Schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Schedule">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Team__leagueid__4D94879B">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_League_RinkOrder">
+          <End Role="RinkOrder" Type="Self.RinkOrder" Multiplicity="1" />
+          <End Role="League" Type="Self.League" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RinkOrder">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="League">
+              <PropertyRef Name="StartWeek" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Schedule">
+          <End Role="Schedule" Type="Self.Schedule" Multiplicity="1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedule">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="WeekId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Team">
+          <End Role="Team" Type="Self.Team" Multiplicity="1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="TeamNo1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Team1">
+          <End Role="Team" Type="Self.Team" Multiplicity="0..1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="TeamNo2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Player_Membership">
+          <End Role="Membership" Type="Self.Membership" Multiplicity="1" />
+          <End Role="Player" Type="Self.Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Membership">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="MembershipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLeague_League">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="UserLeague" Type="Self.UserLeague" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserLeague">
+              <PropertyRef Name="LeagueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLeague_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserLeague" Type="Self.UserLeague" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserLeague">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="GetMatchAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="WeekId" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="TournamentModelStoreContainer">
+          <EntitySet Name="League" EntityType="Self.League" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Match" EntityType="Self.Match" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Membership" EntityType="Self.Membership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RinkOrder" EntityType="Self.RinkOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Team" EntityType="Self.Team" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLeague" EntityType="Self.UserLeague" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLeagueView" EntityType="Self.UserLeagueView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [UserLeagueView].[id] AS [id], 
+    [UserLeagueView].[LeagueName] AS [LeagueName], 
+    [UserLeagueView].[username] AS [username], 
+    [UserLeagueView].[league role] AS [league role], 
+    [UserLeagueView].[site role] AS [site role], 
+    [UserLeagueView].[active] AS [active]
+    FROM [dbo].[UserLeagueView] AS [UserLeagueView]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__Player__leagueid__4E88ABD4" Association="Self.FK__Player__leagueid__4E88ABD4">
+            <End Role="League" EntitySet="League" />
+            <End Role="Player" EntitySet="Player" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players" Association="Self.FK__Players">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="Team" EntitySet="Team" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players1" Association="Self.FK__Players1">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="Team" EntitySet="Team" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players2" Association="Self.FK__Players2">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="Team" EntitySet="Team" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Schedule__League__4F7CD00D" Association="Self.FK__Schedule__League__4F7CD00D">
+            <End Role="League" EntitySet="League" />
+            <End Role="Schedule" EntitySet="Schedule" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Team__leagueid__4D94879B" Association="Self.FK__Team__leagueid__4D94879B">
+            <End Role="League" EntitySet="League" />
+            <End Role="Team" EntitySet="Team" />
+          </AssociationSet>
+          <AssociationSet Name="FK_League_RinkOrder" Association="Self.FK_League_RinkOrder">
+            <End Role="RinkOrder" EntitySet="RinkOrder" />
+            <End Role="League" EntitySet="League" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Schedule" Association="Self.FK_Match_Schedule">
+            <End Role="Schedule" EntitySet="Schedule" />
+            <End Role="Match" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Team" Association="Self.FK_Match_Team">
+            <End Role="Team" EntitySet="Team" />
+            <End Role="Match" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Team1" Association="Self.FK_Match_Team1">
+            <End Role="Team" EntitySet="Team" />
+            <End Role="Match" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Player_Membership" Association="Self.FK_Player_Membership">
+            <End Role="Membership" EntitySet="Membership" />
+            <End Role="Player" EntitySet="Player" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLeague_League" Association="Self.FK_UserLeague_League">
+            <End Role="League" EntitySet="League" />
+            <End Role="UserLeague" EntitySet="UserLeague" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLeague_User" Association="Self.FK_UserLeague_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="UserLeague" EntitySet="UserLeague" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TournamentModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="League">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LeagueName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="TeamSize" Type="Int32" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="TiesAllowed" Type="Boolean" Nullable="false" />
+          <Property Name="PointsCount" Type="Boolean" Nullable="false" />
+          <Property Name="WinPoints" Type="Int16" Nullable="false" />
+          <Property Name="TiePoints" Type="Int16" Nullable="false" />
+          <Property Name="ByePoints" Type="Int16" Nullable="false" />
+          <Property Name="StartWeek" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Players" Relationship="Self.FK__Player__leagueid__4E88ABD4" FromRole="League" ToRole="Player" />
+          <NavigationProperty Name="Schedules" Relationship="Self.FK__Schedule__League__4F7CD00D" FromRole="League" ToRole="Schedule" />
+          <NavigationProperty Name="Teams" Relationship="Self.FK__Team__leagueid__4D94879B" FromRole="League" ToRole="Team" />
+          <NavigationProperty Name="RinkOrder" Relationship="Self.FK_League_RinkOrder" FromRole="League" ToRole="RinkOrder" />
+          <NavigationProperty Name="UserLeagues" Relationship="Self.FK_UserLeague_League" FromRole="League" ToRole="UserLeague" />
+        </EntityType>
+        <EntityType Name="Match">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WeekId" Type="Int32" Nullable="false" />
+          <Property Name="Rink" Type="Int32" Nullable="false" />
+          <Property Name="TeamNo1" Type="Int32" Nullable="false" />
+          <Property Name="TeamNo2" Type="Int32" />
+          <Property Name="Team1Score" Type="Int32" Nullable="false" />
+          <Property Name="Team2Score" Type="Int32" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="ForFeitId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Schedule" Relationship="Self.FK_Match_Schedule" FromRole="Match" ToRole="Schedule" />
+          <NavigationProperty Name="Team" Relationship="Self.FK_Match_Team" FromRole="Match" ToRole="Team" />
+          <NavigationProperty Name="Team1" Relationship="Self.FK_Match_Team1" FromRole="Match" ToRole="Team" />
+        </EntityType>
+        <EntityType Name="Membership">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="101" FixedLength="false" Unicode="false" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="shortname" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="NickName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Wheelchair" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Players" Relationship="Self.FK_Player_Membership" FromRole="Membership" ToRole="Player" />
+        </EntityType>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Leagueid" Type="Int32" Nullable="false" />
+          <Property Name="MembershipId" Type="Int32" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="League" Relationship="Self.FK__Player__leagueid__4E88ABD4" FromRole="Player" ToRole="League" />
+          <NavigationProperty Name="Membership" Relationship="Self.FK_Player_Membership" FromRole="Player" ToRole="Membership" />
+          <NavigationProperty Name="Teams" Relationship="Self.FK__Players" FromRole="Player" ToRole="Team" />
+          <NavigationProperty Name="Teams1" Relationship="Self.FK__Players1" FromRole="Player" ToRole="Team" />
+          <NavigationProperty Name="Teams2" Relationship="Self.FK__Players2" FromRole="Player" ToRole="Team" />
+        </EntityType>
+        <EntityType Name="RinkOrder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="Green" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Direction" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Boundary" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="Leagues" Relationship="Self.FK_League_RinkOrder" FromRole="RinkOrder" ToRole="League" />
+        </EntityType>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="WeekNumber" Type="Int32" Nullable="false" />
+          <Property Name="Leagueid" Type="Int32" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Cancelled" Type="Boolean" Nullable="false" />
+          <Property Name="WeekDate" Type="String" MaxLength="10" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="League" Relationship="Self.FK__Schedule__League__4F7CD00D" FromRole="Schedule" ToRole="League" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Match_Schedule" FromRole="Schedule" ToRole="Match" />
+        </EntityType>
+        <EntityType Name="Team">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Skip" Type="Int32" />
+          <Property Name="ViceSkip" Type="Int32" />
+          <Property Name="Lead" Type="Int32" />
+          <Property Name="Leagueid" Type="Int32" Nullable="false" />
+          <Property Name="TeamNo" Type="Int32" Nullable="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="League" Relationship="Self.FK__Team__leagueid__4D94879B" FromRole="Team" ToRole="League" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Match_Team" FromRole="Team" ToRole="Match" />
+          <NavigationProperty Name="Matches1" Relationship="Self.FK_Match_Team1" FromRole="Team" ToRole="Match" />
+          <NavigationProperty Name="Player" Relationship="Self.FK__Players" FromRole="Team" ToRole="Player" />
+          <NavigationProperty Name="Player1" Relationship="Self.FK__Players1" FromRole="Team" ToRole="Player" />
+          <NavigationProperty Name="Player2" Relationship="Self.FK__Players2" FromRole="Team" ToRole="Player" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="UserLeagues" Relationship="Self.FK_UserLeague_User" FromRole="User" ToRole="UserLeague" />
+        </EntityType>
+        <EntityType Name="UserLeague">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="LeagueId" Type="Int32" Nullable="false" />
+          <Property Name="Roles" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="League" Relationship="Self.FK_UserLeague_League" FromRole="UserLeague" ToRole="League" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserLeague_User" FromRole="UserLeague" ToRole="User" />
+        </EntityType>
+        <EntityType Name="UserLeagueView">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="username" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="LeagueName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="username" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="league_role" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="site_role" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="active" Type="Boolean" />
+        </EntityType>
+        <Association Name="FK__Player__leagueid__4E88ABD4">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Player" Type="Self.Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Schedule__League__4F7CD00D">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Schedule" Type="Self.Schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Schedule">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Team__leagueid__4D94879B">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Leagueid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_League_RinkOrder">
+          <End Role="RinkOrder" Type="Self.RinkOrder" Multiplicity="1" />
+          <End Role="League" Type="Self.League" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RinkOrder">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="League">
+              <PropertyRef Name="StartWeek" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLeague_League">
+          <End Role="League" Type="Self.League" Multiplicity="1" />
+          <End Role="UserLeague" Type="Self.UserLeague" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="League">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserLeague">
+              <PropertyRef Name="LeagueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Schedule">
+          <End Role="Schedule" Type="Self.Schedule" Multiplicity="1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedule">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="WeekId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Team">
+          <End Role="Team" Type="Self.Team" Multiplicity="1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="TeamNo1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Match_Team1">
+          <End Role="Team" Type="Self.Team" Multiplicity="0..1" />
+          <End Role="Match" Type="Self.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Match">
+              <PropertyRef Name="TeamNo2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Player_Membership">
+          <End Role="Membership" Type="Self.Membership" Multiplicity="1" />
+          <End Role="Player" Type="Self.Player" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Membership">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Player">
+              <PropertyRef Name="MembershipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Skip" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players1">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="ViceSkip" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Players2">
+          <End Role="Player" Type="Self.Player" Multiplicity="0..1" />
+          <End Role="Team" Type="Self.Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="Lead" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLeague_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="UserLeague" Type="Self.UserLeague" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserLeague">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TournamentEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Leagues" EntityType="Self.League" />
+          <EntitySet Name="Matches" EntityType="Self.Match" />
+          <EntitySet Name="Memberships" EntityType="Self.Membership" />
+          <EntitySet Name="Players" EntityType="Self.Player" />
+          <EntitySet Name="RinkOrders" EntityType="Self.RinkOrder" />
+          <EntitySet Name="Schedules" EntityType="Self.Schedule" />
+          <EntitySet Name="Teams" EntityType="Self.Team" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserLeagues" EntityType="Self.UserLeague" />
+          <EntitySet Name="UserLeagueViews" EntityType="Self.UserLeagueView" />
+          <AssociationSet Name="FK__Player__leagueid__4E88ABD4" Association="Self.FK__Player__leagueid__4E88ABD4">
+            <End Role="League" EntitySet="Leagues" />
+            <End Role="Player" EntitySet="Players" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Schedule__League__4F7CD00D" Association="Self.FK__Schedule__League__4F7CD00D">
+            <End Role="League" EntitySet="Leagues" />
+            <End Role="Schedule" EntitySet="Schedules" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Team__leagueid__4D94879B" Association="Self.FK__Team__leagueid__4D94879B">
+            <End Role="League" EntitySet="Leagues" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_League_RinkOrder" Association="Self.FK_League_RinkOrder">
+            <End Role="RinkOrder" EntitySet="RinkOrders" />
+            <End Role="League" EntitySet="Leagues" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLeague_League" Association="Self.FK_UserLeague_League">
+            <End Role="League" EntitySet="Leagues" />
+            <End Role="UserLeague" EntitySet="UserLeagues" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Schedule" Association="Self.FK_Match_Schedule">
+            <End Role="Schedule" EntitySet="Schedules" />
+            <End Role="Match" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Team" Association="Self.FK_Match_Team">
+            <End Role="Team" EntitySet="Teams" />
+            <End Role="Match" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Match_Team1" Association="Self.FK_Match_Team1">
+            <End Role="Team" EntitySet="Teams" />
+            <End Role="Match" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Player_Membership" Association="Self.FK_Player_Membership">
+            <End Role="Membership" EntitySet="Memberships" />
+            <End Role="Player" EntitySet="Players" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players" Association="Self.FK__Players">
+            <End Role="Player" EntitySet="Players" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players1" Association="Self.FK__Players1">
+            <End Role="Player" EntitySet="Players" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Players2" Association="Self.FK__Players2">
+            <End Role="Player" EntitySet="Players" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLeague_User" Association="Self.FK_UserLeague_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserLeague" EntitySet="UserLeagues" />
+          </AssociationSet>
+          <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
+            <Parameter Name="WeekId" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="GetMatchAll_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Skip1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Vice1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Lead1" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Skip2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Vice2" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Lead2" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="Team1" Nullable="false" />
+          <Property Type="Int32" Name="Team2" Nullable="false" />
+          <Property Type="String" Name="Date" Nullable="true" MaxLength="10" />
+          <Property Type="Int32" Name="Rink" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TournamentModelStoreContainer" CdmEntityContainer="TournamentEntities1">
+          <EntitySetMapping Name="Leagues">
+            <EntityTypeMapping TypeName="TournamentModel.League">
+              <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="TeamSize" ColumnName="TeamSize" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="TiesAllowed" ColumnName="TiesAllowed" />
+                <ScalarProperty Name="PointsCount" ColumnName="PointsCount" />
+                <ScalarProperty Name="WinPoints" ColumnName="WinPoints" />
+                <ScalarProperty Name="TiePoints" ColumnName="TiePoints" />
+                <ScalarProperty Name="ByePoints" ColumnName="ByePoints" />
+                <ScalarProperty Name="StartWeek" ColumnName="StartWeek" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Matches">
+            <EntityTypeMapping TypeName="TournamentModel.Match">
+              <MappingFragment StoreEntitySet="Match">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="WeekId" ColumnName="WeekId" />
+                <ScalarProperty Name="Rink" ColumnName="Rink" />
+                <ScalarProperty Name="TeamNo1" ColumnName="TeamNo1" />
+                <ScalarProperty Name="TeamNo2" ColumnName="TeamNo2" />
+                <ScalarProperty Name="Team1Score" ColumnName="Team1Score" />
+                <ScalarProperty Name="Team2Score" ColumnName="Team2Score" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="ForFeitId" ColumnName="ForFeitId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Memberships">
+            <EntityTypeMapping TypeName="TournamentModel.Membership">
+              <MappingFragment StoreEntitySet="Membership">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="shortname" ColumnName="shortname" />
+                <ScalarProperty Name="NickName" ColumnName="NickName" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="Wheelchair" ColumnName="Wheelchair" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Players">
+            <EntityTypeMapping TypeName="TournamentModel.Player">
+              <MappingFragment StoreEntitySet="Player">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
+                <ScalarProperty Name="MembershipId" ColumnName="MembershipId" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RinkOrders">
+            <EntityTypeMapping TypeName="TournamentModel.RinkOrder">
+              <MappingFragment StoreEntitySet="RinkOrder">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Green" ColumnName="Green" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="Boundary" ColumnName="Boundary" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="TournamentModel.Schedule">
+              <MappingFragment StoreEntitySet="Schedule">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="GameDate" ColumnName="GameDate" />
+                <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
+                <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
+                <ScalarProperty Name="WeekDate" ColumnName="WeekDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Teams">
+            <EntityTypeMapping TypeName="TournamentModel.Team">
+              <MappingFragment StoreEntitySet="Team">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Skip" ColumnName="Skip" />
+                <ScalarProperty Name="ViceSkip" ColumnName="ViceSkip" />
+                <ScalarProperty Name="Lead" ColumnName="Lead" />
+                <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
+                <ScalarProperty Name="TeamNo" ColumnName="TeamNo" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="TournamentModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="Roles" ColumnName="Roles" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserLeagues">
+            <EntityTypeMapping TypeName="TournamentModel.UserLeague">
+              <MappingFragment StoreEntitySet="UserLeague">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LeagueId" ColumnName="LeagueId" />
+                <ScalarProperty Name="Roles" ColumnName="Roles" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserLeagueViews">
+            <EntityTypeMapping TypeName="TournamentModel.UserLeagueView">
+              <MappingFragment StoreEntitySet="UserLeagueView">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="league_role" ColumnName="league role" />
+                <ScalarProperty Name="site_role" ColumnName="site role" />
+                <ScalarProperty Name="active" ColumnName="active" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetMatchAll" FunctionName="TournamentModel.Store.GetMatchAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.GetMatchAll_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Skip1" ColumnName="Skip1" />
+                <ScalarProperty Name="Vice1" ColumnName="Vice1" />
+                <ScalarProperty Name="Lead1" ColumnName="Lead1" />
+                <ScalarProperty Name="Skip2" ColumnName="Skip2" />
+                <ScalarProperty Name="Vice2" ColumnName="Vice2" />
+                <ScalarProperty Name="Lead2" ColumnName="Lead2" />
+                <ScalarProperty Name="Team1" ColumnName="Team1" />
+                <ScalarProperty Name="Team2" ColumnName="Team2" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Rink" ColumnName="Rink" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

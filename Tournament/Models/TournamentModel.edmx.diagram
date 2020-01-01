@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e4137128248142e78c0d7d192c5f093d" Name="Diagram1">
+        <EntityTypeShape EntityType="TournamentModel.League" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Match" Width="1.5" PointX="12.75" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Membership" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Player" Width="1.5" PointX="5.25" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.RinkOrder" Width="1.5" PointX="0.75" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Schedule" Width="1.5" PointX="5.25" PointY="9.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.Team" Width="1.5" PointX="10.5" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.User" Width="1.5" PointX="6" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.UserLeague" Width="1.5" PointX="8.25" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="TournamentModel.UserLeagueView" Width="1.5" PointX="8.75" PointY="1.5" IsExpanded="true" />
+        <AssociationConnector Association="TournamentModel.FK__Player__leagueid__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK__Schedule__League__4F7CD00D" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK__Team__leagueid__4D94879B" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_League_RinkOrder" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_UserLeague_League" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_Match_Schedule" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_Match_Team" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_Match_Team1" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_Player_Membership" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK__Players" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK__Players1" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK__Players2" ManuallyRouted="false" />
+        <AssociationConnector Association="TournamentModel.FK_UserLeague_User" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

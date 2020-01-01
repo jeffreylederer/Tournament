@@ -54,7 +54,7 @@ namespace Tournament.Models
     public partial class Team
     {
     }
-    public partial class TeamMetaData
+    public class TeamMetaData
     {
         [Display(Name = "Team Number")]
         [Required]
@@ -75,7 +75,7 @@ namespace Tournament.Models
     public partial class Schedule
     {
     }
-    public partial class ScheduleMetaData
+    public class ScheduleMetaData
     {
         [Required]
         public int id { get; set; }
@@ -99,7 +99,7 @@ namespace Tournament.Models
     {
     }
 
-    public partial class MatchMetaData
+    public class MatchMetaData
     {
 
         [Display(Name = "Game Number")]
@@ -137,7 +137,7 @@ namespace Tournament.Models
     {
     }
 
-    public partial class LeagueMetaData
+    public class LeagueMetaData
     {
         [Display(Name = "League Name")]
         [Required]
@@ -190,7 +190,7 @@ namespace Tournament.Models
     {
     }
 
-    public partial class UserLeagueMetaData
+    public class UserLeagueMetaData
     {
         [Display(Name = "User")]
         public int UserId { get; set; }
@@ -212,7 +212,7 @@ namespace Tournament.Models
     {
     }
 
-    public partial class UserMetaData
+    public class UserMetaData
     {
         [Display(Name = "User EmailAddress")]
         [EmailAddress]
@@ -229,7 +229,7 @@ namespace Tournament.Models
     public partial class RinkOrder
     {
     }
-    public partial class RinkOrderMetaData
+    public class RinkOrderMetaData
     {
         [Required]
         [Display(Name = "Week")]

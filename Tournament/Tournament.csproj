@@ -224,6 +224,54 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetMatchAll_Result.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\League.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Match.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Membership.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Player.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RinkOrder.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Schedule.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Team.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TournamentModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\User.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserLeague.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserLeagueView.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\ChangePasswordViewModel.cs" />
     <Compile Include="ViewModel\ForgotPasswordViewModel.cs" />
     <Compile Include="ViewModel\UserLeagueViewModel.cs" />
@@ -293,6 +341,16 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Models\TournamentModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+      <LastGenOutput>TournamentModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\TournamentModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+      <LastGenOutput>TournamentModel.cs</LastGenOutput>
+    </Content>
     <Content Include="ReportViewerWebForm.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -377,6 +435,13 @@
     <Content Include="Content\bootstrap\bootstrap.less" />
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
+    <EntityDeploy Include="Models\TournamentModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>TournamentModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\TournamentModel.edmx.diagram">
+      <DependentUpon>TournamentModel.edmx</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\LawnBowlingMS - Web Deploy.pubxml" />
     <None Include="ReportFiles\TournamentDS.xsd">
       <SubType>Designer</SubType>
