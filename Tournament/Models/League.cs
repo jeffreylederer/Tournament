@@ -33,6 +33,7 @@ namespace Tournament.Models
         public short WinPoints { get; set; }
         public short TiePoints { get; set; }
         public short ByePoints { get; set; }
+        public short StartWeek { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Player> Players { get; set; }

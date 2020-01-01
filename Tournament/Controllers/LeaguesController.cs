@@ -35,7 +35,8 @@ namespace Tournament.Controllers
                 WinPoints = 1,
                 TiePoints = 1,
                 ByePoints = 1,
-                TeamSize=2
+                TeamSize=2,
+                StartWeek = 1
             };
             
             return View(item);
@@ -46,7 +47,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints")] League league)
+        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek")] League league)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +96,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints")] League league)
+        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek")] League league)
         {
             try
             {
@@ -130,6 +131,24 @@ namespace Tournament.Controllers
                     if (databaseValues.Active != clientValues.Active)
                         ModelState.AddModelError("Active", "Current value: "
                                                               + databaseValues.Active);
+                    if (databaseValues.TiesAllowed != clientValues.TiesAllowed)
+                        ModelState.AddModelError("Ties Allowed", "Current value: "
+                                                           + databaseValues.TiesAllowed);
+                    if (databaseValues.PointsCount != clientValues.PointsCount)
+                        ModelState.AddModelError("Do Points Count", "Current value: "
+                                                           + databaseValues.PointsCount);
+                    if (databaseValues.WinPoints != clientValues.WinPoints)
+                        ModelState.AddModelError("Win Points", "Current value: "
+                                                           + databaseValues.WinPoints);
+                    if (databaseValues.TiePoints != clientValues.TiePoints)
+                        ModelState.AddModelError("Tie Points", "Current value: "
+                                                           + databaseValues.TiePoints);
+                    if (databaseValues.ByePoints != clientValues.ByePoints)
+                        ModelState.AddModelError("Bye Points", "Current value: "
+                                                               + databaseValues.ByePoints);
+                    if (databaseValues.StartWeek != clientValues.StartWeek)
+                        ModelState.AddModelError("Start Week", "Current value: "
+                                                               + databaseValues.StartWeek);
                     ModelState.AddModelError(string.Empty, "The record you attempted to edit "
                                                            + "was modified by another user after you got the original value. The "
                                                            + "edit operation was canceled and the current values in the database "

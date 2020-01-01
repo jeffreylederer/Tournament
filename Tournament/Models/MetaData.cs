@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Policy;
@@ -161,19 +162,24 @@ namespace Tournament.Models
         [Range(1,3)]
         [Required]
         [Display(Name = "Multliplier for a win")]
-        public Nullable<short> WinPoints { get; set; }
+        public short WinPoints { get; set; }
 
         [Range(1, 3)]
         [Required]
         [Display(Name = "Multliplier for a tie")]
-        public Nullable<short> TiePoints { get; set; }
+        public short TiePoints { get; set; }
 
         [Range(1, 3)]
         [Required]
         [Display(Name = "Multliplier for a bye")]
-        public Nullable<short> ByePoints { get; set; }
+        public short ByePoints { get; set; }
 
-        
+        [Required]
+        [Range(minimum: 1, maximum:99, ErrorMessage = "Numbering starts at 1")]
+        [Display(Name = "Start Week")]
+        public short StartWeek { get; set; }
+
+
 
         [Timestamp]
         public byte[] rowversion { get; set; }
@@ -226,7 +232,7 @@ namespace Tournament.Models
     public partial class RinkOrderMetaData
     {
         [Required]
-        [Display(Name = "Rink Order")]
+        [Display(Name = "Week")]
         public int id { get; set; }
 
         [Required]

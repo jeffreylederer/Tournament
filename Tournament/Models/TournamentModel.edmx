@@ -19,6 +19,7 @@
           <Property Name="WinPoints" Type="smallint" Nullable="false" />
           <Property Name="TiePoints" Type="smallint" Nullable="false" />
           <Property Name="ByePoints" Type="smallint" Nullable="false" />
+          <Property Name="StartWeek" Type="smallint" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -338,6 +339,7 @@
           <Property Name="WinPoints" Type="Int16" Nullable="false" />
           <Property Name="TiePoints" Type="Int16" Nullable="false" />
           <Property Name="ByePoints" Type="Int16" Nullable="false" />
+          <Property Name="StartWeek" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -677,6 +679,7 @@
           <EntitySetMapping Name="Leagues">
             <EntityTypeMapping TypeName="TournamentModel.League">
               <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="StartWeek" ColumnName="StartWeek" />
                 <ScalarProperty Name="ByePoints" ColumnName="ByePoints" />
                 <ScalarProperty Name="TiePoints" ColumnName="TiePoints" />
                 <ScalarProperty Name="WinPoints" ColumnName="WinPoints" />

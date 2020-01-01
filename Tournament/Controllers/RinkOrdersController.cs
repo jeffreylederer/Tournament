@@ -26,7 +26,7 @@ namespace Tournament.Controllers
         public ActionResult Create()
         {
             var list = db.RinkOrders.OrderBy(x => x.id).ToList();
-            int id = 0;
+            int id = 1;
             if (list.Any())
             {
                 id = list.Last().id + 1;
@@ -177,7 +177,7 @@ namespace Tournament.Controllers
                 try
                 {
                     var list = db.RinkOrders.OrderBy(x => x.id).ToList();
-                    int id1 = 0;
+                    int id1 = 1;
                     foreach (var item in list)
                     {
                         if (item.id == rinkOrder.id)
