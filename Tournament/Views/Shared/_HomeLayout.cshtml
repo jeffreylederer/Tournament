@@ -7,15 +7,7 @@
     <title>@ViewBag.Title -League Management Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    @{
-        var leagueid = 0;
-        var cookie = Request.Cookies["leagueid"];
-        if (cookie != null)
-        {
-            int.TryParse(cookie.Value, out leagueid);
-        }
-    }
-</head>
+ </head>
 <body>
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
@@ -32,30 +24,7 @@
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Membership", "Index", "Membership")</li>
 
-                    @if (leagueid != 0)
-                    {
-
-                        <li class="menu-item dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">League Play<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Players", "Index", "Players", new {id = leagueid}, null)</li>
-                                <li>@Html.ActionLink("Schedule", "Index", "Schedules", new { id = leagueid }, null)</li>
-                                <li>@Html.ActionLink("Teams", "Index", "Teams", new { id = leagueid }, null)</li>
-                                <li>@Html.ActionLink("Matches", "Index", "Matches", new { id = leagueid}, null)</li>
-                                <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches", new { id = leagueid }, null)</li>
-                                <li>@Html.ActionLink("Schedule Report", "GenerateReport", "GetSchedule", new { id = leagueid }, null)</li>
-                                
-
-                                @if (User.IsInRole("Admin") ||
-                                     User.IsInRole("LeagueAdmin"))
-                                {
-                                    <li>----------------------------</li>
-                                    <li>@Html.ActionLink("Create Matches", "CreateMatches", "Matches", new {id=leagueid},null)</li>
-                                    <li>@Html.ActionLink("Delete Matches", "ClearSchedule", "Matches", new {id=leagueid},null)</li>
-                                }
-                            </ul>
-                        </li>
-                    }
+                   
 
 
 

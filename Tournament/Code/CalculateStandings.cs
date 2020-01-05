@@ -19,9 +19,9 @@ namespace Tournament.Code
         /// <param name="teamsize">number of players per team</param>
         /// <param name="leagueid">the record id of the league table</param>
         /// <returns></returns>
-        public static TournamentDS.StandDataTable Doit(int weekid, int teamsize, League league)
+        public static TournamentDS.StandDataTable Doit(int weekid, League league)
         {
-            
+            int teamsize = league.TeamSize;
             var ds = new TournamentDS();
             var list = new List<Standing>();
             using (var db = new TournamentEntities())

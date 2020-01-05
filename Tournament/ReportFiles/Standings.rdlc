@@ -1299,7 +1299,7 @@
                 </TablixMember>
                 <TablixMember>
                   <Visibility>
-                    <Hidden>=Parameters!IsBye.Value="1"</Hidden>
+                    <Hidden>=Parameters!IsBye.Value="0"</Hidden>
                   </Visibility>
                 </TablixMember>
                 <TablixMember />

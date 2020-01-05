@@ -17,23 +17,21 @@ namespace Tournament.Controllers
 
         [Authorize]
         // GET: Schedules
-        public ActionResult Index()
+        public ActionResult Index(int id)
         {
-            int leagueid = (int) this.HttpContext.Session["leagueid"];
-
-            var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.WeekNumber).ToList();
+            var list = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.WeekNumber).ToList();
+            ViewBag.Id = id;
             return View(list);
         }
 
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Schedules/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            var leagueid = (int)this.HttpContext.Session["leagueid"];
             DateTime date = DateTime.Now;
             int WeekNumber = 1;
-            var list = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x=>x.GameDate).ToList();
+            var list = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.GameDate).ToList();
             if (list.Any())
             {
                 WeekNumber = list.Last().WeekNumber + 1;
@@ -43,10 +41,10 @@ namespace Tournament.Controllers
             {
                 WeekNumber = WeekNumber,
                 GameDate = date,
-                Leagueid = leagueid,
+                Leagueid = id,
                 Cancelled = false
             };
-            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.GameDate);
+            ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate);
             return View(schedule);
         }
 
@@ -82,7 +80,7 @@ namespace Tournament.Controllers
                             }
                         }
                         db.SaveChanges();
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new {id=schedule.Leagueid});
                     }
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -134,7 +132,7 @@ namespace Tournament.Controllers
                 {
                     db.Entry(schedule).State = EntityState.Modified;
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new {id=schedule.Leagueid});
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -198,7 +196,7 @@ namespace Tournament.Controllers
             {
                 if (concurrencyError.GetValueOrDefault())
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Welcome", "Home");
                 }
                 return HttpNotFound();
             }
@@ -246,7 +244,7 @@ namespace Tournament.Controllers
                     db.Entry(item).State = EntityState.Modified;
                 }
                db.SaveChanges();
-               return RedirectToAction("Index");
+               return RedirectToAction("Index", new {id = schedule.Leagueid});
             }
             catch (DbUpdateConcurrencyException ex)
             {

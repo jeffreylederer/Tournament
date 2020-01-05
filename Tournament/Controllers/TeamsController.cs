@@ -23,20 +23,19 @@ namespace Tournament.Controllers
 
        [Authorize]
         // GET: Teams
-        public ActionResult Index()
-        {
-            var leagueid = (int)HttpContext.Session["leagueid"];
-           
+        public ActionResult Index(int id)
+       {
+           ViewBag.Id = id;
             ViewBag.TeamSize = (int) HttpContext.Session["teamsize"];
-            return View(db.Teams.Where(x=>x.Leagueid == leagueid).OrderBy(x => x.TeamNo).ToList());
+            return View(db.Teams.Where(x=>x.Leagueid == id).OrderBy(x => x.TeamNo).ToList());
         }
 
         
 
         [Authorize]
-        public ActionResult TeamReport()
+        public ActionResult TeamReport(int id)
         {
-            var leagueid = (int)HttpContext.Session["leagueid"];
+            ViewBag.Id = id;
             var reportViewer = new ReportViewer()
             {
                 ProcessingMode = ProcessingMode.Local,
@@ -60,7 +59,7 @@ namespace Tournament.Controllers
             var p2 = new ReportParameter("Description", (string) HttpContext.Session["leaguename"]);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
-            var teams = db.Teams.Where(x => x.Leagueid == leagueid);
+            var teams = db.Teams.Where(x => x.Leagueid == id);
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
@@ -75,11 +74,10 @@ namespace Tournament.Controllers
 
         [Authorize(Roles = "Admin,LeagueAdmin")]
         // GET: Teams/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            var leagueid = (int)HttpContext.Session["leagueid"];
             int TeamNo = 1;
-            var list = db.Teams.Where(x => x.Leagueid == leagueid).ToList().OrderBy(x=>x.TeamNo).ToList();
+            var list = db.Teams.Where(x => x.Leagueid == id).ToList().OrderBy(x=>x.TeamNo).ToList();
             
             if (list.Any())
             {
@@ -88,7 +86,7 @@ namespace Tournament.Controllers
             var team = new Team()
             {
                 TeamNo = TeamNo,
-                Leagueid = leagueid,
+                Leagueid = id,
                 Skip=0,
                 ViceSkip = 0,
                 Lead=0
@@ -107,7 +105,6 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo")] Team team)
         {
-            var leagueid = (int)HttpContext.Session["leagueid"];
             team.Skip = team.Skip == 0 ? (int ?) null : team.Skip;
             team.ViceSkip = team.ViceSkip == 0 ? (int?)null : team.ViceSkip;
             team.Lead = team.Lead == 0 ? (int?)null : team.Lead;
@@ -126,7 +123,7 @@ namespace Tournament.Controllers
                         else
                         {
                         db.SaveChanges();
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new {id=team.Leagueid});
                     }
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -158,7 +155,7 @@ namespace Tournament.Controllers
         [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Edit(int? id)
         {
-            var leagueid = (int)HttpContext.Session["leagueid"];
+          
            
             if (id == null)
             {
@@ -169,7 +166,7 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo);
+            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
 
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
@@ -205,7 +202,7 @@ namespace Tournament.Controllers
 
                         db.Entry(team).State = EntityState.Modified;
                         db.SaveChanges();
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new {id = team.Leagueid});
                     }
                 }
             }
@@ -273,7 +270,7 @@ namespace Tournament.Controllers
             {
                 if (concurrencyError.GetValueOrDefault())
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Welcome","Home");
                 }
                 return HttpNotFound();
             }
@@ -320,7 +317,7 @@ namespace Tournament.Controllers
                     db.Entry(item).State = EntityState.Modified;
                 }
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new {id=team.Leagueid});
             }
             catch (DbUpdateConcurrencyException ex)
             {

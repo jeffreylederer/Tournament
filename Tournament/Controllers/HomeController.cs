@@ -25,8 +25,7 @@ namespace Tournament.Controllers
             if (HttpContext.Session["leaguename"] != null)
                 HttpContext.Session["leaguename"] = null;
 
-            if (HttpContext.Session["leagueid"] != null)
-                HttpContext.Session["leagueid"] = null;
+            RemoveCookie("leagueid");
 
             var user = db.Users.Where(x => x.username == username).First();
             ViewBag.Error = "";
@@ -97,7 +96,7 @@ namespace Tournament.Controllers
             }
             HttpContext.Session["teamsize"] = league.TeamSize;
             HttpContext.Session["leaguename"] = league.LeagueName;
-            HttpContext.Session["leagueid"] = id.Value;
+            SetCookie("leagueid", id.Value);
   
 
             FormsAuthentication.SetAuthCookie(user.username, false);
@@ -146,6 +145,22 @@ namespace Tournament.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        private void RemoveCookie(string name)
+        {
+            var cookie = Request.Cookies[name];
+            if (cookie != null)
+            {
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
+            }
+        }
+
+        private void SetCookie(string name, int value)
+        {
+            var cookie = new HttpCookie(name, value.ToString());
+            Response.Cookies.Add(cookie);
         }
     }
 }

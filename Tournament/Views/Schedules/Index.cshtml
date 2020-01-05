@@ -12,7 +12,7 @@
     if (User.IsInRole("Admin") ||
         User.IsInRole("LeagueAdmin"))
     {
-        @Html.ActionLink("Create New", "Create")
+        @Html.ActionLink("Create New", "Create", new {id = ViewBag.Id})
     }
 }
 </

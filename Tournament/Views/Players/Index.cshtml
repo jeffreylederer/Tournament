@@ -8,7 +8,7 @@
     if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
     {
         <p>
-            @Html.ActionLink("Add a Player", "Create")
+            @Html.ActionLink("Add a Player", "Create", new {id=ViewBag.Id})
         </p>
     }
 }
@@ -18,7 +18,7 @@
         <table class="table">
             <tr>
                 <th>
-                    @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.FullNameSortParm })
+                    @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.FullNameSortParm , id=@ViewBag.Id})
                 </th>
 
 

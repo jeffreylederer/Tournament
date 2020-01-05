@@ -17,13 +17,13 @@ namespace Tournament.Controllers
         /// <summary>
         /// Gets the object to be serialized to XML.
         /// </summary>
-        public ActionResult GenerateReport()
+        public ActionResult GenerateReport(int id)
         {
             var topLine = new StringBuilder();
 
-            var leagueid = (int) HttpContext.Session["leagueid"];
+           
             var teamsize = (int) HttpContext.Session["teamsize"];
-            var league = db.Leagues.Find(leagueid);
+            var league = db.Leagues.Find(id);
             if (league == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -33,7 +33,7 @@ namespace Tournament.Controllers
             {
                 topLine.AppendLine("<table class='table table-striped table-sm'>");
 
-                var teams = db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.TeamNo).ToList();
+                var teams = db.Teams.Where(x => x.Leagueid == id).OrderBy(x => x.TeamNo).ToList();
 
 
                 var rinks = teams.Count / 2;
@@ -56,7 +56,7 @@ namespace Tournament.Controllers
                 
 
 
-                var weeks = db.Schedules.Where(x => x.Leagueid == leagueid).OrderBy(x => x.WeekNumber);
+                var weeks = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.WeekNumber);
 
                 int i = startWeek;
                 foreach (Schedule week in weeks)

@@ -18,11 +18,18 @@ namespace Tournament
                 "elmah/{type}",
                 new { action = "Index", controller = "Elmah", type = UrlParameter.Optional });
 
+            //routes.MapRoute(
+            //    name: "match",
+            //    url: "{controller}/{action}/{id}/weekid",
+            //    defaults: new { controller = "Matches", action = "Index", id = UrlParameter.Optional }
+            //);
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
         }
     }
 }

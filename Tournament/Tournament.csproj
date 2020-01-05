@@ -547,6 +547,7 @@
     <Content Include="Views\RinkOrders\Delete.cshtml" />
     <Content Include="Views\RinkOrders\Edit.cshtml" />
     <Content Include="Views\RinkOrders\Index.cshtml" />
+    <Content Include="Views\Shared\_HomeLayout.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

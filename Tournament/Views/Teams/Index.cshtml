@@ -11,10 +11,10 @@
 @{
     if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
     {
-        @Html.ActionLink("Add Team", "Create")<br/>
+        @Html.ActionLink("Add Team", "Create", new {id=ViewBag.Id})<br/>
     }
 }
-    @Html.ActionLink("Team Report", "TeamReport")
+    @Html.ActionLink("Team Report", "TeamReport", new { id = ViewBag.Id })
 </p>
 <table class="table-condensed table-striped">
     <tr>
