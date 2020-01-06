@@ -30,15 +30,15 @@ namespace Tournament.Controllers
             // Lets first check if the Model is valid or not
             if (ModelState.IsValid)
             {
-                
-                string username = model.Username;
-                string password = model.Password;
+
+                string username = model.Username.Trim();
+                string password = model.Password.Trim();
 
                 // Now if our password was enctypted or hashed we would have done the
                 // same operation on the user entered password here, But for now
                 // since the password is in plain text lets just authenticate directly
 
-                var users = db.Users.Where(x => x.username == model.Username);
+                var users = db.Users.Where(x => x.username == model.Username.ToLower().Trim());
                 // User found in the database
                 if (users.Count() == 1 && users.First().password == model.Password)
                 {
@@ -108,7 +108,7 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                var users = db.Users.Where(x => x.username.ToLower() == chpvm.EmailAddress.ToString());
+                var users = db.Users.Where(x => x.username == chpvm.EmailAddress.ToLower().Trim());
                 if (!users.Any())
                 {
                     ModelState.AddModelError(string.Empty, "User Id or Current Password not found");

@@ -4,10 +4,9 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using Tournament.Models;
 using Tournament.Code;
+using Tournament.Models;
 
 namespace Tournament.Controllers
 {
@@ -42,6 +41,7 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
+                user.username = user.username.ToLower().Trim();
                 db.Users.Add(user);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -86,6 +86,7 @@ namespace Tournament.Controllers
             {
                 var sharedSecret = (string) TempData["Secret"];
                 user.password = Crypto.DecryptStringAES(user.password, sharedSecret);
+                user.username = user.username.ToLower().Trim();
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
