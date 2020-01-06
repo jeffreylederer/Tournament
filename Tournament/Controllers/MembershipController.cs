@@ -252,7 +252,7 @@ namespace Tournament.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateConcurrencyException)
                 {
                     return RedirectToAction("Delete", new { concurrencyError = true, id = id });
                 }

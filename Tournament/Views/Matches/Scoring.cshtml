@@ -4,7 +4,6 @@
 @{
     ViewBag.Title = "Scoring";
 }
-<h2>@HttpContext.Current.Session["LeagueName"].ToString()</h2>
 <h2>Scoring</h2>
 
 
@@ -105,7 +104,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new { scheduleId = Model.WeekId })
+    @Html.ActionLink("Back to List", "Index", new { weekid = Model.WeekId,id=ViewBag.Id })
 </div>
 
 @section Scripts {

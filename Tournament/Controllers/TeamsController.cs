@@ -26,8 +26,11 @@ namespace Tournament.Controllers
         public ActionResult Index(int id)
        {
            ViewBag.Id = id;
-            ViewBag.TeamSize = (int) HttpContext.Session["teamsize"];
-            return View(db.Teams.Where(x=>x.Leagueid == id).OrderBy(x => x.TeamNo).ToList());
+           var league = db.Leagues.Find(id);
+           if (league == null)
+               return HttpNotFound();
+           ViewBag.TeamSize = league.TeamSize;
+           return View(db.Teams.Where(x=>x.Leagueid == id).OrderBy(x => x.TeamNo).ToList());
         }
 
         
@@ -43,7 +46,10 @@ namespace Tournament.Controllers
                 Height = Unit.Pixel(1000),
                 ShowExportControls =  true
             };
-            switch ((int)HttpContext.Session["teamsize"])
+            var league = db.Leagues.Find(id);
+            if (league == null)
+                return HttpNotFound();
+            switch (league.TeamSize)
             {
                 case 1:
                     reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/SingleTeams.rdlc");
@@ -56,7 +62,7 @@ namespace Tournament.Controllers
                     break;
             }
 
-            var p2 = new ReportParameter("Description", (string) HttpContext.Session["leaguename"]);
+            var p2 = new ReportParameter("Description", league.LeagueName);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
             var teams = db.Teams.Where(x => x.Leagueid == id);
@@ -76,6 +82,9 @@ namespace Tournament.Controllers
         // GET: Teams/Create
         public ActionResult Create(int id)
         {
+            var league = db.Leagues.Find(id);
+            if (league == null)
+                return HttpNotFound();
             int TeamNo = 1;
             var list = db.Teams.Where(x => x.Leagueid == id).ToList().OrderBy(x=>x.TeamNo).ToList();
             
@@ -94,7 +103,7 @@ namespace Tournament.Controllers
             var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             ViewBag.Teams = teams;
             ViewBag.List = RemainingPlayers(team, teams.ToList());
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.TeamSize = league.TeamSize;
             return View(team);
         }
 
@@ -142,11 +151,14 @@ namespace Tournament.Controllers
                 }
 
             }
+            var league = db.Leagues.Find(team.Leagueid);
+            if (league == null)
+                return HttpNotFound();
             var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.TeamSize = league.TeamSize;
            
             return View(team);
         }
@@ -171,7 +183,7 @@ namespace Tournament.Controllers
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"]; 
+            ViewBag.TeamSize = team.League.TeamSize;
             return View(team);
         }
 
@@ -246,12 +258,15 @@ namespace Tournament.Controllers
                 }
             }
 
+            var league = db.Leagues.Find(team.Leagueid);
+            if (league == null)
+                return HttpNotFound();
             var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
 
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.TeamSize = league.TeamSize;
             return View(team);
         }
 
@@ -259,7 +274,7 @@ namespace Tournament.Controllers
         [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+           
            
             if (id == null)
             {
@@ -284,7 +299,7 @@ namespace Tournament.Controllers
                                                   + "record, click the Delete button again. Otherwise "
                                                   + "click the Back to List hyperlink.";
             }
-
+            ViewBag.TeamSize = team.League.TeamSize;
             return View(team);
         }
 
@@ -294,8 +309,9 @@ namespace Tournament.Controllers
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
 
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            
             var team = db.Teams.Find(id);
+           
             if (team == null)
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
@@ -303,6 +319,7 @@ namespace Tournament.Controllers
             }
             if (db.Matches.Any(x => x.TeamNo1 == team.id || x.TeamNo2 == team.id))
             {
+                ViewBag.TeamSize = team.League.TeamSize;
                 ViewBag.Error = "Unable to delete this record, this team is scheduled to play matches";
                 return View(team);
             }
@@ -319,7 +336,7 @@ namespace Tournament.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index", new {id=team.Leagueid});
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 return RedirectToAction("Delete", new { concurrencyError = true, id = id });
             }
@@ -331,7 +348,7 @@ namespace Tournament.Controllers
                 ErrorSignal.FromCurrentContext().Raise(dex);
 
             }
-
+            ViewBag.TeamSize = team.League.TeamSize;
             return View(team);
         }
 
@@ -415,6 +432,14 @@ namespace Tournament.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private int TeamSize(int leagueid)
+        {
+            var league = db.Leagues.Find(leagueid);
+            if (league != null)
+                return league.TeamSize;
+            return 0;
         }
     }
 }

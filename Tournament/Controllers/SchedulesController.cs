@@ -246,7 +246,7 @@ namespace Tournament.Controllers
                db.SaveChanges();
                return RedirectToAction("Index", new {id = schedule.Leagueid});
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 return RedirectToAction("Delete", new { concurrencyError = true, id = id });
             }

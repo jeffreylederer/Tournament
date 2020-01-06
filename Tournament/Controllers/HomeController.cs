@@ -19,13 +19,8 @@ namespace Tournament.Controllers
         public ActionResult Index()
         {
             var username = User.Identity.Name;
-            if (HttpContext.Session["teamsize"] != null)
-                HttpContext.Session["teamsize"] = null;
-
-            if (HttpContext.Session["leaguename"] != null)
-                HttpContext.Session["leaguename"] = null;
-
             RemoveCookie("leagueid");
+            RemoveCookie("leaguename");
 
             var user = db.Users.Where(x => x.username == username).First();
             ViewBag.Error = "";
@@ -94,9 +89,8 @@ namespace Tournament.Controllers
             {
                 return HttpNotFound();
             }
-            HttpContext.Session["teamsize"] = league.TeamSize;
-            HttpContext.Session["leaguename"] = league.LeagueName;
             SetCookie("leagueid", id.Value);
+            SetCookie("leaguename", league.LeagueName);
   
 
             FormsAuthentication.SetAuthCookie(user.username, false);
@@ -112,15 +106,20 @@ namespace Tournament.Controllers
             string encryptCookie = FormsAuthentication.Encrypt(ticket);
             HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptCookie);
             HttpContext.Response.Cookies.Add(cookie);
-
-
             return RedirectToAction("Welcome");
         }
 
         [Authorize]
         public ActionResult Welcome()
         {
-            if(User.IsInRole("Admin"))
+            var leaguename = "";
+            var cookie = Request.Cookies["leaguename"];
+            if (cookie != null)
+            {
+                leaguename = cookie.Value;
+            }
+            ViewBag.leaguename = leaguename;
+            if (User.IsInRole("Admin"))
                 ViewBag.Info = "You are a site administrator";
             else if(User.IsInRole("LeagueAdmin"))
                 ViewBag.Info = "You are a league administrator";
@@ -160,6 +159,12 @@ namespace Tournament.Controllers
         private void SetCookie(string name, int value)
         {
             var cookie = new HttpCookie(name, value.ToString());
+            Response.Cookies.Add(cookie);
+        }
+
+        private void SetCookie(string name, string value)
+        {
+            var cookie = new HttpCookie(name, value);
             Response.Cookies.Add(cookie);
         }
     }

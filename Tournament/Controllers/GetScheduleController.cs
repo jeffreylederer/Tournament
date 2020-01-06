@@ -22,7 +22,7 @@ namespace Tournament.Controllers
             var topLine = new StringBuilder();
 
            
-            var teamsize = (int) HttpContext.Session["teamsize"];
+            
             var league = db.Leagues.Find(id);
             if (league == null)
             {

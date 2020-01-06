@@ -1,21 +1,21 @@
 ﻿using Elmah;
+using Microsoft.Reporting.WebForms;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
-using Microsoft.Reporting.WebForms;
 using Tournament.Code;
 using Tournament.Models;
 using Tournament.ReportFiles;
-using System.Data.Entity.Infrastructure;
 
 namespace Tournament.Controllers
 {
-   
+
     public class MatchesController : Controller
     {
         private TournamentEntities db = new TournamentEntities();
@@ -111,7 +111,13 @@ namespace Tournament.Controllers
             var complete = Complete(id);
             if (!complete)
                 ViewBag.Error = "Not all teams are complete";
-            TempData["id"] = id;
+            var leaguename = "";
+            var cookie = Request.Cookies["leaguename"];
+            if (cookie != null)
+            {
+                leaguename = cookie.Value;
+            }
+            ViewBag.LeagueName = leaguename;
             return View(missing);
         }
 
@@ -119,9 +125,29 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateMatches()
         {
-            var leagueid = (int) TempData["id"];
+           
+           
+
+            var leaguename = "";
+            var cookie = Request.Cookies["leaguename"];
+            if (cookie != null)
+            {
+                leaguename = cookie.Value;
+            }
+            ViewBag.LeagueName = leaguename;
+
+
+            var leagueid = 0;
+            cookie = Request.Cookies["leagueid"];
+            if (cookie != null)
+            {
+                int.TryParse(cookie.Value, out leagueid);
+            }
+            
+
             var numOfWeeks = db.Schedules.Count(x => x.Leagueid == leagueid);
             var numofTeams = db.Teams.Count(x => x.Leagueid == leagueid);
+
 
             var missing = Missing(leagueid);
             if (missing.Count > 0)
@@ -305,6 +331,10 @@ namespace Tournament.Controllers
             ViewBag.WeekId = weekid;
             ViewBag.Id = id;
 
+            var league = db.Leagues.Find(id);
+            if (league == null)
+                return HttpNotFound();
+
 
             var ds = new TournamentDS();
             bool IsBye = false;
@@ -344,9 +374,9 @@ namespace Tournament.Controllers
                         }
                     }
                     ds.Game.AddGameRow(item.Team.TeamNo,
-                        Players(item.Team),
+                        Players(item.Team, league.TeamSize),
                         item.Team1.TeamNo,
-                        Players(item.Team1),
+                        Players(item.Team1, league.TeamSize),
                         item.Team1Score,
                         item.Team2Score, item.Rink, forfeit);
                 }
@@ -354,12 +384,13 @@ namespace Tournament.Controllers
 
                 // check for byes
                 var matches = db.Matches.Where(x => x.Rink == -1 && x.WeekId == weekid);
+                
                 if (matches.Any())
                 {
                     var match = matches.First();
 
                     ds.Byes.AddByesRow(match.Schedule.WeekDate, match.Team.TeamNo,
-                        Players(match.Team));
+                        Players(match.Team, league.TeamSize));
                     reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", ds.Byes.Rows));
                     IsBye = true;
                 }
@@ -375,15 +406,13 @@ namespace Tournament.Controllers
                 reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", new System.Data.DataTable()));
                 reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Bye", new System.Data.DataTable()));
             }
-            var league = db.Leagues.Find(id);
-            if (league == null)
-                return HttpNotFound();
+            
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Stand", CalculateStandings.Doit(weekid, league).Rows));
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Standings.rdlc");
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", ds.Game.Rows));
 
             var p1 = new ReportParameter("WeekDate", WeekDate);
-            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
+            var p2 = new ReportParameter("Description",league.LeagueName);
             var p3 = new ReportParameter("IsBye", IsBye ? "1" : "0");
             var p4 = new ReportParameter("IsCancelled", isCancelled ? "1" : "0");
             var p5 = new ReportParameter("PointsCount", league.PointsCount ? "1" : "0");
@@ -396,10 +425,9 @@ namespace Tournament.Controllers
             return View();
         }
 
-        private string Players(Team team)
+        private string Players(Team team, int teamsize)
         {
-            var TeamSize = (int)HttpContext.Session["teamsize"];
-            switch (TeamSize)
+            switch (teamsize)
             {
                 case 1:
                     return $"{team.Player.Membership.NickName}";
@@ -415,7 +443,11 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult ScoreCardReport(int id, int weekid)
         {
-           
+            var league = db.Leagues.Find(id);
+            if (league == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            }
             var reportViewer = new ReportViewer()
             {
                 ProcessingMode = ProcessingMode.Local,
@@ -425,14 +457,13 @@ namespace Tournament.Controllers
             };
             ViewBag.WeekId = weekid;
 
-            var ds = new TournamentDS();
             var matches = db.GetMatchAll(weekid).ToList();
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Match", matches));
 
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/ScoreCard.rdlc");
-
-            var p1 = new ReportParameter("teamsize", HttpContext.Session["teamsize"].ToString());
-            var p2 = new ReportParameter("Description", (string) HttpContext.Session["leaguename"]);
+            ViewBag.TeamSize = league.TeamSize;
+            var p1 = new ReportParameter("teamsize", league.TeamSize.ToString());
+            var p2 = new ReportParameter("Description", league.LeagueName);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2 });
             ViewBag.ReportViewer = reportViewer;
             ViewBag.Id = id;
@@ -451,18 +482,20 @@ namespace Tournament.Controllers
             };
 
             var ds = new TournamentDS();
-
+            var league = db.Leagues.Find(id);
+            if (league == null)
+                return HttpNotFound();
 
             foreach (var item in db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.WeekNumber))
             {
                 var matches = db.Matches.Where(x => x.Rink == -1 && x.WeekId == item.id);
                 if(matches.Any())
-                    ds.Byes.AddByesRow(item.WeekDate, matches.First().Team.TeamNo, Players(matches.First().Team));
+                    ds.Byes.AddByesRow(item.WeekDate, matches.First().Team.TeamNo, Players(matches.First().Team, league.TeamSize));
 
             }
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Byes.rdlc");
 
-            var p2 = new ReportParameter("Description", (string)HttpContext.Session["leaguename"]);
+            var p2 = new ReportParameter("Description", league.LeagueName);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Byes", ds.Byes.Rows));
@@ -499,8 +532,9 @@ namespace Tournament.Controllers
                     Selected = match.ForFeitId == match.Team1.TeamNo
                 }
             };
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            ViewBag.TeamSize = match.Schedule.League.TeamSize;
             ViewBag.ForFeitId = forfeits;
+            ViewBag.Id = match.Schedule.Leagueid;
             return View(match);
         }
 
@@ -511,6 +545,7 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Scoring([Bind(Include = "id,WeekId,Rink,TeamNo1,TeamNo2,Team1Score,Team2Score,ForFeitId,rowversion")] Match match)
         {
+            League league=null;
             try
             {
 
@@ -519,7 +554,7 @@ namespace Tournament.Controllers
                     var schedule = db.Schedules.Find(match.WeekId);
                     if (schedule == null)
                         return HttpNotFound();
-                    var league = db.Leagues.Find(schedule.Leagueid);
+                    league = db.Leagues.Find(schedule.Leagueid);
                     if (league == null)
                         return HttpNotFound();
                     if (!league.TiesAllowed && match.Team1Score == match.Team2Score && match.ForFeitId == 0 && (match.Team1Score + match.Team2Score > 0 ))
@@ -595,8 +630,21 @@ namespace Tournament.Controllers
                     Selected = match.ForFeitId == newmatch.Team1.TeamNo
                 }
             };
-            ViewBag.TeamSize = (int)HttpContext.Session["teamsize"];
+            if (league == null)
+            {
+                var leagueid = 0;
+                var cookie = Request.Cookies["leagueid"];
+                if (cookie != null)
+                {
+                    int.TryParse(cookie.Value, out leagueid);
+                }
+                league = db.Leagues.Find(leagueid);
+                if (league == null)
+                    return HttpNotFound();
+            }
+            ViewBag.TeamSize = league.TeamSize;
             ViewBag.ForFeitId = forfeits;
+            ViewBag.Id = league.id;
             return View(newmatch);
         }
 

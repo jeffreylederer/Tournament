@@ -508,7 +508,6 @@
     <Content Include="Views\Schedules\Edit.cshtml" />
     <Content Include="Views\Schedules\Index.cshtml" />
     <Content Include="Views\Matches\ClearSchedule.cshtml" />
-    <Content Include="Views\Matches\Create.cshtml" />
     <Content Include="Views\Matches\CreateMatches.cshtml" />
     <Content Include="Views\Matches\Index.cshtml" />
     <Content Include="Views\Matches\Scoring.cshtml" />

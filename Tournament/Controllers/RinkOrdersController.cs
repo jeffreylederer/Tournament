@@ -180,9 +180,7 @@ namespace Tournament.Controllers
                     int id1 = 1;
                     foreach (var item in list)
                     {
-                        if (item.id == rinkOrder.id)
-                            list.Remove(rinkOrder);
-                        else
+                        if (item.id != rinkOrder.id)
                         {
                             item.id = id1++;
                             db.Entry(item).State = EntityState.Modified;
@@ -193,7 +191,7 @@ namespace Tournament.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException ex)
+                catch (DbUpdateConcurrencyException)
                 {
                     return RedirectToAction("Delete", new { concurrencyError = true, id = id });
                 }
