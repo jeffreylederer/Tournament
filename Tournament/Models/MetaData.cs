@@ -1,8 +1,5 @@
 ﻿using System;
-using System.CodeDom;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Policy;
 
 namespace Tournament.Models
 {
@@ -31,6 +28,9 @@ namespace Tournament.Models
         
         [Display(Name = "Nickname")]
         public string NickName { get; set; }
+
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; }
 
         [Timestamp]
         public byte[] rowversion { get; set; }

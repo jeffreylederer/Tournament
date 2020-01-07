@@ -26,29 +26,28 @@ namespace Tournament.Controllers
             
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = db.Memberships;
-            IOrderedQueryable<Membership> newlist; 
+            var list = db.MembershipAllowDelete().ToList();
             switch (sortOrder)
             {
                 case "name_desc":
-                    newlist = list.OrderByDescending(x => x.LastName);
+                    list.Sort((a, b) => b.LastName.CompareTo(a.LastName));
                     break;
                 
                 case "firstname_desc":
-                    newlist = list.OrderByDescending(x => x.FirstName);
+                    list.Sort((a, b) => b.FirstName.CompareTo(a.FirstName));
                     break;
                 case "firstname":
-                    newlist = list.OrderBy(x => x.FirstName);
+                    list.Sort((a, b) => a.FirstName.CompareTo(b.FirstName));
                     break;
                 default:
-                    newlist = list.OrderBy(x => x.LastName);
+                    list.Sort((a, b) => a.LastName.CompareTo(b.LastName));
                     break;
 
             }
-            ViewBag.Count = list.Count();
+            ViewBag.Count = list.Count;
             
 
-            return View(newlist);
+            return View(list);
         }
 
 
@@ -176,27 +175,7 @@ namespace Tournament.Controllers
             return View(membership);
         }
 
-        /// <summary>
-        /// determine if a player is in any league
-        /// </summary>
-        /// <param name="id">record id of the player</param>
-        /// <returns>true if player is in some league</returns>
-        private bool InUse(int? id)
-        {
-            var players = db.Players.Where(x => x.MembershipId == id.Value);
-            bool inUse = false;
-            foreach (var player in players)
-            {
-                if (db.Leagues.Any(x => x.id == player.Leagueid ))
-                {
-                    inUse = true;
-                    break;
-                }
-            }
-            return inUse;
-        }
-
-        // GET: Memberships/Delete/5
+       // GET: Memberships/Delete/5
         [Authorize(Roles = "Admin,LeagueAdmin")]
         public ActionResult Delete(int? id, bool? concurrencyError)
         {
@@ -238,11 +217,7 @@ namespace Tournament.Controllers
             {
                 ViewBag.Message = "Record was deleted by another user";
             }
-            else if (InUse(membership.id))
-            {
-                @ViewBag.Error = "Unable to delete. Member is a player in a league";
-                return View(membership);
-            }
+            
             else
             {
                 try

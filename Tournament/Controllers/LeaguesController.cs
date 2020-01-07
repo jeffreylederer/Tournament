@@ -20,7 +20,7 @@ namespace Tournament.Controllers
         // GET: Leagues
         public ActionResult Index()
         {
-            return View(db.Leagues.ToList());
+            return View(db.LeagueAllowDelete().ToList());
         }
 
         
@@ -206,11 +206,7 @@ namespace Tournament.Controllers
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
             }
-            else if(db.Players.Where(x=>x.Leagueid == id).Count() != 0 || db.Schedules.Where(x=>x.Leagueid==id).Count() != 0)
-            {
-                ViewBag.Error = "Unable to delete this record, there are players or scheduled weeks assigned to this league";
-            }
-            else
+           else
             {
                 try
                 {

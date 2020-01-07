@@ -26,15 +26,14 @@ namespace Tournament.Controllers
 
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = from s in db.Players where s.Leagueid == id
-                       select s;
+            var list = db.PlayerAllowDelete(id).ToList();
             switch (sortOrder)
             {
                 case "name_desc":
-                    list = list.OrderByDescending(s => s.Membership.LastName + " " + s.Membership.FirstName);
+                    list.Sort((a, b) => String.Compare((b.LastName + " " + b.FirstName), a.LastName + " " + a.FirstName, StringComparison.CurrentCulture));
                     break;
                 default:
-                    list = list.OrderBy(s => s.Membership.LastName + " " + s.Membership.FirstName);
+                    list.Sort((a, b) => String.Compare((a.LastName + " " + a.FirstName), b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
                     break;
             }
             ViewBag.Count = list.Count();

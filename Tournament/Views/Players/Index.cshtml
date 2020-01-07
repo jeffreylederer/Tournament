@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Tournament.Models.Player>
+﻿@model IEnumerable<Tournament.Models.PlayerAllowDelete_Result>
 
 @{
     ViewBag.Title = "Index";
@@ -29,17 +29,23 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Membership.FullName)
+                        @Html.DisplayFor(modelItem => item.FullName)
                     </td>
 
                     <td>
                         @{
-                            if (User.IsInRole("Admin") ||
-                                User.IsInRole("LeagueAdmin"))
+                            if (User.IsInRole("Admin") ||User.IsInRole("LeagueAdmin"))
                             {
-                                @Html.ActionLink("Edit", "Edit", new { id = item.id })
-                                @Html.Raw(" | ")
-                                @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                                @Html.ActionLink("Edit", "Edit", new { id = item.id });
+                                @Html.Raw(" | ");
+                                if (item.cnt > 0)
+                                { 
+                                    <span style="color: gray;">Delete</span>
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                                }
                             }
                         }
                     </td>

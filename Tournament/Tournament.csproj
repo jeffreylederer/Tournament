@@ -230,13 +230,23 @@
     <Compile Include="Models\League.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LeagueAllowDelete_Result.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Match.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Membership.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MembershipAllowDelete_Result.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MetaDataSP.cs" />
     <Compile Include="Models\Player.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PlayerAllowDelete_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\RinkOrder.cs">
@@ -245,7 +255,13 @@
     <Compile Include="Models\Schedule.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ScheduleAllowDelete_Result.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Team.cs">
+      <DependentUpon>TournamentModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TeamAllowDelete_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TournamentModel.Context.cs">

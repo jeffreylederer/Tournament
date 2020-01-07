@@ -30,7 +30,8 @@ namespace Tournament.Controllers
            if (league == null)
                return HttpNotFound();
            ViewBag.TeamSize = league.TeamSize;
-           return View(db.Teams.Where(x=>x.Leagueid == id).OrderBy(x => x.TeamNo).ToList());
+           var list = db.TeamAllowDelete(id).OrderBy(x => x.TeamNo);
+           return View(list);
         }
 
         
@@ -316,12 +317,6 @@ namespace Tournament.Controllers
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
                 return View(new Team());
-            }
-            if (db.Matches.Any(x => x.TeamNo1 == team.id || x.TeamNo2 == team.id))
-            {
-                ViewBag.TeamSize = team.League.TeamSize;
-                ViewBag.Error = "Unable to delete this record, this team is scheduled to play matches";
-                return View(team);
             }
             try
             {

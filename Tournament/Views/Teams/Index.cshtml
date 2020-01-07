@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Tournament.Models.Team>
+﻿@model IEnumerable<Tournament.Models.TeamAllowDelete_Result>
 
 @{
     ViewBag.Title = "Index";
@@ -22,7 +22,7 @@
             @Html.DisplayNameFor(model => model.TeamNo)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Skip)
+            @Html.DisplayNameFor(model => model.skip)
         </th>
     @{
         if ((int) ViewBag.TeamSize > 2)
@@ -49,18 +49,18 @@
             @Html.DisplayFor(modelItem => item.TeamNo)
         </th>
         <td>
-            @Html.DisplayFor(modelItem => item.Player.Membership.FullName)
+            @Html.DisplayFor(modelItem => item.skip)
         </td>
     @if ((int) ViewBag.TeamSize > 2)
     {
         <td>
-            @Html.DisplayFor(modelItem => item.Player1.Membership.FullName)
+            @Html.DisplayFor(modelItem => item.ViceSkip)
         </td>
     }
     @if ((int) ViewBag.TeamSize > 1)
     {
         <td>
-            @Html.DisplayFor(modelItem => item.Player2.Membership.FullName)
+            @Html.DisplayFor(modelItem => item.Lead)
         </td>
     }
         <td>
@@ -69,8 +69,15 @@
                 User.IsInRole("LeagueAdmin"))
             {
                 @Html.ActionLink("Edit", "Edit", new {id = item.id})
-                @Html.Raw(" | ")
-                @Html.ActionLink("Delete", "Delete", new {id = item.id}) 
+                @Html.Raw(" | ");
+                if (item.cnt > 0)
+                { 
+                    <span style="color: gray;">Delete</span>
+                }
+                else
+                {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                }
             }
         }
             </td>

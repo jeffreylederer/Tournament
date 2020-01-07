@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Tournament.Models.Membership>
+﻿@model IEnumerable<Tournament.Models.MembershipAllowDelete_Result>
 
 @{
     ViewBag.Title = "Index";
@@ -7,16 +7,16 @@
 <h2>Membership</h2>
 
 <p>
-@{
-    if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
-    {
-        @Html.ActionLink("Add a Membership", "Create")
+    @{
+        if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
+        {
+            @Html.ActionLink("Add a Membership", "Create")
+        }
     }
-}
 
 
 
-<p> Total Memberships: @ViewBag.Count<p/>
+<p> Total Memberships: @ViewBag.Count<p />
 
 
 <table class="table">
@@ -43,38 +43,46 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model)
-{
-    <tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.LastName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.FirstName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.FullName)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.shortname)
-    </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NickName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Wheelchair)
-        </td>
-    <td>
-    @{
-        if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
-        {
-            @Html.ActionLink("Edit", "Edit", new {id = item.id});  
-            @Html.Raw(" | ");
-            @Html.ActionLink("Delete", "Delete", new {id = item.id});
-        }
-    }
-</td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.shortname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NickName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Wheelchair)
+            </td>
+            <td>
 
+                @if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.id });
+                    @Html.Raw(" | ");
+                    if (item.cnt > 0)
+                    { 
+                        <span style="color: gray;">Delete</span>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                    }
+                }
+
+            </td>
+        </tr>
+    }
 </table>
+
+}

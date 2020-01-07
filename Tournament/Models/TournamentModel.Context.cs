@@ -46,5 +46,42 @@ namespace Tournament.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetMatchAll_Result>("GetMatchAll", weekIdParameter);
         }
+    
+        public virtual ObjectResult<LeagueAllowDelete_Result> LeagueAllowDelete()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LeagueAllowDelete_Result>("LeagueAllowDelete");
+        }
+    
+        public virtual ObjectResult<MembershipAllowDelete_Result> MembershipAllowDelete()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<MembershipAllowDelete_Result>("MembershipAllowDelete");
+        }
+    
+        public virtual ObjectResult<PlayerAllowDelete_Result> PlayerAllowDelete(Nullable<int> leagueid)
+        {
+            var leagueidParameter = leagueid.HasValue ?
+                new ObjectParameter("leagueid", leagueid) :
+                new ObjectParameter("leagueid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<PlayerAllowDelete_Result>("PlayerAllowDelete", leagueidParameter);
+        }
+    
+        public virtual ObjectResult<TeamAllowDelete_Result> TeamAllowDelete(Nullable<int> leagueid)
+        {
+            var leagueidParameter = leagueid.HasValue ?
+                new ObjectParameter("leagueid", leagueid) :
+                new ObjectParameter("leagueid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<TeamAllowDelete_Result>("TeamAllowDelete", leagueidParameter);
+        }
+    
+        public virtual ObjectResult<ScheduleAllowDelete_Result> ScheduleAllowDelete(Nullable<int> leagueid)
+        {
+            var leagueidParameter = leagueid.HasValue ?
+                new ObjectParameter("leagueid", leagueid) :
+                new ObjectParameter("leagueid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ScheduleAllowDelete_Result>("ScheduleAllowDelete", leagueidParameter);
+        }
     }
 }

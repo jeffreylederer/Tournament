@@ -37,8 +37,8 @@ namespace Tournament.Controllers
                 // Now if our password was enctypted or hashed we would have done the
                 // same operation on the user entered password here, But for now
                 // since the password is in plain text lets just authenticate directly
-
-                var users = db.Users.Where(x => x.username == model.Username.ToLower().Trim());
+                var checkid = model.Username.ToLower().Trim();
+                var users = db.Users.Where(x => x.username == checkid);
                 // User found in the database
                 if (users.Count() == 1 && users.First().password == model.Password)
                 {

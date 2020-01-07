@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TournamentModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="League">
           <Key>
             <PropertyRef Name="id" />
@@ -284,6 +284,17 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
         <Function Name="GetMatchAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WeekId" Type="int" Mode="In" />
         </Function>
+        <Function Name="LeagueAllowDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="MembershipAllowDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="PlayerAllowDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="leagueid" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ScheduleAllowDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="leagueid" Type="int" Mode="In" />
+        </Function>
+        <Function Name="TeamAllowDelete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="leagueid" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="TournamentModelStoreContainer">
           <EntitySet Name="League" EntityType="Self.League" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Match" EntityType="Self.Match" Schema="dbo" store:Type="Tables" />
@@ -357,8 +368,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
             <End Role="UserLeague" EntitySet="UserLeague" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TournamentModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -726,7 +736,18 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
             <End Role="UserLeague" EntitySet="UserLeagues" />
           </AssociationSet>
           <FunctionImport Name="GetMatchAll" ReturnType="Collection(TournamentModel.GetMatchAll_Result)">
-            <Parameter Name="WeekId" Mode="In" Type="Int32" />
+          <Parameter Name="WeekId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="LeagueAllowDelete" ReturnType="Collection(TournamentModel.LeagueAllowDelete_Result)" />
+          <FunctionImport Name="MembershipAllowDelete" ReturnType="Collection(TournamentModel.MembershipAllowDelete_Result)" />
+          <FunctionImport Name="PlayerAllowDelete" ReturnType="Collection(TournamentModel.PlayerAllowDelete_Result)">
+          <Parameter Name="leagueid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="TeamAllowDelete" ReturnType="Collection(TournamentModel.TeamAllowDelete_Result)">
+          <Parameter Name="leagueid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ScheduleAllowDelete" ReturnType="Collection(TournamentModel.ScheduleAllowDelete_Result)">
+          <Parameter Name="leagueid" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetMatchAll_Result">
@@ -741,6 +762,54 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Type="Int32" Name="Team2" Nullable="false" />
           <Property Type="String" Name="Date" Nullable="true" MaxLength="10" />
           <Property Type="Int32" Name="Rink" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="LeagueAllowDelete_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="LeagueName" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Active" Nullable="false" />
+          <Property Type="Int32" Name="TeamSize" Nullable="false" />
+          <Property Type="Binary" Name="rowversion" Nullable="false" MaxLength="8" />
+          <Property Type="Boolean" Name="TiesAllowed" Nullable="false" />
+          <Property Type="Boolean" Name="PointsCount" Nullable="false" />
+          <Property Type="Int16" Name="WinPoints" Nullable="false" />
+          <Property Type="Int16" Name="TiePoints" Nullable="false" />
+          <Property Type="Int16" Name="ByePoints" Nullable="false" />
+          <Property Type="Int32" Name="StartWeek" Nullable="false" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="MembershipAllowDelete_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="FirstName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="FullName" Nullable="false" MaxLength="101" />
+          <Property Type="String" Name="shortname" Nullable="true" MaxLength="25" />
+          <Property Type="String" Name="NickName" Nullable="true" MaxLength="50" />
+          <Property Type="Boolean" Name="Wheelchair" Nullable="false" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="PlayerAllowDelete_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
+          <Property Type="String" Name="FullName" Nullable="true" MaxLength="101" />
+          <Property Type="String" Name="LastName" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="50" />
+        </ComplexType>
+        <ComplexType Name="TeamAllowDelete_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="skip" Nullable="true" MaxLength="101" />
+          <Property Type="String" Name="ViceSkip" Nullable="true" MaxLength="101" />
+          <Property Type="String" Name="Lead" Nullable="true" MaxLength="101" />
+          <Property Type="Int32" Name="Leagueid" Nullable="false" />
+          <Property Type="Int32" Name="TeamNo" Nullable="false" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="ScheduleAllowDelete_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="DateTime" Name="GameDate" Nullable="false" />
+          <Property Type="Int32" Name="WeekNumber" Nullable="false" />
+          <Property Type="Boolean" Name="Cancelled" Nullable="false" />
+          <Property Type="String" Name="WeekDate" Nullable="true" MaxLength="10" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -889,6 +958,74 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
                 <ScalarProperty Name="Team2" ColumnName="Team2" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="Rink" ColumnName="Rink" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="LeagueAllowDelete" FunctionName="TournamentModel.Store.LeagueAllowDelete">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.LeagueAllowDelete_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="TeamSize" ColumnName="TeamSize" />
+                <ScalarProperty Name="rowversion" ColumnName="rowversion" />
+                <ScalarProperty Name="TiesAllowed" ColumnName="TiesAllowed" />
+                <ScalarProperty Name="PointsCount" ColumnName="PointsCount" />
+                <ScalarProperty Name="WinPoints" ColumnName="WinPoints" />
+                <ScalarProperty Name="TiePoints" ColumnName="TiePoints" />
+                <ScalarProperty Name="ByePoints" ColumnName="ByePoints" />
+                <ScalarProperty Name="StartWeek" ColumnName="StartWeek" />
+                <ScalarProperty Name="cnt" ColumnName="cnt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="MembershipAllowDelete" FunctionName="TournamentModel.Store.MembershipAllowDelete">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.MembershipAllowDelete_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="shortname" ColumnName="shortname" />
+                <ScalarProperty Name="NickName" ColumnName="NickName" />
+                <ScalarProperty Name="Wheelchair" ColumnName="Wheelchair" />
+                <ScalarProperty Name="cnt" ColumnName="cnt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="PlayerAllowDelete" FunctionName="TournamentModel.Store.PlayerAllowDelete">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.PlayerAllowDelete_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cnt" ColumnName="cnt" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="TeamAllowDelete" FunctionName="TournamentModel.Store.TeamAllowDelete">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.TeamAllowDelete_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="skip" ColumnName="skip" />
+                <ScalarProperty Name="ViceSkip" ColumnName="ViceSkip" />
+                <ScalarProperty Name="Lead" ColumnName="Lead" />
+                <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
+                <ScalarProperty Name="TeamNo" ColumnName="TeamNo" />
+                <ScalarProperty Name="cnt" ColumnName="cnt" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="ScheduleAllowDelete" FunctionName="TournamentModel.Store.ScheduleAllowDelete">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="TournamentModel.ScheduleAllowDelete_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="GameDate" ColumnName="GameDate" />
+                <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
+                <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
+                <ScalarProperty Name="WeekDate" ColumnName="WeekDate" />
+                <ScalarProperty Name="cnt" ColumnName="cnt" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

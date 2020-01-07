@@ -19,9 +19,8 @@ namespace Tournament.Controllers
         // GET: Schedules
         public ActionResult Index(int id)
         {
-            var list = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.WeekNumber).ToList();
             ViewBag.Id = id;
-            return View(list);
+            return View(db.ScheduleAllowDelete(id).ToList());
         }
 
 
@@ -225,11 +224,6 @@ namespace Tournament.Controllers
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
                 return View(new Schedule());
-            }
-           if(db.Matches.Any(x=>x.WeekId == schedule.id))
-            {
-                ViewBag.Error = "Unable to delete this record, there are matches scheduled to play on this date";
-                return View(schedule);
             }
             try
             {
