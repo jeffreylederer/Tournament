@@ -25,7 +25,7 @@
     <div class="validation-summary-errors text-danger">@ViewBag.Error</div>
 <br/>
 <p>
-    @if ((int) ViewBag.WeekID > 0)
+    @if (ViewBag.WeekID != null && (int) ViewBag.WeekID > 0)
     {
         @Html.ActionLink("This week's standings report", "StandingsReport", new {weekid = ViewBag.WeekId, id=ViewBag.Id})<br/>
         @Html.ActionLink("This week's score cards", "ScoreCardReport", new {weekid = ViewBag.WeekId, id = ViewBag.Id })
