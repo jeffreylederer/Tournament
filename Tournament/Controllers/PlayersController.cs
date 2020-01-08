@@ -16,7 +16,7 @@ namespace Tournament.Controllers
     
     public class PlayersController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         [Authorize]
         // GET: Players
@@ -26,7 +26,7 @@ namespace Tournament.Controllers
 
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = db.PlayerAllowDelete(id).ToList();
+            var list = _db.PlayerAllowDelete(id).ToList();
             switch (sortOrder)
             {
                 case "name_desc":
@@ -51,7 +51,9 @@ namespace Tournament.Controllers
                 Leagueid = id
             };
 
-            ViewBag.List = GetRemainingMembers(id).OrderBy(x => x.LastName);
+            var list = GetRemainingMembers(id);
+            list.Sort((a, b) => String.Compare(a.LastName + " " + a.FirstName, b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
+            ViewBag.List = list;
             return View(item);
         }
 
@@ -65,10 +67,10 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Players.Add(player);
+                _db.Players.Add(player);
                 try
                 {
-                    db.SaveChanges();
+                    _db.SaveChanges();
                     return RedirectToAction("Index", new {id=player.Leagueid});
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -85,8 +87,9 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Insert failed");
                 }
             }
-
-            ViewBag.List = GetRemainingMembers(player.Leagueid).OrderBy(x => x.LastName);
+            var list = GetRemainingMembers(player.Leagueid);
+            list.Sort((a, b) => String.Compare(a.LastName + " " + a.FirstName, b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
+            ViewBag.List = list;
             return View(player);
         }
 
@@ -98,14 +101,14 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Player player = db.Players.Find(id);
+            Player player = _db.Players.Find(id);
             if (player == null)
             {
                 return HttpNotFound();
             }
             var list = GetRemainingMembers(player.Leagueid);
             list.Add(player.Membership);
-            list.Sort((a, b) => a.LastName.CompareTo(b.LastName));
+            list.Sort((a, b) => String.Compare(a.LastName + " " + a.FirstName, b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
             ViewBag.List = list;
             return View(player);
         }
@@ -123,8 +126,8 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(player).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(player).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("Index", new {id=player.Leagueid});
                 }
             }
@@ -165,7 +168,10 @@ namespace Tournament.Controllers
                     "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 ErrorSignal.FromCurrentContext().Raise(dex);
             }
-
+            var list = GetRemainingMembers(player.Leagueid);
+            list.Add(player.Membership);
+            list.Sort((a, b) => String.Compare(a.LastName + " " + a.FirstName, b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
+            ViewBag.List = list;
             return View(player);
         }
 
@@ -177,7 +183,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var player = db.Players.Find(id);
+            var player = _db.Players.Find(id);
             if (player == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -206,22 +212,22 @@ namespace Tournament.Controllers
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
 
-            var player = db.Players.Find(id);
+            var player = _db.Players.Find(id);
             if (player == null)
             {
                 ViewBag.Message = "Record was delete by another user";
                 return View(player);
             }
-            if(db.Teams.Any(x=>x.Skip == player.id) || db.Teams.Any(x => x.ViceSkip == player.id) || db.Teams.Any(x => x.Lead == player.id))
+            if(_db.Teams.Any(x=>x.Skip == player.id) || _db.Teams.Any(x => x.ViceSkip == player.id) || _db.Teams.Any(x => x.Lead == player.id))
             {
                 ViewBag.Error = "Record was not deleted, the player is on a team.";
                 return View(player);
             }
             try
             {
-                db.Entry(player).Property("rowversion").OriginalValue = rowversion;
-                db.Entry(player).State = EntityState.Deleted;
-                db.SaveChanges();
+                _db.Entry(player).Property("rowversion").OriginalValue = rowversion;
+                _db.Entry(player).State = EntityState.Deleted;
+                _db.SaveChanges();
                 return RedirectToAction("Index", new {id=player.Leagueid});
             }
             catch (DbUpdateConcurrencyException)
@@ -242,20 +248,21 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private List<Membership> GetRemainingMembers(int leagueid)
         {
-            var players = db.Players;
+            var players = _db.Players;
             var list = new List<Membership>();
-            foreach (var member in db.Memberships)
+            foreach (var member in _db.Memberships)
             {
                 if (!players.Any(x => x.MembershipId == member.id && x.Leagueid==leagueid))
                     list.Add(member);
             }
+            
             return list;
 
         }

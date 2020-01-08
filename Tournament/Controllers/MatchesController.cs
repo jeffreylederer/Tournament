@@ -18,14 +18,14 @@ namespace Tournament.Controllers
 
     public class MatchesController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         [Authorize]
         // GET: Matches
         public ActionResult Index(int id, int? weekid)
         {
 
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -34,9 +34,9 @@ namespace Tournament.Controllers
             Schedule schedule = null;
             if (!weekid.HasValue || weekid.Value == 0)
             {
-                if (db.Schedules.Where(x => x.Leagueid == id).Any())
+                if (_db.Schedules.Any(x => x.Leagueid == id))
                 {
-                    schedule = db.Schedules.Where(x => x.Leagueid==id).First();
+                    schedule = _db.Schedules.Where(x => x.Leagueid==id).First();
                     weekid = schedule.id;
                 }
                 else
@@ -44,9 +44,9 @@ namespace Tournament.Controllers
                     ViewBag.Error = "No dates have been scheduled";
                 }
             }
-            else if(weekid.HasValue && weekid.Value > 0)
+            else if(weekid > 0)
             {
-                schedule = db.Schedules.Find(weekid.Value);
+                schedule = _db.Schedules.Find(weekid.Value);
                 if (schedule == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -57,9 +57,9 @@ namespace Tournament.Controllers
             var matches = new List<Match>();
             if (schedule != null)
             {
-                matches = db.Matches.Where(x => x.WeekId == schedule.id && x.Rink != -1).OrderBy(x => x.Rink).ToList();
+                matches = _db.Matches.Where(x => x.WeekId == schedule.id && x.Rink != -1).OrderBy(x => x.Rink).ToList();
                 ViewBag.ScheduleID =
-                    new SelectList(db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.WeekNumber).ToList(), "id",
+                    new SelectList(_db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate).ToList(), "id",
                         "WeekDate", weekid);
                 ViewBag.Date = schedule.WeekDate;
             }
@@ -67,7 +67,7 @@ namespace Tournament.Controllers
             {
                 ViewBag.Date = DateTime.Now.ToShortDateString();
                 ViewBag.scheduleId =
-                    new SelectList(db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.WeekNumber).ToList(), "id",
+                    new SelectList(_db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate).ToList(), "id",
                         "WeekDate");
             }
 
@@ -81,15 +81,17 @@ namespace Tournament.Controllers
         public ActionResult MoveUp(int id)
         {
             
-            var match = db.Matches.Find(id);
-            var weekMatches = db.Matches.Where(x => x.WeekId == match.WeekId);
+            var match = _db.Matches.Find(id);
+            if (match == null)
+                return HttpNotFound();
+            var weekMatches = _db.Matches.Where(x => x.WeekId == match.WeekId);
             var match1 = weekMatches.First(x => x.Rink == match.Rink-1);
             match1.Rink = match.Rink;
             match.Rink = match1.Rink-1;
-            db.Entry(match).State = EntityState.Modified;
+            _db.Entry(match).State = EntityState.Modified;
             try
             {
-                db.SaveChanges();
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -125,9 +127,6 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateMatches()
         {
-           
-           
-
             var leaguename = "";
             var cookie = Request.Cookies["leaguename"];
             if (cookie != null)
@@ -145,8 +144,8 @@ namespace Tournament.Controllers
             }
             
 
-            var numOfWeeks = db.Schedules.Count(x => x.Leagueid == leagueid);
-            var numofTeams = db.Teams.Count(x => x.Leagueid == leagueid);
+            var numOfWeeks = _db.Schedules.Count(x => x.Leagueid == leagueid);
+            var numofTeams = _db.Teams.Count(x => x.Leagueid == leagueid);
 
 
             var missing = Missing(leagueid);
@@ -163,7 +162,7 @@ namespace Tournament.Controllers
                 return View(missing);
             }
 
-            var matches = db.Matches.Where(x => x.Team.Leagueid == leagueid).ToList();
+            var matches = _db.Matches.Where(x => x.Team.Leagueid == leagueid).ToList();
             foreach (var match in matches)
             {
                 if (match.Team1Score != 0 || match.Team2Score != 0 || match.ForFeitId != 0)
@@ -173,21 +172,28 @@ namespace Tournament.Controllers
                 }
             }
 
-            db.Matches.RemoveRange(matches);
+            _db.Matches.RemoveRange(matches);
 
             var cs = new CreateSchedule();
 
             var newMatches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
             
-            var scheduleList = db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
-            var teamList = db.Teams.Where(x => x.Leagueid == leagueid).ToList();
+            var scheduleList = _db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
+            var lookup = new Dictionary<int, DateTime>();
+            int i = 1;
+            foreach (var item in scheduleList)
+            {
+                lookup[i++] = item.GameDate;
+            }
+            var teamList = _db.Teams.Where(x => x.Leagueid == leagueid).ToList();
 
             foreach (var match in newMatches)
             {
                 var team1 = teamList.Find(x => x.TeamNo == match.Team1 + 1);
                 var team2 = teamList.Find(x => x.TeamNo == match.Team2 + 1);
-                var round = scheduleList.Find(x => x.WeekNumber == match.Week + 1);
-                db.Matches.Add(new Match()
+                var date = lookup[match.Week + 1];
+                var round = scheduleList.Find(x => x.GameDate == date);
+                _db.Matches.Add(new Match()
                 {
                     id=0,
                     WeekId = round.id,
@@ -202,7 +208,7 @@ namespace Tournament.Controllers
             }
             try
             {
-                db.SaveChanges();
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -210,7 +216,7 @@ namespace Tournament.Controllers
                 ViewBag.Error = $"No matches were created, Error {e.Message}";
                 return View(new List<Player>());
             }
-            var rounds = db.Schedules.Where(x => x.Leagueid == leagueid);
+            var rounds = _db.Schedules.Where(x => x.Leagueid == leagueid);
             if (!rounds.Any())
             {
                 ViewBag.Error = "No matches created becuse no weeks have been scheduled";
@@ -219,18 +225,22 @@ namespace Tournament.Controllers
             return RedirectToAction("index", new { weekid = rounds.First().id, id= leagueid});
         }
 
+        /// <summary>
+        /// Check to make sure every position on a team is filed
+        /// </summary>
+        /// <param name="leagueid"></param>
+        /// <returns>true if every poosition is filled</returns>
         private bool Complete(int leagueid)
         {
-            var teamsize = db.Leagues.Find(leagueid).TeamSize;
+            var teamsize = _db.Leagues.Find(leagueid).TeamSize;
             var complete = true;
-            foreach (var team in db.Teams.Where(x => x.Leagueid == leagueid).ToList())
+            foreach (var team in _db.Teams.Where(x => x.Leagueid == leagueid).ToList())
             {
                 switch (teamsize)
                 {
                     case 1:
                         if (!team.Skip.HasValue)
                         {
-                            ViewBag.Error = "Not all teams are complete";
                             complete = false;
                         }
                         break;
@@ -238,14 +248,12 @@ namespace Tournament.Controllers
                     case 2:
                         if (!team.Skip.HasValue || !team.Lead.HasValue)
                         {
-                            ViewBag.Error = "Not all teams are complete";
                             complete = false;
                         }
                         break;
                     case 3:
                         if (!team.Skip.HasValue || !team.Lead.HasValue || !team.ViceSkip.HasValue)
                         {
-                            ViewBag.Error = "Not all teams are complete";
                             complete = false;
                         }
                         break;
@@ -257,10 +265,15 @@ namespace Tournament.Controllers
             return complete;
         }
 
+        /// <summary>
+        /// Make sure every player in the league list of players is assigned to a team
+        /// </summary>
+        /// <param name="leagueid"></param>
+        /// <returns>returns a list of players still unassigned</returns>
         private List<Player> Missing(int leagueid)
         {
-            var teams = db.Teams.Where(x => x.Leagueid == leagueid);
-            var playerList = db.Players.Where(x => x.Leagueid == leagueid).ToList();
+            var teams = _db.Teams.Where(x => x.Leagueid == leagueid);
+            var playerList = _db.Players.Where(x => x.Leagueid == leagueid).ToList();
             foreach (var team in teams)
             {
                 if (team.Skip.HasValue)
@@ -293,10 +306,10 @@ namespace Tournament.Controllers
         public ActionResult ClearSchedule()
         {
            var leagueid =(int) TempData["id"];
-            var matches = db.Matches.Where(x=>x.Team.Leagueid == leagueid).ToList();
+            var matches = _db.Matches.Where(x=>x.Team.Leagueid == leagueid).ToList();
             foreach (var match in matches)
             {
-                if (match.Team1Score != 0 || match.Team2Score != 0 || match.ForFeitId != 0)
+                if ((match.Team1Score + match.Team2Score + match.ForFeitId) > 0)
                 {
                     ViewBag.Error = "Matches cannot be delete, some matches have scores";
                     return View();
@@ -304,8 +317,8 @@ namespace Tournament.Controllers
             }
             try
             {
-                db.Matches.RemoveRange(matches);
-                db.SaveChanges();
+                _db.Matches.RemoveRange(matches);
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -331,7 +344,7 @@ namespace Tournament.Controllers
             ViewBag.WeekId = weekid;
             ViewBag.Id = id;
 
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
                 return HttpNotFound();
 
@@ -342,13 +355,13 @@ namespace Tournament.Controllers
   
 
            
-            var week = db.Schedules.Find(weekid);
+            var week = _db.Schedules.Find(weekid);
             if (week == null)
                 return HttpNotFound();
-            var WeekDate = week.WeekDate;
+            var weekDate = week.WeekDate;
             if (!week.Cancelled)
             {
-                foreach (var item in db.Matches.Include(x=>x.Team1).Include(x=>x.Team).Include(x=>x.Schedule).Where(x => x.WeekId == weekid && x.Rink != -1)
+                foreach (var item in _db.Matches.Include(x=>x.Team1).Include(x=>x.Team).Include(x=>x.Schedule).Where(x => x.WeekId == weekid && x.Rink != -1)
                     .OrderBy(x => x.Rink))
                 {
                     var forfeit = "";
@@ -383,7 +396,7 @@ namespace Tournament.Controllers
 
 
                 // check for byes
-                var matches = db.Matches.Where(x => x.Rink == -1 && x.WeekId == weekid);
+                var matches = _db.Matches.Where(x => x.Rink == -1 && x.WeekId == weekid);
                 
                 if (matches.Any())
                 {
@@ -411,7 +424,7 @@ namespace Tournament.Controllers
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Standings.rdlc");
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Game", ds.Game.Rows));
 
-            var p1 = new ReportParameter("WeekDate", WeekDate);
+            var p1 = new ReportParameter("WeekDate", weekDate);
             var p2 = new ReportParameter("Description",league.LeagueName);
             var p3 = new ReportParameter("IsBye", IsBye ? "1" : "0");
             var p4 = new ReportParameter("IsCancelled", isCancelled ? "1" : "0");
@@ -425,6 +438,12 @@ namespace Tournament.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Returns a string representing the players on a team
+        /// </summary>
+        /// <param name="team"></param>
+        /// <param name="teamsize"></param>
+        /// <returns></returns>
         private string Players(Team team, int teamsize)
         {
             switch (teamsize)
@@ -443,7 +462,7 @@ namespace Tournament.Controllers
         [Authorize]
         public ActionResult ScoreCardReport(int id, int weekid)
         {
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -457,7 +476,7 @@ namespace Tournament.Controllers
             };
             ViewBag.WeekId = weekid;
 
-            var matches = db.GetMatchAll(weekid).ToList();
+            var matches = _db.GetMatchAll(weekid).ToList();
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Match", matches));
 
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/ScoreCard.rdlc");
@@ -482,13 +501,13 @@ namespace Tournament.Controllers
             };
 
             var ds = new TournamentDS();
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
                 return HttpNotFound();
 
-            foreach (var item in db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.WeekNumber))
+            foreach (var item in _db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.GameDate))
             {
-                var matches = db.Matches.Where(x => x.Rink == -1 && x.WeekId == item.id);
+                var matches = _db.Matches.Where(x => x.Rink == -1 && x.WeekId == item.id);
                 if(matches.Any())
                     ds.Byes.AddByesRow(item.WeekDate, matches.First().Team.TeamNo, Players(matches.First().Team, league.TeamSize));
 
@@ -511,7 +530,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Match match = db.Matches.Find(id);
+            Match match = _db.Matches.Find(id);
             if (match == null)
             {
                 return HttpNotFound();
@@ -551,20 +570,18 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var schedule = db.Schedules.Find(match.WeekId);
+                    var schedule = _db.Schedules.Find(match.WeekId);
                     if (schedule == null)
                         return HttpNotFound();
-                    league = db.Leagues.Find(schedule.Leagueid);
-                    if (league == null)
-                        return HttpNotFound();
+                    league = schedule.League;
                     if (!league.TiesAllowed && match.Team1Score == match.Team2Score && match.ForFeitId == 0 && (match.Team1Score + match.Team2Score > 0 ))
                     {
                         ModelState.AddModelError(string.Empty, "Matched not scored, ties not allowed");
                     }
                     else
                     {
-                        db.Entry(match).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _db.Entry(match).State = EntityState.Modified;
+                        _db.SaveChanges();
                         return RedirectToAction("Index", new { weekid = match.WeekId, id = league.id });
                     }
                 }
@@ -609,7 +626,9 @@ namespace Tournament.Controllers
 
             }
 
-            var newmatch = db.Matches.Find(match.id);
+            var newmatch = _db.Matches.Find(match.id);
+            if (newmatch == null)
+                return HttpNotFound();
             newmatch.Team1Score = match.Team1Score;
             newmatch.Team2Score = match.Team2Score;
             newmatch.ForFeitId = match.ForFeitId;
@@ -630,21 +649,9 @@ namespace Tournament.Controllers
                     Selected = match.ForFeitId == newmatch.Team1.TeamNo
                 }
             };
-            if (league == null)
-            {
-                var leagueid = 0;
-                var cookie = Request.Cookies["leagueid"];
-                if (cookie != null)
-                {
-                    int.TryParse(cookie.Value, out leagueid);
-                }
-                league = db.Leagues.Find(leagueid);
-                if (league == null)
-                    return HttpNotFound();
-            }
-            ViewBag.TeamSize = league.TeamSize;
+            ViewBag.TeamSize = newmatch.Schedule.League.TeamSize;
             ViewBag.ForFeitId = forfeits;
-            ViewBag.Id = league.id;
+            ViewBag.Id = newmatch.Schedule.Leagueid;
             return View(newmatch);
         }
 
@@ -653,7 +660,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

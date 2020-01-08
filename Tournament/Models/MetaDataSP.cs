@@ -103,8 +103,6 @@ namespace Tournament.Models
         [Display(Name = "Game Date")]
         public System.DateTime GameDate { get; set; }
 
-        [Display(Name = "Week Number")]
-        public int WeekNumber { get; set; }
         public bool Cancelled { get; set; }
 
         public string WeekDate { get; set; }

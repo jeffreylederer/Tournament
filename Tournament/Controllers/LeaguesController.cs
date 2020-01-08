@@ -15,12 +15,12 @@ namespace Tournament.Controllers
     [Authorize(Roles = "Admin")]
     public class LeaguesController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         // GET: Leagues
         public ActionResult Index()
         {
-            return View(db.LeagueAllowDelete().ToList());
+            return View(_db.LeagueAllowDelete().ToList());
         }
 
         
@@ -51,10 +51,10 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Leagues.Add(league);
+                _db.Leagues.Add(league);
                 try
                 {
-                    db.SaveChanges();
+                    _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -83,7 +83,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            League league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 return HttpNotFound();
@@ -103,8 +103,8 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(league).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(league).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
@@ -173,7 +173,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            League league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -201,7 +201,7 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 ViewBag.Error = "Unable to delete this record, another user deleted this record";
@@ -211,14 +211,14 @@ namespace Tournament.Controllers
                 try
                 {
                     
-                    db.Matches.RemoveRange(db.Matches.Where(x => x.Team.Leagueid == league.id).ToList());
-                    db.Teams.RemoveRange(db.Teams.Where(x => x.Leagueid == league.id).ToList());
-                    db.Players.RemoveRange(db.Players.Where(x => x.Leagueid == league.id).ToList());
-                    db.Schedules.RemoveRange(db.Schedules.Where(x => x.Leagueid == league.id).ToList());
-                    db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.LeagueId == id));
-                    db.Entry(league).Property("rowversion").OriginalValue = rowversion;
-                    db.Entry(league).State = EntityState.Deleted;
-                    db.SaveChanges();
+                    _db.Matches.RemoveRange(_db.Matches.Where(x => x.Team.Leagueid == league.id).ToList());
+                    _db.Teams.RemoveRange(_db.Teams.Where(x => x.Leagueid == league.id).ToList());
+                    _db.Players.RemoveRange(_db.Players.Where(x => x.Leagueid == league.id).ToList());
+                    _db.Schedules.RemoveRange(_db.Schedules.Where(x => x.Leagueid == league.id).ToList());
+                    _db.UserLeagues.RemoveRange(_db.UserLeagues.Where(x => x.LeagueId == id));
+                    _db.Entry(league).Property("rowversion").OriginalValue = rowversion;
+                    _db.Entry(league).State = EntityState.Deleted;
+                    _db.SaveChanges();
                     return RedirectToAction("Index","Home");
                 }
                 catch (DbUpdateConcurrencyException)
@@ -243,7 +243,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

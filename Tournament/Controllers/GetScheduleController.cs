@@ -12,7 +12,7 @@ namespace Tournament.Controllers
     // GET: GetSchedule
     public class GetScheduleController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         /// <summary>
         /// Gets the object to be serialized to XML.
@@ -23,7 +23,7 @@ namespace Tournament.Controllers
 
            
             
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -56,9 +56,10 @@ namespace Tournament.Controllers
                 
 
 
-                var weeks = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.WeekNumber);
+                var weeks = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate);
 
                 int i = startWeek;
+                int weekNumber = 1;
                 foreach (Schedule week in weeks)
                 {
                     topLine.AppendLine("<tr>");
@@ -69,7 +70,7 @@ namespace Tournament.Controllers
                     int index = ((i - 1) % rinkList.Count) + 1;
                     var rinklist = rinkList.Find(x => x.id == index);
                     i++;
-                    topLine.AppendLine($"<td>{week.WeekNumber}</td>");
+                    topLine.AppendLine($"<td>{weekNumber++}</td>");
                     topLine.AppendLine($"<td>{week.GameDate.Month}/{week.GameDate.Day}</td>");
                     topLine.AppendLine($"<td>{rinklist.Green}</td>");
                     topLine.AppendLine($"<td>{rinklist.Direction}</td>");
@@ -94,7 +95,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

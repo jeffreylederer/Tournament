@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Elmah;
 using Tournament.Code;
 using Tournament.Models;
 
@@ -13,12 +15,12 @@ namespace Tournament.Controllers
     [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         // GET: Users
         public ActionResult Index()
         {
-            return View(db.Users.Where(x => x.Roles != "Mailer").ToList());
+            return View(_db.Users.Where(x => x.Roles != "Mailer").ToList());
         }
 
        
@@ -42,8 +44,8 @@ namespace Tournament.Controllers
             if (ModelState.IsValid)
             {
                 user.username = user.username.ToLower().Trim();
-                db.Users.Add(user);
-                db.SaveChanges();
+                _db.Users.Add(user);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             var dict = new List<Role>();
@@ -60,7 +62,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            User user = _db.Users.Find(id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -87,8 +89,8 @@ namespace Tournament.Controllers
                 var sharedSecret = (string) TempData["Secret"];
                 user.password = Crypto.DecryptStringAES(user.password, sharedSecret);
                 user.username = user.username.ToLower().Trim();
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(user).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             var dict = new List<Role>();
@@ -99,37 +101,78 @@ namespace Tournament.Controllers
         }
 
         // GET: Users/Delete/5
-        public ActionResult Delete(int? id)
+        [Authorize(Roles = "Admin")]
+        public ActionResult Delete(int? id, bool? concurrencyError)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            var user = _db.Users.Find(id);
             if (user == null)
             {
+                if (concurrencyError.GetValueOrDefault())
+                {
+                    return RedirectToAction("Index");
+                }
                 return HttpNotFound();
             }
+
+            if (concurrencyError.GetValueOrDefault())
+            {
+                ViewBag.Error = "The record you attempted to delete "
+                                + "was modified by another user after you got the original values. "
+                                + "The delete operation was canceled and the current values in the "
+                                + "database have been displayed. If you still want to delete this "
+                                + "record, click the Delete button again. Otherwise "
+                                + "click the Back to List hyperlink.";
+            }
+
             return View(user);
         }
 
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
-            User user = db.Users.Find(id);
-            db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.UserId == id));
-            db.Users.Remove(user);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+
+            var user = _db.Users.Find(id);
+            if (user == null)
+            {
+                ViewBag.Message = "Record was deleted by another user";
+            }
+
+            else
+            {
+                try
+                {
+                    _db.Entry(user).Property("rowversion").OriginalValue = rowversion;
+                    _db.Entry(user).State = EntityState.Deleted;
+                    _db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    return RedirectToAction("Delete", new { concurrencyError = true, id = id });
+                }
+                catch (Exception dex)
+                {
+                    //Log the error (uncomment dex variable name after DataException and add a line here to write a log.
+                    ViewBag.Error =
+                        "Unable to delete. Try again, and if the problem persists contact your system administrator.";
+                    ErrorSignal.FromCurrentContext().Raise(dex);
+
+                }
+            }
+            return View(user);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

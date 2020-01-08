@@ -16,7 +16,7 @@ namespace Tournament.Controllers
 
     public class MembershipController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
 
         // GET: Memberships
@@ -26,21 +26,21 @@ namespace Tournament.Controllers
             
             ViewData["FullNameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["FirstNameSortParm"] = sortOrder == "firstname" ? "firstname_desc" : "firstname";
-            var list = db.MembershipAllowDelete().ToList();
+            var list = _db.MembershipAllowDelete().ToList();
             switch (sortOrder)
             {
                 case "name_desc":
-                    list.Sort((a, b) => b.LastName.CompareTo(a.LastName));
+                    list.Sort((a, b) => String.Compare(b.LastName + " " + b.FirstName, a.LastName + " " + a.FirstName, StringComparison.CurrentCulture));
                     break;
                 
                 case "firstname_desc":
-                    list.Sort((a, b) => b.FirstName.CompareTo(a.FirstName));
+                    list.Sort((a, b) => String.Compare(b.FirstName, a.FirstName, StringComparison.CurrentCulture));
                     break;
                 case "firstname":
-                    list.Sort((a, b) => a.FirstName.CompareTo(b.FirstName));
+                    list.Sort((a, b) => String.Compare(a.FirstName, b.FirstName, StringComparison.CurrentCulture));
                     break;
                 default:
-                    list.Sort((a, b) => a.LastName.CompareTo(b.LastName));
+                    list.Sort((a, b) => String.Compare(a.LastName + " " + a.FirstName, b.LastName + " " + b.FirstName, StringComparison.CurrentCulture));
                     break;
 
             }
@@ -64,14 +64,14 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,FirstName,LastName,FullName,shortname,NickName,Wheelchair")] Membership membership)
+        public ActionResult Create([Bind(Include = "id,FirstName,LastName,shortname,NickName,Wheelchair")] Membership membership)
         {
             if (ModelState.IsValid)
             {
-                db.Memberships.Add(membership);
+                _db.Memberships.Add(membership);
                 try
                 {
-                    db.SaveChanges();
+                    _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -99,7 +99,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Membership membership = db.Memberships.Find(id);
+            Membership membership = _db.Memberships.Find(id);
             if (membership == null)
             {
                 return HttpNotFound();
@@ -112,7 +112,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,FullName,shortname,NickName,Wheelchair,rowversion")] Membership membership)
+        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,shortname,NickName,Wheelchair,rowversion")] Membership membership)
         {
 
             try
@@ -120,8 +120,8 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(membership).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(membership).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
@@ -183,7 +183,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var membership = db.Memberships.Find(id);
+            var membership = _db.Memberships.Find(id);
             if (membership == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -212,7 +212,7 @@ namespace Tournament.Controllers
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
             
-            var membership = db.Memberships.Find(id);
+            var membership = _db.Memberships.Find(id);
             if (membership == null)
             {
                 ViewBag.Message = "Record was deleted by another user";
@@ -222,9 +222,9 @@ namespace Tournament.Controllers
             {
                 try
                 {
-                    db.Entry(membership).Property("rowversion").OriginalValue = rowversion;
-                    db.Entry(membership).State = EntityState.Deleted;
-                    db.SaveChanges();
+                    _db.Entry(membership).Property("rowversion").OriginalValue = rowversion;
+                    _db.Entry(membership).State = EntityState.Deleted;
+                    _db.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 catch (DbUpdateConcurrencyException)
@@ -247,7 +247,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

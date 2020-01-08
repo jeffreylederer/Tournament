@@ -13,7 +13,7 @@ namespace Tournament.Controllers
 {
     public class HomeController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         [Authorize]
         public ActionResult Index()
@@ -21,13 +21,18 @@ namespace Tournament.Controllers
             var username = User.Identity.Name;
             RemoveCookie("leagueid");
             RemoveCookie("leaguename");
+            var users = _db.Users.Where(x => x.username == username);
+            if (!users.Any())
+            {
+                return HttpNotFound();
+            }
 
-            var user = db.Users.Where(x => x.username == username).First();
+            var user = users.First();
             ViewBag.Error = "";
             var leagues = new List<League>();
-            if (!string.IsNullOrWhiteSpace(user.Roles) &&  user.Roles.Contains("Admin"))
-            {
-                leagues = db.Leagues.Where(x=>x.Active).ToList();
+            if (User.IsInRole("Admin"))
+            { 
+                leagues = _db.Leagues.Where(x=>x.Active).ToList();
             }
             else
             {
@@ -62,17 +67,19 @@ namespace Tournament.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var user = db.Users.Where(x => x.username == username).First();
-            if(user == null)
+            var users = _db.Users.Where(x => x.username == username);
+            if (!users.Any())
             {
                 return HttpNotFound();
             }
+
+            var user = users.First();
             var role = "";
             if (!string.IsNullOrWhiteSpace(user.Roles))
             {
                 role = user.Roles;
             }
-            var items = db.UserLeagues.Where(x => x.UserId == user.id && x.LeagueId == id);
+            var items = _db.UserLeagues.Where(x => x.UserId == user.id && x.LeagueId == id);
             if (items.Any())
             {
                 var item = items.First();
@@ -84,7 +91,7 @@ namespace Tournament.Controllers
 
 
 
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
             {
                 return HttpNotFound();

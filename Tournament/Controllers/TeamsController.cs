@@ -18,7 +18,7 @@ namespace Tournament.Controllers
 
     public class TeamsController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
        
 
        [Authorize]
@@ -26,11 +26,11 @@ namespace Tournament.Controllers
         public ActionResult Index(int id)
        {
            ViewBag.Id = id;
-           var league = db.Leagues.Find(id);
+           var league = _db.Leagues.Find(id);
            if (league == null)
                return HttpNotFound();
            ViewBag.TeamSize = league.TeamSize;
-           var list = db.TeamAllowDelete(id).OrderBy(x => x.TeamNo);
+           var list = _db.TeamAllowDelete(id).OrderBy(x => x.TeamNo);
            return View(list);
         }
 
@@ -47,7 +47,7 @@ namespace Tournament.Controllers
                 Height = Unit.Pixel(1000),
                 ShowExportControls =  true
             };
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
                 return HttpNotFound();
             switch (league.TeamSize)
@@ -66,7 +66,7 @@ namespace Tournament.Controllers
             var p2 = new ReportParameter("Description", league.LeagueName);
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
 
-            var teams = db.Teams.Where(x => x.Leagueid == id);
+            var teams = _db.Teams.Where(x => x.Leagueid == id);
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
@@ -83,25 +83,25 @@ namespace Tournament.Controllers
         // GET: Teams/Create
         public ActionResult Create(int id)
         {
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
             if (league == null)
                 return HttpNotFound();
-            int TeamNo = 1;
-            var list = db.Teams.Where(x => x.Leagueid == id).ToList().OrderBy(x=>x.TeamNo).ToList();
+            int teamNo = 1;
+            var list = _db.Teams.Where(x => x.Leagueid == id).ToList().OrderBy(x=>x.TeamNo).ToList();
             
             if (list.Any())
             {
-                TeamNo = list.Last().TeamNo + 1;
+                teamNo = list.Last().TeamNo + 1;
             }
             var team = new Team()
             {
-                TeamNo = TeamNo,
+                TeamNo = teamNo,
                 Leagueid = id,
                 Skip=0,
                 ViceSkip = 0,
                 Lead=0
             };
-            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             ViewBag.Teams = teams;
             ViewBag.List = RemainingPlayers(team, teams.ToList());
             ViewBag.TeamSize = league.TeamSize;
@@ -122,7 +122,7 @@ namespace Tournament.Controllers
             {
                 
 
-                    db.Teams.Add(team);
+                    _db.Teams.Add(team);
                     try
                     {
                         if (CheckTeam(team))
@@ -132,7 +132,7 @@ namespace Tournament.Controllers
                         }
                         else
                         {
-                        db.SaveChanges();
+                        _db.SaveChanges();
                         return RedirectToAction("Index", new {id=team.Leagueid});
                     }
                 }
@@ -152,10 +152,10 @@ namespace Tournament.Controllers
                 }
 
             }
-            var league = db.Leagues.Find(team.Leagueid);
+            var league = _db.Leagues.Find(team.Leagueid);
             if (league == null)
                 return HttpNotFound();
-            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
             ViewBag.Teams = teams;
@@ -174,12 +174,12 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Team team = db.Teams.Find(id);
+            Team team = _db.Teams.Find(id);
             if (team == null)
             {
                 return HttpNotFound();
             }
-            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
 
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
@@ -213,8 +213,8 @@ namespace Tournament.Controllers
                     else
                     {
 
-                        db.Entry(team).State = EntityState.Modified;
-                        db.SaveChanges();
+                        _db.Entry(team).State = EntityState.Modified;
+                        _db.SaveChanges();
                         return RedirectToAction("Index", new {id = team.Leagueid});
                     }
                 }
@@ -259,10 +259,10 @@ namespace Tournament.Controllers
                 }
             }
 
-            var league = db.Leagues.Find(team.Leagueid);
+            var league = _db.Leagues.Find(team.Leagueid);
             if (league == null)
                 return HttpNotFound();
-            var teams = db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
 
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
@@ -281,7 +281,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var team = db.Teams.Find(id);
+            var team = _db.Teams.Find(id);
             if (team == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -311,7 +311,7 @@ namespace Tournament.Controllers
         {
 
             
-            var team = db.Teams.Find(id);
+            var team = _db.Teams.Find(id);
            
             if (team == null)
             {
@@ -320,15 +320,15 @@ namespace Tournament.Controllers
             }
             try
             {
-                db.Entry(team).Property("rowversion").OriginalValue = rowversion;
-                db.Entry(team).State = EntityState.Deleted;
+                _db.Entry(team).Property("rowversion").OriginalValue = rowversion;
+                _db.Entry(team).State = EntityState.Deleted;
                 int teamno = 1;
-                foreach(var item in db.Teams.Where(x=>x.Leagueid==team.Leagueid && x.id != team.id).OrderBy(x=>x.TeamNo))
+                foreach(var item in _db.Teams.Where(x=>x.Leagueid==team.Leagueid && x.id != team.id).OrderBy(x=>x.TeamNo))
                 {
                     item.TeamNo = teamno++;
-                    db.Entry(item).State = EntityState.Modified;
+                    _db.Entry(item).State = EntityState.Modified;
                 }
-                db.SaveChanges();
+                _db.SaveChanges();
                 return RedirectToAction("Index", new {id=team.Leagueid});
             }
             catch (DbUpdateConcurrencyException)
@@ -357,7 +357,7 @@ namespace Tournament.Controllers
         private List<PlayerViewModel> RemainingPlayers(Team team, List<Team> teams)
         {
             var list = new List<PlayerViewModel>();
-            foreach (var player in db.Players.Where(x => x.Leagueid == team.Leagueid))
+            foreach (var player in _db.Players.Where(x => x.Leagueid == team.Leagueid))
             {
                 if (!teams.Any(x => x.Skip == player.id || x.Lead == player.id || x.ViceSkip == player.id))
                 {
@@ -411,6 +411,11 @@ namespace Tournament.Controllers
             return list;
         }
 
+        /// <summary>
+        /// Make sure a player cannot be in multiple positions
+        /// </summary>
+        /// <param name="team">team record</param>
+        /// <returns>true if multiple positions</returns>
         private bool CheckTeam(Team team)
         {
             if (team.Skip.HasValue && (team.Skip == team.ViceSkip || team.Skip == team.Lead))
@@ -424,14 +429,19 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Determine teamsize from league record
+        /// </summary>
+        /// <param name="leagueid">league key</param>
+        /// <returns>teamsize</returns>
         private int TeamSize(int leagueid)
         {
-            var league = db.Leagues.Find(leagueid);
+            var league = _db.Leagues.Find(leagueid);
             if (league != null)
                 return league.TeamSize;
             return 0;

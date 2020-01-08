@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_LeagueLayout.cshtml";
+    int weeknumber = 1;
 }
 
 <h2>Schedule</h2>
@@ -21,7 +22,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.WeekNumber)
+           Week Number
         </th>
         <th>
             @Html.DisplayNameFor(model => model.GameDate)
@@ -35,7 +36,7 @@
 @foreach (var item in Model) {
     <tr>
         <th>
-            @Html.DisplayFor(modelItem => item.WeekNumber)
+            @weeknumber
         </th>
         <td>
             @Html.DisplayFor(modelItem => item.GameDate)
@@ -44,24 +45,25 @@
             @Html.DisplayFor(modelItem => item.Cancelled)
         </td>
         <td>
-        @{
-            if (User.IsInRole("Admin") ||
-                User.IsInRole("LeagueAdmin"))
-            {
-                @Html.ActionLink("Edit", "Edit", new {id = item.id})
-                @Html.Raw(" | ");
-                if (item.cnt > 0)
-                { 
-                    <span style="color: gray;">Delete</span>
-                }
-                else
+            @{
+                if (User.IsInRole("Admin") ||
+                    User.IsInRole("LeagueAdmin"))
                 {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                    @Html.ActionLink("Edit", "Edit", new {id = item.id})
+                    @Html.Raw(" | ");
+                    if (item.cnt > 0)
+                    { 
+                        <span style="color: gray;">Delete</span>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                    }
                 }
             }
-        }
-            </td>
+        </td>
     </tr>
+    weeknumber++;
 }
 
 </table>

@@ -86,11 +86,7 @@ namespace Tournament.Models
         [Required]
         public DateTime GameDate { get; set; }
 
-        [Display(Name = "Week Number")]
-        [Required]
-        public int WeekNumber { get; set; }
-
-        [Timestamp]
+       [Timestamp]
         public byte[] rowversion { get; set; }
     }
 

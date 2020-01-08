@@ -16,16 +16,16 @@ namespace Tournament.Controllers
     [Authorize(Roles="Admin")]
     public class UserLeaguesController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         // GET: UserLeagues
         public ActionResult Index(int id)
         {
-            var userLeagues = db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
-            ViewBag.LeagueName = db.Leagues.Find(id).LeagueName;
+            var userLeagues = _db.UserLeagues.Include(u => u.League).Include(u => u.User).Where(x=>x.LeagueId==id);
+            ViewBag.LeagueName = _db.Leagues.Find(id).LeagueName;
             var model = new UserLeagueViewModel()
             {
-                LeagueName = db.Leagues.Find(id).LeagueName,
+                LeagueName = _db.Leagues.Find(id).LeagueName,
                 leagueid = id,
                 userLeagues = userLeagues
             };
@@ -36,10 +36,12 @@ namespace Tournament.Controllers
         // GET: UserLeagues/Create
         public ActionResult Create(int id)
         {
-            var league = db.Leagues.Find(id);
+            var league = _db.Leagues.Find(id);
+            if (league == null)
+                return HttpNotFound();
             ViewBag.LeagueName = league.LeagueName;
-            var list = db.Users.Where(x => x.Roles != "Mailer" && x.Roles != "Admin").ToList();
-            foreach (var userLeague in db.UserLeagues.Where(x=>x.LeagueId==id))
+            var list = _db.Users.Where(x => x.Roles != "Mailer" && x.Roles != "Admin").ToList();
+            foreach (var userLeague in _db.UserLeagues.Where(x=>x.LeagueId==id))
             {
                 if(list.Any(x=>x.id == userLeague.UserId))
                     list.RemoveAll(x => x.id == userLeague.UserId);
@@ -61,10 +63,10 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.UserLeagues.Add(userLeague);
+                _db.UserLeagues.Add(userLeague);
                 try
                 {
-                    db.SaveChanges();
+                    _db.SaveChanges();
                     return RedirectToAction("Index", new {id=userLeague.LeagueId});
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -83,14 +85,14 @@ namespace Tournament.Controllers
             }
 
 
-            var list = db.Users.Where(x => x.Roles != "Mailer" || x.Roles != "Admin").ToList();
-            foreach (var item in db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId))
+            var list = _db.Users.Where(x => x.Roles != "Mailer" || x.Roles != "Admin").ToList();
+            foreach (var item in _db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId))
             {
                 if (list.Any(x => x.id == item.UserId))
                     list.RemoveAll(x => x.id == item.UserId);
             }
             ViewBag.UserId = new SelectList(list, "id", "username");
-            var league = db.Leagues.Find(userLeague.LeagueId);
+            var league = _db.Leagues.Find(userLeague.LeagueId);
             ViewBag.LeagueName = league.LeagueName;
             return View(userLeague);
         }
@@ -102,7 +104,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            UserLeague userLeague = db.UserLeagues.Find(id);
+            UserLeague userLeague = _db.UserLeagues.Find(id);
             if (userLeague == null)
             {
                 return HttpNotFound();
@@ -123,8 +125,8 @@ namespace Tournament.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(userLeague).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(userLeague).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("Index", new {id=userLeague.LeagueId});
                 }
             }
@@ -178,7 +180,7 @@ namespace Tournament.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var userLeague = db.UserLeagues.Find(id);
+            var userLeague = _db.UserLeagues.Find(id);
             if (userLeague == null)
             {
                 if (concurrencyError.GetValueOrDefault())
@@ -205,7 +207,7 @@ namespace Tournament.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, byte[] rowversion)
         {
-            var userLeague = db.UserLeagues.Find(id);
+            var userLeague = _db.UserLeagues.Find(id);
             if (userLeague == null)
             {
                 ViewBag.Error = "Record was delete by another user";
@@ -214,10 +216,10 @@ namespace Tournament.Controllers
             {
                 try
                 {
-                    db.UserLeagues.RemoveRange(db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId));
-                    db.Entry(userLeague).Property("rowversion").OriginalValue = rowversion;
-                    db.Entry(userLeague).State = EntityState.Deleted;
-                    db.SaveChanges();
+                    _db.UserLeagues.RemoveRange(_db.UserLeagues.Where(x => x.LeagueId == userLeague.LeagueId));
+                    _db.Entry(userLeague).Property("rowversion").OriginalValue = rowversion;
+                    _db.Entry(userLeague).State = EntityState.Deleted;
+                    _db.SaveChanges();
                     return RedirectToAction("Index","Home");
                 }
                 catch (DbUpdateConcurrencyException)
@@ -240,7 +242,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

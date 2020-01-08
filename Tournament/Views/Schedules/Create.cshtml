@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
+    int weeknumber = 1;
 }
 <h2>Create</h2>
 
@@ -15,15 +16,9 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.Leagueid)
     @Html.HiddenFor(model => model.Cancelled)
-    @Html.HiddenFor(model => model.WeekNumber)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.WeekNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DisplayFor(model => model.WeekNumber, new { htmlAttributes = new { @class = "form-control" } })
-        </div>
-    </div>
-    <br /><br /><br /><br />
+
+    <br /><br /><br /><br /><br /><br /><br/>
     <div class="form-group">
         @Html.LabelFor(model => model.GameDate, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
@@ -50,7 +45,7 @@
 <table class="table-condensed table-striped">
 <tr>
     <th>
-        @Html.DisplayNameFor(model => model.WeekNumber)
+       Week Number
     </th>
     <th>
         @Html.DisplayNameFor(model => model.GameDate)
@@ -64,7 +59,7 @@
 {
     <tr>
         <th>
-            @Html.DisplayFor(modelItem => item.WeekNumber)
+            @weeknumber
         </th>
         <td>
             @Html.DisplayFor(modelItem => item.GameDate)
@@ -72,10 +67,8 @@
         <td>
             @Html.DisplayFor(modelItem => item.Cancelled)
         </td>
-
-
-
     </tr>
+     weeknumber++;
 }
 </table>
 

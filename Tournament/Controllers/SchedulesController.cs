@@ -29,16 +29,11 @@ namespace Tournament.Controllers
         public ActionResult Create(int id)
         {
             DateTime date = DateTime.Now;
-            int WeekNumber = 1;
-            var list = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x=>x.GameDate).ToList();
+            var list = db.Schedules.OrderBy(x => x.GameDate).ToList();
             if (list.Any())
-            {
-                WeekNumber = list.Last().WeekNumber + 1;
                 date = list.Last().GameDate.AddDays(7);
-            }
             var schedule = new Schedule()
             {
-                WeekNumber = WeekNumber,
                 GameDate = date,
                 Leagueid = id,
                 Cancelled = false
@@ -52,34 +47,25 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "GameDate,WeekNumber,LeagueId,Cancelled")] Schedule schedule)
+        public ActionResult Create([Bind(Include = "GameDate,LeagueId,Cancelled")] Schedule schedule)
         {
             if (ModelState.IsValid)
             {
-                int WeekNumber = 1;
                 try
                 {
                     if (ModelState.IsValid)
                     {
-                        var list = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).ToList();
-                        if(list.Any(x=>x.GameDate == schedule.GameDate))
+                        if (db.Schedules.Any(x => x.GameDate == schedule.GameDate))
                         {
-                            ModelState.AddModelError(string.Empty,"Insert failed, Game date already in list");
+                            ModelState.AddModelError(string.Empty, "Duplicate date is not allowed");
                         }
-                        list.Add(schedule);
-                        list.Sort((a, b) => a.GameDate.CompareTo(b.GameDate));
-                        foreach (var item in list)
+                        else
                         {
-                            item.WeekNumber = WeekNumber++;
-                            if (item.GameDate == schedule.GameDate)
-                                db.Schedules.Add(item);
-                            else
-                            {
-                                db.Entry(item).State = EntityState.Modified;
-                            }
+
+                            db.Schedules.Add(schedule);
+                            db.SaveChanges();
+                            return RedirectToAction("Index", new {id = schedule.Leagueid});
                         }
-                        db.SaveChanges();
-                        return RedirectToAction("Index", new {id=schedule.Leagueid});
                     }
                 }
                 catch (System.Data.Entity.Infrastructure.DbUpdateException e)
@@ -122,16 +108,23 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,GameDate,WeekNumber,Leagueid,Cancelled,rowversion")] Schedule schedule)
+        public ActionResult Edit([Bind(Include = "id,GameDate,Leagueid,Cancelled,rowversion")] Schedule schedule)
         {
             try
             {
 
                 if (ModelState.IsValid)
                 {
-                    db.Entry(schedule).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index", new {id=schedule.Leagueid});
+                    if (db.Schedules.Any(x => x.GameDate == schedule.GameDate && x.id != schedule.id))
+                    {
+                        ModelState.AddModelError(string.Empty, "Duplicate date is not allowed");
+                    }
+                    else
+                    {
+                        db.Entry(schedule).State = EntityState.Modified;
+                        db.SaveChanges();
+                        return RedirectToAction("Index", new {id = schedule.Leagueid});
+                    }
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -154,9 +147,6 @@ namespace Tournament.Controllers
                     if (databaseValues.Cancelled != clientValues.Cancelled)
                         ModelState.AddModelError("Cancelled", "Current value: "
                                                               + databaseValues.Cancelled);
-                    if (databaseValues.WeekNumber != clientValues.WeekNumber)
-                        ModelState.AddModelError("Week Number", "Current value: "
-                                                                + databaseValues.WeekNumber);
                     if (databaseValues.Leagueid != clientValues.Leagueid)
                         ModelState.AddModelError("League", "Current value: "
                                                                 + databaseValues.Leagueid);
@@ -227,18 +217,10 @@ namespace Tournament.Controllers
             }
             try
             {
-                var list = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid && x.GameDate != schedule.GameDate)
-                    .OrderBy(x => x.GameDate);
                 db.Entry(schedule).Property("rowversion").OriginalValue = rowversion;
                 db.Entry(schedule).State = EntityState.Deleted;
-                int WeekNo = 1;
-                foreach (var item in list)
-                {
-                    item.WeekNumber = WeekNo++;
-                    db.Entry(item).State = EntityState.Modified;
-                }
-               db.SaveChanges();
-               return RedirectToAction("Index", new {id = schedule.Leagueid});
+                db.SaveChanges();
+                return RedirectToAction("Index", new {id = schedule.Leagueid});
             }
             catch (DbUpdateConcurrencyException)
             {

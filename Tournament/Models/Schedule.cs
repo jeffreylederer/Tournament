@@ -22,7 +22,6 @@ namespace Tournament.Models
     
         public int id { get; set; }
         public System.DateTime GameDate { get; set; }
-        public int WeekNumber { get; set; }
         public int Leagueid { get; set; }
         public byte[] rowversion { get; set; }
         public bool Cancelled { get; set; }

@@ -15,7 +15,7 @@ namespace Tournament.Controllers
 {
     public class AccountsController : Controller
     {
-        private TournamentEntities db = new TournamentEntities();
+        private readonly TournamentEntities _db = new TournamentEntities();
 
         [AllowAnonymous]
         public ActionResult Login()
@@ -38,7 +38,7 @@ namespace Tournament.Controllers
                 // same operation on the user entered password here, But for now
                 // since the password is in plain text lets just authenticate directly
                 var checkid = model.Username.ToLower().Trim();
-                var users = db.Users.Where(x => x.username == checkid);
+                var users = _db.Users.Where(x => x.username == checkid);
                 // User found in the database
                 if (users.Count() == 1 && users.First().password == model.Password)
                 {
@@ -108,7 +108,7 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                var users = db.Users.Where(x => x.username == chpvm.EmailAddress.ToLower().Trim());
+                var users = _db.Users.Where(x => x.username == chpvm.EmailAddress.ToLower().Trim());
                 if (!users.Any())
                 {
                     ModelState.AddModelError(string.Empty, "User Id or Current Password not found");
@@ -129,8 +129,8 @@ namespace Tournament.Controllers
                 try
                 {
                     user.password = chpvm.Password;
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(user).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("PasswordAccepted", "Accounts");
                 }
                 catch
@@ -160,7 +160,7 @@ namespace Tournament.Controllers
         {
             if (ModelState.IsValid)
             {
-                var users = db.Users.Where(x => x.username.ToLower() == forgotPassword.EmailId.ToLower());
+                var users = _db.Users.Where(x => x.username.ToLower() == forgotPassword.EmailId.ToLower());
                 if (!users.Any())
                 {
                     ModelState.AddModelError(string.Empty, "User Id not found");
@@ -174,7 +174,7 @@ namespace Tournament.Controllers
                 var verifyUrl = $"/Accounts/ResetPassword/{activationCode}";
                 var link = $"http://{Request.Url.Host}:{Request.Url.Port}{verifyUrl}";
 
-                var emailUser =db.Users.First(x => x.Roles == "Mailer");
+                var emailUser =_db.Users.First(x => x.Roles == "Mailer");
                 var fromEmail = new MailAddress(emailUser.username, "Lawn Bowling Pittsburgh");
                 var toEmail = new MailAddress(forgotPassword.EmailId);
                 var fromEmailPassword = emailUser.password; 
@@ -268,7 +268,7 @@ namespace Tournament.Controllers
                     ModelState.AddModelError(string.Empty, "Link is more than 15 minutes old");
                     return View(resetPassword);
                 }
-                var user = db.Users.Find(userid);
+                var user = _db.Users.Find(userid);
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "Link has been tampered with.");
@@ -282,8 +282,8 @@ namespace Tournament.Controllers
                 try
                 {
                     user.password = resetPassword.Password;
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(user).State = EntityState.Modified;
+                    _db.SaveChanges();
                     return RedirectToAction("PasswordAccepted", "Accounts");
                 }
                 catch 
@@ -298,7 +298,7 @@ namespace Tournament.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
