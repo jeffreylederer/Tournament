@@ -64,7 +64,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,FirstName,LastName,shortname,NickName,Wheelchair")] Membership membership)
+        public ActionResult Create([Bind(Include = "id,FirstName,LastName,shortname,Wheelchair")] Membership membership)
         {
             if (ModelState.IsValid)
             {
@@ -112,7 +112,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,shortname,NickName,Wheelchair,rowversion")] Membership membership)
+        public ActionResult Edit([Bind(Include = "id,FirstName,LastName,shortname,Wheelchair,rowversion")] Membership membership)
         {
 
             try
