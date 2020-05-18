@@ -458,7 +458,8 @@
     <Content Include="Models\TournamentModel.edmx.diagram">
       <DependentUpon>TournamentModel.edmx</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\LawnBowlingMS - Web Deploy.pubxml" />
+    <Content Include="Properties\PublishProfiles\webdeploy.PublishSettings" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="ReportFiles\TournamentDS.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>

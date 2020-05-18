@@ -172,7 +172,8 @@ namespace Tournament.Controllers
                         $"{user.id},{DateTime.Now.AddMinutes(15).ToString("M/d/yyyy hh:mm:ss tt")}"));
 
                 var verifyUrl = $"/Accounts/ResetPassword/{activationCode}";
-                var link = $"http://{Request.Url.Host}:{Request.Url.Port}{verifyUrl}";
+                var url = ConfigurationManager.AppSettings["url"];
+                var link = $"{url}{verifyUrl}";
 
                 var emailUser =_db.Users.First(x => x.Roles == "Mailer");
                 var fromEmail = new MailAddress(emailUser.username, "Lawn Bowling Pittsburgh");
