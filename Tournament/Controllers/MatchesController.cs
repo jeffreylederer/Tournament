@@ -149,11 +149,11 @@ namespace Tournament.Controllers
 
 
             var missing = Missing(leagueid);
-            if (missing.Count > 0)
-            {
-                ViewBag.Error = "Some players not assigned to a team";
-                return View(missing);
-            }
+            //if (missing.Count > 0)
+            //{
+            //    ViewBag.Error = "Some players not assigned to a team";
+            //    return View(missing);
+            //}
 
             var complete = Complete(leagueid);
             if (!complete)

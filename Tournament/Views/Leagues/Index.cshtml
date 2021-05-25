@@ -85,21 +85,15 @@
         <td>
             @if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
             {
-                @Html.ActionLink("Edit", "Edit", new { id = item.id });
-                @Html.Raw(" | ");
+                @Html.ActionLink("Edit", "Edit", new { id = item.id })
+                @Html.Raw(" | ")
             }
             @Html.ActionLink("League Users", "Index", "UserLeagues", new { id = item.id }, null)
-            @if ((User.IsInRole("Admin") || User.IsInRole("LeagueAdmin")) && item.cnt == 0)
+            @if ((User.IsInRole("Admin") || User.IsInRole("LeagueAdmin")))
             {
-                @Html.Raw(" | ");
-                if (item.cnt > 0)
-                { 
-                    <span style="color: gray;">Delete</span>
-                }
-                else
-                {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.id });
-                }
+                @Html.Raw(" | ")
+                @Html.ActionLink("Delete League", "Delete", new {id = item.id})
+
             }
         </td>
     </tr>
