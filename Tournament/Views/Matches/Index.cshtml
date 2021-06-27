@@ -142,11 +142,17 @@
             </td>
 
             <td>
-                @Html.DisplayFor(modelItem => item.Team1Score)
+                @if (item.ForFeitId == 0)
+                {
+                    @Html.DisplayFor(modelItem => item.Team1Score)
+                }
             </td>
 
             <td>
-                @Html.DisplayFor(modelItem => item.Team2Score)
+                @if (item.ForFeitId == 0)
+                {
+                    @Html.DisplayFor(modelItem => item.Team2Score)
+                }
             </td>
             <td>
                 @if (item.ForFeitId != 0)

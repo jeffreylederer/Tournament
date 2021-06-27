@@ -569,6 +569,9 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Team1Score</rd:DefaultName>
+                          <Visibility>
+                            <Hidden>=Fields!Forfeit.Value &lt;&gt;""</Hidden>
+                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -663,6 +666,9 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Team2Score</rd:DefaultName>
+                          <Visibility>
+                            <Hidden>=Fields!Forfeit.Value &lt;&gt; ""</Hidden>
+                          </Visibility>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -674,6 +680,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
