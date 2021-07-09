@@ -557,7 +557,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Team1Score.Value</Value>
+                                  <Value>=iif(Fields!Forfeit.Value="",FormatNumber(Fields!Team1Score.Value,0),"")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -647,7 +647,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Team2Score.Value</Value>
+                                  <Value>=iif(Fields!Forfeit.Value="",FormatNumber(Fields!Team2Score.Value,0),"")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
