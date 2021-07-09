@@ -155,7 +155,7 @@
                 }
             </td>
             <td>
-                @if (item.ForFeitId != 0)
+                @if (item.ForFeitId > 0)
                 {
                     if (item.Team.TeamNo == item.ForFeitId)
                     {
@@ -165,6 +165,10 @@
                     {
                         @Html.Raw(item.Team1.TeamNo)
                     }
+                }
+                else if (item.ForFeitId == -1)
+                {
+                    @Html.Raw("Both")
                 }
             </td>
             <td>

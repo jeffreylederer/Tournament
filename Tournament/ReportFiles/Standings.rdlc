@@ -477,11 +477,9 @@
                           <rd:DefaultName>Rink</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <RightBorder>
-                              <Color>Black</Color>
                               <Width>2.5pt</Width>
                             </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -511,7 +509,6 @@
                           <rd:DefaultName>Team1</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -541,7 +538,6 @@
                           <rd:DefaultName>Players1</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -569,12 +565,8 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Team1Score</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Fields!Forfeit.Value &lt;&gt;""</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -604,11 +596,9 @@
                           <rd:DefaultName>Team2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <LeftBorder>
-                              <Color>Black</Color>
                               <Width>2.5pt</Width>
                             </LeftBorder>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -638,7 +628,6 @@
                           <rd:DefaultName>Players2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -666,12 +655,8 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Team2Score</rd:DefaultName>
-                          <Visibility>
-                            <Hidden>=Fields!Forfeit.Value &lt;&gt; ""</Hidden>
-                          </Visibility>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>
@@ -704,7 +689,6 @@
                           <rd:DefaultName>Forfeit</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
                               <Style>Solid</Style>
                             </Border>
                             <PaddingLeft>2pt</PaddingLeft>

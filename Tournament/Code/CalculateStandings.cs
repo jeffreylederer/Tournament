@@ -67,8 +67,17 @@ namespace Tournament.Code
                     bool forfeit = false;
                     foreach (var match in db.Matches.Where(x => x.WeekId == week.id))
                     {
+                        // both teams forfeits
+                        if (match.Rink != -1 && match.ForFeitId == -1)
+                        {
+                            var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
+                            var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
+                            winner.Loses++;
+                            loser.Loses++;
+                           
+                        }
                         // tie game
-                        if(match.Team1Score == match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
+                        else if (match.Team1Score == match.Team2Score && match.Rink != -1 && match.ForFeitId == 0)
                         {
                             var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                             var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
@@ -103,8 +112,8 @@ namespace Tournament.Code
                             total += Math.Min(20, match.Team2Score);
                             numMatches++;
                         }
-                        // forfeit
-                        else if (match.Rink != -1 && match.ForFeitId != 0)
+                        // one team forfeits
+                        else if (match.Rink != -1 && match.ForFeitId > 0)
                         {
                             var winner = list.Find(x => x.TeamNumber == (match.Team.TeamNo== match.ForFeitId? match.Team1.TeamNo: match.Team.TeamNo));
                             var loser = list.Find(x => x.TeamNumber == match.ForFeitId);
@@ -128,12 +137,12 @@ namespace Tournament.Code
 
                         foreach (var match in db.Matches.Where(x => x.WeekId == week.id))
                         {
-                            if (match.Rink != -1 && match.ForFeitId != 0)
+                            if (match.Rink != -1 && match.ForFeitId > 0)
                             {
                                 var winner = list.Find(x => x.TeamNumber == (match.Team.TeamNo == match.ForFeitId ? match.Team1.TeamNo : match.Team.TeamNo));
                                 winner.TotalScore += total / numMatches;
                             }
-                            else if (match.Rink == -1)
+                            else if (match.Rink == -1 && match.ForFeitId !=-1)
                             {
                                 var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                                 winner.TotalScore += total / numMatches;

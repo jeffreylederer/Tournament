@@ -365,7 +365,7 @@ namespace Tournament.Controllers
                     .OrderBy(x => x.Rink))
                 {
                     var forfeit = "";
-                    if(item.ForFeitId != 0)
+                    if(item.ForFeitId > 0)
                     {
                         if(item.ForFeitId == item.Team.TeamNo)
                             forfeit = item.Team.TeamNo.ToString();
@@ -373,6 +373,10 @@ namespace Tournament.Controllers
                         {
                             forfeit = item.Team1.TeamNo.ToString();
                         }
+                    }
+                    else if (item.ForFeitId == -1)
+                    {
+                        forfeit = "Both";
                     }
                     else
                     {
@@ -549,6 +553,12 @@ namespace Tournament.Controllers
                     Value = match.Team1.TeamNo.ToString(),
                     Text = $"Team No. {match.Team1.TeamNo}",
                     Selected = match.ForFeitId == match.Team1.TeamNo
+                },
+                new SelectListItem
+                {
+                    Value = "-1",
+                    Text = "Both",
+                    Selected = match.ForFeitId == -1
                 }
             };
             ViewBag.TeamSize = match.Schedule.League.TeamSize;
@@ -647,6 +657,12 @@ namespace Tournament.Controllers
                     Value = newmatch.Team1.TeamNo.ToString(),
                     Text = $"Team No. {newmatch.Team1.TeamNo}",
                     Selected = match.ForFeitId == newmatch.Team1.TeamNo
+                },
+                new SelectListItem
+                {
+                    Value = "-1",
+                    Text = "Both",
+                    Selected = match.ForFeitId == -1
                 }
             };
             ViewBag.TeamSize = newmatch.Schedule.League.TeamSize;
