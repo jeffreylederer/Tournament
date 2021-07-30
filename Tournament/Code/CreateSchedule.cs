@@ -106,13 +106,14 @@ namespace Tournament.Code
                     {
                         match.Team2 = match.Team1;
                         match.Rink = -1;
+                        System.Diagnostics.Trace.WriteLine($"Bye {match.Team1}");
                     }
                     else
                     {
-                        match.Rink = (match.Rink + 2 * w) % (numberOfRinks - 1);
+                        match.Rink = (rink + 2 * w) % (numberOfRinks - 1);
                         rink++;
                     }
-                    
+                    System.Diagnostics.Trace.WriteLine($"Rink {match.Rink}, T1={match.Team1}, T2={match.Team2}");
                     matches.Add(match);
                 }
             }
