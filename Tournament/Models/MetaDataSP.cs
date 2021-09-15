@@ -105,6 +105,7 @@ namespace Tournament.Models
     {
         public int id { get; set; }
         [Display(Name = "Game Date")]
+        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
         public System.DateTime GameDate { get; set; }
 
         public bool Cancelled { get; set; }
