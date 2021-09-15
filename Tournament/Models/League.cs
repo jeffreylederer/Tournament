@@ -34,6 +34,7 @@ namespace Tournament.Models
         public short TiePoints { get; set; }
         public short ByePoints { get; set; }
         public int StartWeek { get; set; }
+        public bool PointsLimit { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Player> Players { get; set; }

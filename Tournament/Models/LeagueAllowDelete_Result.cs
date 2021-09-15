@@ -25,5 +25,7 @@ namespace Tournament.Models
         public short ByePoints { get; set; }
         public int StartWeek { get; set; }
         public Nullable<int> cnt { get; set; }
+    //    public bool Property { get; set; }
+        public bool PointsLimit { get; set; }
     }
 }

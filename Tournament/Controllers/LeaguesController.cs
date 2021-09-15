@@ -36,7 +36,8 @@ namespace Tournament.Controllers
                 TiePoints = 1,
                 ByePoints = 1,
                 TeamSize=2,
-                StartWeek = 1
+                StartWeek = 1,
+                PointsLimit = true
             };
             
             return View(item);
@@ -47,7 +48,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek")] League league)
+        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek, PointsLimit")] League league)
         {
             if (ModelState.IsValid)
             {
@@ -96,7 +97,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek")] League league)
+        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek,PointsLimit")] League league)
         {
             try
             {
@@ -149,6 +150,10 @@ namespace Tournament.Controllers
                     if (databaseValues.StartWeek != clientValues.StartWeek)
                         ModelState.AddModelError("Start Week", "Current value: "
                                                                + databaseValues.StartWeek);
+                    if (databaseValues.PointsLimit != clientValues.PointsLimit)
+                        ModelState.AddModelError("PointLimit", "Current value: "
+                                                               + databaseValues.StartWeek);
+
                     ModelState.AddModelError(string.Empty, "The record you attempted to edit "
                                                            + "was modified by another user after you got the original value. The "
                                                            + "edit operation was canceled and the current values in the database "

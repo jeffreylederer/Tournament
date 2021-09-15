@@ -82,7 +82,7 @@ namespace Tournament.Models
 
         [DataType(DataType.Date)]
         [Display(Name = "Game Date")]
-        [DisplayFormat(DataFormatString = "{0:d}")]
+        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
         [Required]
         public DateTime GameDate { get; set; }
 
@@ -174,6 +174,10 @@ namespace Tournament.Models
         [Range(minimum: 1, maximum:99, ErrorMessage = "Numbering starts at 1")]
         [Display(Name = "Start Week")]
         public short StartWeek { get; set; }
+
+        [Required]
+        [Display(Name = "Limit Points to 20")]
+        public bool PointsLimit { get; set; }
 
 
 

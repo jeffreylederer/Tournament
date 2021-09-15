@@ -20,6 +20,7 @@
           <Property Name="TiePoints" Type="smallint" Nullable="false" />
           <Property Name="ByePoints" Type="smallint" Nullable="false" />
           <Property Name="StartWeek" Type="int" Nullable="false" />
+          <Property Name="PointsLimit" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -391,6 +392,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <NavigationProperty Name="Teams" Relationship="Self.FK__Team__leagueid__4D94879B" FromRole="League" ToRole="Team" />
           <NavigationProperty Name="RinkOrder" Relationship="Self.FK_League_RinkOrder" FromRole="League" ToRole="RinkOrder" />
           <NavigationProperty Name="UserLeagues" Relationship="Self.FK_UserLeague_League" FromRole="League" ToRole="UserLeague" />
+          <Property Name="PointsLimit" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -670,7 +672,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="TournamentEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="TournamentEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Leagues" EntityType="Self.League" />
           <EntitySet Name="Matches" EntityType="Self.Match" />
           <EntitySet Name="Memberships" EntityType="Self.Membership" />
@@ -773,6 +775,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Type="Int16" Name="TiePoints" Nullable="false" />
           <Property Type="Int16" Name="ByePoints" Nullable="false" />
           <Property Type="Int32" Name="StartWeek" Nullable="false" />
+          <Property Type="Boolean" Name="PointsLimit" Nullable="false" />
           <Property Type="Int32" Name="cnt" Nullable="true" />
         </ComplexType>
         <ComplexType Name="MembershipAllowDelete_Result">
@@ -813,10 +816,11 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="TournamentModelStoreContainer" CdmEntityContainer="TournamentEntities1">
+        <EntityContainerMapping StorageEntityContainer="TournamentModelStoreContainer" CdmEntityContainer="TournamentEntities">
           <EntitySetMapping Name="Leagues">
             <EntityTypeMapping TypeName="TournamentModel.League">
               <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="PointsLimit" ColumnName="PointsLimit" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
@@ -971,6 +975,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
                 <ScalarProperty Name="TiePoints" ColumnName="TiePoints" />
                 <ScalarProperty Name="ByePoints" ColumnName="ByePoints" />
                 <ScalarProperty Name="StartWeek" ColumnName="StartWeek" />
+                <ScalarProperty Name="PointsLimit" ColumnName="PointsLimit" />
                 <ScalarProperty Name="cnt" ColumnName="cnt" />
               </ComplexTypeMapping>
             </ResultMapping>

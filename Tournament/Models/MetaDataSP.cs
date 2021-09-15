@@ -90,6 +90,10 @@ namespace Tournament.Models
 
         [Display(Name = "Start Week")]
         public int StartWeek { get; set; }
+
+
+        [Display(Name = "Limit Points to 20")]
+        public int PointsLimit { get; set; }
     }
 
     [MetadataType(typeof(ScheduleAllowDelete_Result_MetaData))]

@@ -83,9 +83,18 @@ namespace Tournament.Code
                             var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
                             winner.Ties++;
                             loser.Ties++;
-                            winner.TotalScore += Math.Min(20, match.Team1Score);
-                            loser.TotalScore += Math.Min(20, match.Team2Score);
-                            total += Math.Min(20, match.Team1Score);
+                            if (league.PointsLimit)
+                            {
+                                winner.TotalScore += Math.Min(20, match.Team1Score);
+                                loser.TotalScore += Math.Min(20, match.Team2Score);
+                                total += Math.Min(20, match.Team1Score);
+                            }
+                            else
+                            {
+                                winner.TotalScore += match.Team1Score;
+                                loser.TotalScore += match.Team2Score;
+                                total += match.Team1Score;
+                            }
                             numMatches++;
                         }
                         //team 1 wins
@@ -95,9 +104,18 @@ namespace Tournament.Code
                             var loser = list.Find(x => x.TeamNumber == match.Team1.TeamNo);
                             winner.Wins++;
                             loser.Loses++;
-                            winner.TotalScore += Math.Min(20, match.Team1Score);
-                            loser.TotalScore += Math.Min(20, match.Team2Score);
-                            total += Math.Min(20, match.Team1Score);
+                            if (league.PointsLimit)
+                            {
+                                winner.TotalScore += Math.Min(20, match.Team1Score);
+                                loser.TotalScore += Math.Min(20, match.Team2Score);
+                                total += Math.Min(20, match.Team1Score);
+                        }
+                            else
+                            {
+                                winner.TotalScore += match.Team1Score;
+                                loser.TotalScore += match.Team2Score;
+                                total += match.Team1Score;
+                            }
                             numMatches++;
                         }
                         //team 2 wins
@@ -107,9 +125,18 @@ namespace Tournament.Code
                             var loser = list.Find(x => x.TeamNumber == match.Team.TeamNo);
                             winner.Wins++;
                             loser.Loses++;
-                            winner.TotalScore += Math.Min(20, match.Team2Score);
-                            loser.TotalScore += Math.Min(20, match.Team1Score);
-                            total += Math.Min(20, match.Team2Score);
+                            if (league.PointsLimit)
+                            {
+                                winner.TotalScore += Math.Min(20, match.Team2Score);
+                                loser.TotalScore += Math.Min(20, match.Team1Score);
+                                total += Math.Min(20, match.Team2Score);
+                            }
+                            else
+                            {
+                                winner.TotalScore += match.Team2Score;
+                                loser.TotalScore += match.Team1Score;
+                                total += match.Team2Score;
+                            }
                             numMatches++;
                         }
                         // one team forfeits
