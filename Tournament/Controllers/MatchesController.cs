@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Tournament.Code;
 using Tournament.Models;
 using Tournament.ReportFiles;
@@ -364,19 +365,29 @@ namespace Tournament.Controllers
                 foreach (var item in _db.Matches.Include(x=>x.Team1).Include(x=>x.Team).Include(x=>x.Schedule).Where(x => x.WeekId == weekid && x.Rink != -1)
                     .OrderBy(x => x.Rink))
                 {
-                    var forfeit = "";
-                    if(item.ForFeitId > 0)
+                    int forfeit = 0;
+                    var team1score = item.Team1Score;
+                    var team2score = item.Team2Score;
+                    if (item.ForFeitId > 0)
                     {
-                        if(item.ForFeitId == item.Team.TeamNo)
-                            forfeit = item.Team.TeamNo.ToString();
+                        if (item.ForFeitId == item.Team.TeamNo)
+                        {
+                            forfeit = item.Team.TeamNo;
+                            team1score = 0;
+                            team2score = 14;
+                        }
                         else
                         {
-                            forfeit = item.Team1.TeamNo.ToString();
+                            forfeit = item.Team1.TeamNo;
+                            team1score = 14;
+                            team2score = 0;
                         }
                     }
                     else if (item.ForFeitId == -1)
                     {
-                        forfeit = "Both";
+                        forfeit = -1;
+                        team1score = 0;
+                        team2score = 0;
                     }
                     else
                     {
@@ -394,8 +405,10 @@ namespace Tournament.Controllers
                         Players(item.Team, league.TeamSize),
                         item.Team1.TeamNo,
                         Players(item.Team1, league.TeamSize),
-                        item.Team1Score,
-                        item.Team2Score, item.Rink, forfeit);
+                        team1score,
+                        team2score, 
+                        item.Rink, 
+                        forfeit==0?"":(forfeit==-1?"Both": forfeit.ToString()));
                 }
 
 

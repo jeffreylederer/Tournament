@@ -61,7 +61,7 @@ namespace Tournament.Code
                     //cancelled weeks do not count
                     if (week.Cancelled)
                         continue;
-                    var total = 0;
+                    //var total = 0;
                     var numMatches = 0;
                     var bye = false;
                     bool forfeit = false;
@@ -87,13 +87,13 @@ namespace Tournament.Code
                             {
                                 winner.TotalScore += Math.Min(20, match.Team1Score);
                                 loser.TotalScore += Math.Min(20, match.Team2Score);
-                                total += Math.Min(20, match.Team1Score);
+                                //total += Math.Min(20, match.Team1Score);
                             }
                             else
                             {
                                 winner.TotalScore += match.Team1Score;
                                 loser.TotalScore += match.Team2Score;
-                                total += match.Team1Score;
+                                //total += match.Team1Score;
                             }
                             numMatches++;
                         }
@@ -108,13 +108,11 @@ namespace Tournament.Code
                             {
                                 winner.TotalScore += Math.Min(20, match.Team1Score);
                                 loser.TotalScore += Math.Min(20, match.Team2Score);
-                                total += Math.Min(20, match.Team1Score);
                         }
                             else
                             {
                                 winner.TotalScore += match.Team1Score;
                                 loser.TotalScore += match.Team2Score;
-                                total += match.Team1Score;
                             }
                             numMatches++;
                         }
@@ -129,13 +127,11 @@ namespace Tournament.Code
                             {
                                 winner.TotalScore += Math.Min(20, match.Team2Score);
                                 loser.TotalScore += Math.Min(20, match.Team1Score);
-                                total += Math.Min(20, match.Team2Score);
                             }
                             else
                             {
                                 winner.TotalScore += match.Team2Score;
                                 loser.TotalScore += match.Team1Score;
-                                total += match.Team2Score;
                             }
                             numMatches++;
                         }
@@ -167,12 +163,12 @@ namespace Tournament.Code
                             if (match.Rink != -1 && match.ForFeitId > 0)
                             {
                                 var winner = list.Find(x => x.TeamNumber == (match.Team.TeamNo == match.ForFeitId ? match.Team1.TeamNo : match.Team.TeamNo));
-                                winner.TotalScore += total / numMatches;
+                                winner.TotalScore += 14;
                             }
                             else if (match.Rink == -1 && match.ForFeitId !=-1)
                             {
                                 var winner = list.Find(x => x.TeamNumber == match.Team.TeamNo);
-                                winner.TotalScore += total / numMatches;
+                                winner.TotalScore += 14;
                             }
                         }
                     }
