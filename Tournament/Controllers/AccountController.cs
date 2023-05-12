@@ -201,7 +201,7 @@ namespace Tournament.Controllers
                         message.IsBodyHtml = true;
                         try
                         {
-                            //smtp.Send(message);
+                            smtp.Send(message);
                             return RedirectToAction("SentEmail", "Accounts");
                         }
                         catch (Exception ex)

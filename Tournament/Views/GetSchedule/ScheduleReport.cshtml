@@ -1,0 +1,18 @@
+﻿@using ReportViewerForMvc
+
+@{
+    ViewBag.Title = "ScheduleReport";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
+}
+
+<table>
+    
+    <tr>
+        <td>
+            @Html.ReportViewer(
+                ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer,
+                new { scrolling = "no" })
+        </td>
+    </tr>
+</table>
+

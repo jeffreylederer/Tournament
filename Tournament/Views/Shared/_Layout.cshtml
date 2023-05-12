@@ -43,7 +43,7 @@
                                 <li>@Html.ActionLink("Teams", "Index", "Teams", new { id = leagueid }, null)</li>
                                 <li>@Html.ActionLink("Matches", "Index", "Matches", new { id = leagueid}, null)</li>
                                 <li>@Html.ActionLink("Byes Report", "ByesReport", "Matches", new { id = leagueid }, null)</li>
-                                <li>@Html.ActionLink("Schedule Report", "GenerateReport", "GetSchedule", new { id = leagueid }, null)</li>
+                                <li>@Html.ActionLink("Schedule Report", "ScheduleReport", "GetSchedule", new { id = leagueid }, null)</li>
                                 
 
                                 @if (User.IsInRole("Admin") ||
