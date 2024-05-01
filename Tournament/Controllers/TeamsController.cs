@@ -1,4 +1,5 @@
-﻿using Elmah;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Elmah;
 using Microsoft.Reporting.WebForms;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ using System.Web.UI.WebControls;
 using Tournament.Model;
 using Tournament.Models;
 using Tournament.ReportFiles;
+using Tournament.ViewModel;
+using static Tournament.ReportFiles.TournamentDS;
 
 namespace Tournament.Controllers
 {
@@ -25,14 +28,23 @@ namespace Tournament.Controllers
         // GET: Teams
         public ActionResult Index(int id)
        {
-           ViewBag.Id = id;
-           var league = _db.Leagues.Find(id);
-           if (league == null)
-               return HttpNotFound();
-           ViewBag.TeamSize = league.TeamSize;
-           var list = _db.TeamAllowDelete(id).OrderBy(x => x.TeamNo);
-           return View(list);
+        ViewBag.Id = id;
+        var league = _db.Leagues.Find(id);
+        if (league == null)
+            return HttpNotFound();
+        ViewBag.TeamSize = league.TeamSize;
+        string message = string.Empty;
+        var list = _db.TeamAllowDelete(id).OrderBy(x => x.TeamNo).OrderBy(x => x.Division).ToList();
+        if (league.Divisions > 1)
+        {
+            message = "Number of teams, Division 1=" + list.Count(x => x.Division == 1);
+            for (int i = 1; i < league.Divisions; i++)
+                message += $", Division {i + 1}={list.Count(x => x.Division == i + 1)}";
         }
+        ViewBag.Message = message;
+            ViewBag.NumberDivisions = league.Divisions;
+        return View(list);
+     }
 
         
 
@@ -53,7 +65,7 @@ namespace Tournament.Controllers
             switch (league.TeamSize)
             {
                 case 1:
-                    reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/SingleTeams.rdlc");
+                    reportViewer.LocalReport.ReportPath = Server.MapPath(" /ReportFiles/SingleTeams.rdlc");
                     break;
                 case 2:
                     reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/PairsTeams.rdlc");
@@ -64,15 +76,16 @@ namespace Tournament.Controllers
             }
 
             var p2 = new ReportParameter("Description", league.LeagueName);
-            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2 });
+            var p1 = new ReportParameter("Divisions", league.Divisions.ToString());
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p2, p1 });
 
-            var teams = _db.Teams.Where(x => x.Leagueid == id);
+            var teams = _db.Teams.Where(x => x.Leagueid == id).ToList().OrderBy(x => x.TeamNo).OrderBy(x => x.DivisionId);
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
-                ds.Team.AddTeamRow(team.TeamNo, team.Player.Membership.FullName,  team.Lead== null? "" : team.Player2.Membership.FullName, team.ViceSkip == null ? "" : team.Player1.Membership.FullName);
+                ds.Team.AddTeamRow(team.TeamNo, team.Player.Membership.FullName,  team.Lead== null? "" : team.Player2.Membership.FullName, team.ViceSkip == null ? "" : team.Player1.Membership.FullName, team.DivisionId);
             }
-            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
+             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
 
             ViewBag.ReportViewer = reportViewer;
             return View();
@@ -95,6 +108,7 @@ namespace Tournament.Controllers
             }
             var team = new Team()
             {
+                DivisionId=1,
                 TeamNo = teamNo,
                 Leagueid = id,
                 Skip=0,
@@ -104,6 +118,12 @@ namespace Tournament.Controllers
             var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
             ViewBag.Teams = teams;
             ViewBag.List = RemainingPlayers(team, teams.ToList());
+            var divisions = new List<DivisionViewModel>();
+            for (short i = 1; i <= league.Divisions; i++)
+                divisions.Add(new DivisionViewModel() { DivisionId = i, DivisionNumber = i });
+
+            ViewBag.Divisions = divisions;
+            ViewBag.NumberDivisions = league.Divisions;
             ViewBag.TeamSize = league.TeamSize;
             return View(team);
         }
@@ -113,7 +133,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo")] Team team)
+        public ActionResult Create([Bind(Include = "id,DivisionId,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo")] Team team)
         {
             team.Skip = team.Skip == 0 ? (int ?) null : team.Skip;
             team.ViceSkip = team.ViceSkip == 0 ? (int?)null : team.ViceSkip;
@@ -125,14 +145,15 @@ namespace Tournament.Controllers
                     _db.Teams.Add(team);
                     try
                     {
-                        if (CheckTeam(team))
-                        {
-                            ModelState.AddModelError(string.Empty,
-                                "Unable to create record, a player cannot be on a team in multiple positions");
-                        }
-                        else
-                        {
+                    if (CheckTeam(team))
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "Unable to create record, a player cannot be on a team in multiple positions");
+                    }
+                    else
+                    {
                         _db.SaveChanges();
+                        OrderTeam(team.Leagueid);
                         return RedirectToAction("Index", new {id=team.Leagueid});
                     }
                 }
@@ -160,7 +181,8 @@ namespace Tournament.Controllers
             ViewBag.List = list;
             ViewBag.Teams = teams;
             ViewBag.TeamSize = league.TeamSize;
-           
+            ViewBag.NumberDivisions = league.Divisions;
+
             return View(team);
         }
 
@@ -180,10 +202,18 @@ namespace Tournament.Controllers
                 return HttpNotFound();
             }
             var teams = _db.Teams.Where(x => x.Leagueid == team.Leagueid).OrderBy(x => x.TeamNo);
+            var league = _db.Leagues.Find(team.Leagueid);
+            if (league == null)
+                return HttpNotFound();
 
             var list = RemainingPlayers(team, teams.ToList());
             ViewBag.List = list;
-            ViewBag.Teams = teams;
+            var divisions = new List<DivisionViewModel>();
+            for (short i = 1; i <= league.Divisions; i++)
+                divisions.Add(new DivisionViewModel() { DivisionId = i, DivisionNumber = i });
+            ViewBag.Divisions = divisions;
+            ViewBag.NumberDivisions = league.Divisions;
+            ViewBag.Teams = teams.OrderBy(x=>x.TeamNo).OrderBy(x=>x.DivisionId);
             ViewBag.TeamSize = team.League.TeamSize;
             return View(team);
         }
@@ -195,7 +225,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,LeagueId,TeamNo,rowversion")] Team team)
+        public ActionResult Edit([Bind(Include = "id,Skip,Lead,ViceSkip,TeamId,DivisionId,LeagueId,TeamNo,rowversion")] Team team)
         {
             
             try
@@ -205,6 +235,7 @@ namespace Tournament.Controllers
                     team.Skip = team.Skip == 0 ? (int?)null : team.Skip;
                     team.ViceSkip = team.ViceSkip == 0 ? (int?)null : team.ViceSkip;
                     team.Lead = team.Lead == 0 ? (int?)null : team.Lead;
+                    team.DivisionId = team.DivisionId;
                     if (CheckTeam(team))
                     {
                         ModelState.AddModelError(string.Empty,
@@ -215,6 +246,7 @@ namespace Tournament.Controllers
 
                         _db.Entry(team).State = EntityState.Modified;
                         _db.SaveChanges();
+                        OrderTeam(team.Leagueid);
                         return RedirectToAction("Index", new {id = team.Leagueid});
                     }
                 }
@@ -290,6 +322,10 @@ namespace Tournament.Controllers
                 }
                 return HttpNotFound();
             }
+            var league = _db.Leagues.Find(team.Leagueid);
+            if (league == null)
+                return HttpNotFound();
+            ViewBag.NumberDivisions = league.Divisions;
 
             if (concurrencyError.GetValueOrDefault())
             {
@@ -329,6 +365,7 @@ namespace Tournament.Controllers
                     _db.Entry(item).State = EntityState.Modified;
                 }
                 _db.SaveChanges();
+                OrderTeam(team.Leagueid);
                 return RedirectToAction("Index", new {id=team.Leagueid});
             }
             catch (DbUpdateConcurrencyException)
@@ -423,6 +460,24 @@ namespace Tournament.Controllers
             if (team.ViceSkip.HasValue && team.ViceSkip == team.Lead)
                 return true;
             return false;
+        }
+
+        private void OrderTeam(int leagueid)
+        {
+            bool changed = false;
+            var teams = _db.Teams.Where(x => x.Leagueid == leagueid).OrderBy(x => x.DivisionId).ToList();
+            for(int i=0;i<teams.Count();i++)
+            {
+                var item = teams[i];
+                if (item.TeamNo != i + 1)
+                {
+                    item.TeamNo = i + 1;
+                    _db.Entry(item).State = EntityState.Modified;
+                    changed = true;
+                }
+            }
+            if(changed)
+                _db.SaveChanges();
         }
 
         protected override void Dispose(bool disposing)

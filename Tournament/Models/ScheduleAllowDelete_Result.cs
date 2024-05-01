@@ -17,6 +17,7 @@ namespace Tournament.Models
         public System.DateTime GameDate { get; set; }
         public bool Cancelled { get; set; }
         public string WeekDate { get; set; }
+        public bool PlayOffs { get; set; }
         public Nullable<int> cnt { get; set; }
     }
 }

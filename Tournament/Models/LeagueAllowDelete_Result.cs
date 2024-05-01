@@ -17,6 +17,7 @@ namespace Tournament.Models
         public string LeagueName { get; set; }
         public bool Active { get; set; }
         public int TeamSize { get; set; }
+        public short Divisions { get; set; }
         public byte[] rowversion { get; set; }
         public bool TiesAllowed { get; set; }
         public bool PointsCount { get; set; }
@@ -24,8 +25,7 @@ namespace Tournament.Models
         public short TiePoints { get; set; }
         public short ByePoints { get; set; }
         public int StartWeek { get; set; }
-        public Nullable<int> cnt { get; set; }
-    //    public bool Property { get; set; }
         public bool PointsLimit { get; set; }
+        public Nullable<int> cnt { get; set; }
     }
 }

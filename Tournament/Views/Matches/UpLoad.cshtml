@@ -1,0 +1,48 @@
+﻿@using System.Runtime.InteropServices
+@model IEnumerable<Tournament.Models.Player>
+@{
+    ViewBag.Title = "CreateMatches";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
+    var visible = Model.Count() > 0 ? "visible" : "hidden";
+}
+
+<h2>Upload Matches for League</h2>
+<div class="validation-summary-errors text-danger">@ViewBag.Error</div>
+<h3 style="color: red">Are you sure you want to erase all matches and create a new set of matches?</h3>
+<div>
+    <table class="table" style="visibility:@visible">
+        <tr>
+            <th>
+                Players not assigned to a team
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Membership.FullName)
+                </td>
+
+
+            </tr>
+        }
+
+    </table>
+
+    This will erase all matches for the @ViewBag.LeagueName and create a new round robin set of matches using the
+    league's schedule and teams.
+    <br />
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Create Matches" class="btn btn-default" />
+
+        </div>
+    }
+
+
+</div>

@@ -19,6 +19,7 @@ namespace Tournament.Models
         public string Lead { get; set; }
         public int Leagueid { get; set; }
         public int TeamNo { get; set; }
+        public short Division { get; set; }
         public Nullable<int> cnt { get; set; }
     }
 }

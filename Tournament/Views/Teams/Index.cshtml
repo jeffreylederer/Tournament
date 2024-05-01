@@ -11,77 +11,95 @@
 @{
     if (User.IsInRole("Admin") || User.IsInRole("LeagueAdmin"))
     {
-        @Html.ActionLink("Add Team", "Create", new {id=ViewBag.Id})<br/>
+        @Html.ActionLink("Add Team", "Create", new { id = ViewBag.Id })<br/>
     }
 }
     @Html.ActionLink("Team Report", "TeamReport", new { id = ViewBag.Id })
 </p>
+<p>@ViewBag.Message</p>
 <table class="table-condensed table-striped">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.TeamNo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.skip)
-        </th>
-    @{
-        if ((int) ViewBag.TeamSize > 2)
-        {
-            <th>
-                @Html.DisplayNameFor(model => model.ViceSkip)
-            </th>
-        }
-    }
-    @{
-        if ((int) ViewBag.TeamSize > 1)
-        {
-            <th>
-                @Html.DisplayNameFor(model => model.Lead)
-            </th>
-        }
-    }
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model) {
-    <tr>
-        <th>
-            @Html.DisplayFor(modelItem => item.TeamNo)
-        </th>
-        <td>
-            @Html.DisplayFor(modelItem => item.skip)
-        </td>
-    @if ((int) ViewBag.TeamSize > 2)
-    {
-        <td>
-            @Html.DisplayFor(modelItem => item.ViceSkip)
-        </td>
-    }
-    @if ((int) ViewBag.TeamSize > 1)
-    {
-        <td>
-            @Html.DisplayFor(modelItem => item.Lead)
-        </td>
-    }
-        <td>
         @{
-            if (User.IsInRole("Admin") ||
-                User.IsInRole("LeagueAdmin"))
+            if ((int)ViewBag.NumberDivisions > 1)
             {
-                @Html.ActionLink("Edit", "Edit", new {id = item.id})
-                @Html.Raw(" | ");
-                if (item.cnt > 0)
-                { 
-                    <span style="color: gray;">Delete</span>
-                }
-                else
-                {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                <th>
+                    @Html.DisplayNameFor(model => model.Division)
+                </th>
                 }
             }
-        }
-            </td>
-    </tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.TeamNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.skip)
+                </th>
+                @{
+                    if ((int)ViewBag.TeamSize > 2)
+                    {
+                        <th>
+                            @Html.DisplayNameFor(model => model.ViceSkip)
+                        </th>
+                    }
+                }
+                @{
+                    if ((int)ViewBag.TeamSize > 1)
+                    {
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lead)
+                        </th>
+                    }
+                }
+                <th></th>
+            </tr>
+
+    @foreach (var item in Model)
+    {
+    <tr>
+        @{
+            if ((int)ViewBag.NumberDivisions > 1)
+            {
+                <th>
+                    @Html.DisplayFor(modelItem => item.Division)
+                </th>
+                }
+            }
+                <th>
+                    @Html.DisplayFor(modelItem => item.TeamNo)
+                </th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.skip)
+                </td>
+                @if ((int)ViewBag.TeamSize > 2)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ViceSkip)
+                    </td>
+                }
+                @if ((int)ViewBag.TeamSize > 1)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lead)
+                    </td>
+                }
+                <td>
+                    @{
+                        if (User.IsInRole("Admin") ||
+                            User.IsInRole("LeagueAdmin"))
+                        {
+                            @Html.ActionLink("Edit", "Edit", new { id = item.id })
+                            @Html.Raw(" | ");
+                            if (item.cnt > 0)
+                            {
+                                <span style="color: gray;">Delete</span>
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Delete", "Delete", new { id = item.id });
+                            }
+                        }
+                    }
+                </td>
+            </tr>
     }
 
 </table>

@@ -22,10 +22,13 @@
 <table class="table">
     <tr>
         <th>
-           Week Number
+            Week Number
         </th>
         <th>
             @Html.DisplayNameFor(model => model.GameDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PlayOffs)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Cancelled)
@@ -42,6 +45,9 @@
             @Html.DisplayFor(modelItem => item.GameDate)
         </td>
         <td>
+            @Html.DisplayFor(modelItem => item.PlayOffs)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.Cancelled)
         </td>
         <td>
@@ -49,10 +55,10 @@
                 if (User.IsInRole("Admin") ||
                     User.IsInRole("LeagueAdmin"))
                 {
-                    @Html.ActionLink("Edit", "Edit", new {id = item.id})
+                    @Html.ActionLink("Edit", "Edit", new { id = item.id })
                     @Html.Raw(" | ");
                     if (item.cnt > 0)
-                    { 
+                    {
                         <span style="color: gray;">Delete</span>
                     }
                     else

@@ -50,7 +50,8 @@ namespace Tournament.Code
                         TotalScore = 0,
                         Ties = 0,
                         Byes = 0,
-                        Players = players
+                        Players = players,
+                        DivisionId = team.DivisionId
                     });
                 }
 
@@ -186,6 +187,7 @@ namespace Tournament.Code
                 Wins = 0,
                 Ties = 0,
                 Byes = 0
+                
             };
             foreach (var item in list)
             {
@@ -208,7 +210,7 @@ namespace Tournament.Code
                 {
                     place = nextplace;
                 }
-                ds.Stand.AddStandRow(item.TeamNumber,item.Players, item.TotalScore, place, item.Wins, item.Loses, item.Ties, item.Byes);
+                ds.Stand.AddStandRow(item.TeamNumber,item.Players, item.TotalScore, place, item.Wins, item.Loses, item.Ties, item.Byes, item.DivisionId);
                 previous = item;
                 nextplace++;
             }
@@ -226,6 +228,7 @@ namespace Tournament.Code
         public string Players { get; set; }
         public int Ties { get; set; }
         public int Byes { get; set; }
+        public short DivisionId { get; set; }
        
         public int TotalPoints { get; set; }
 

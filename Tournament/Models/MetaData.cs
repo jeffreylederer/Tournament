@@ -68,6 +68,11 @@ namespace Tournament.Models
 
         [Timestamp]
         public byte[] rowversion { get; set; }
+
+        [Required]
+        [Range(minimum: 1, maximum: 4, ErrorMessage = "Must be between 1 and 4")]
+        [Display(Name = "Division")]
+        public short DivisionId { get; set; }
     }
 
 
@@ -86,7 +91,11 @@ namespace Tournament.Models
         [Required]
         public DateTime GameDate { get; set; }
 
-       [Timestamp]
+        [Display(Name = "PlayOffs")]
+        [Required]
+        public bool PlayOffs { get; set; }
+
+        [Timestamp]
         public byte[] rowversion { get; set; }
     }
 
@@ -178,6 +187,11 @@ namespace Tournament.Models
         [Required]
         [Display(Name = "Limit Points to 20")]
         public bool PointsLimit { get; set; }
+
+        [Required]
+        [Range(minimum: 1, maximum: 4, ErrorMessage = "Must be between 1 and 4")]
+        [Display(Name = "Number of Divisions")]
+        public short Divisions { get; set; }
 
 
 

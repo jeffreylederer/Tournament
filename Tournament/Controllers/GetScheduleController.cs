@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -191,30 +192,50 @@ namespace Tournament.Controllers
             var league = _db.Leagues.Find(id);
             if (league == null)
                 return HttpNotFound();
-            var weeks = _db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate);
+            var weeks = _db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate).ToList();
             var table = new TournamentDS.ScheduleDataTable();
             int weekNumber = 1;
-            int i = league.StartWeek;
-            
+            int rinks = 0;
+
             foreach (Schedule week in weeks)
             {
-                var matches = _db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink).ToList();
-                var matchesByes = _db.Matches.Where(x => x.Rink == -1 && x.WeekId == week.id).ToList();
-                object[] row = new object[13];
-                row[0] = weekNumber++;
-                row[1] = $"{week.GameDate.Month}/{week.GameDate.Day}";
-                
-                i++;
-                if (matchesByes.Any())
-                    row[2] = matchesByes.First().Team.TeamNo.ToString();
-                int rinkNumber = 3;
-                foreach (var match in matches)
+                if (!week.PlayOffs)
                 {
-                    if (match.Rink != -1)
-                        row[rinkNumber++] = $"{match.Team.TeamNo}-{match.Team1.TeamNo}";
+                    var matches = _db.Matches.Where(x => x.WeekId == week.id).OrderBy(x => x.Rink).ToList();
+                    var matchesByes = _db.Matches.Where(x => x.Rink == -1 && x.WeekId == week.id).ToList();
+                    object[] row = new object[13];
+                    row[0] = weekNumber++;
+                    row[1] = $"{week.GameDate.Month}/{week.GameDate.Day}";
+                    if (matchesByes.Any())
+                        row[2] = matchesByes.First().Team.TeamNo.ToString();
+                    int rinkNumber = 3;
+                    foreach (var match in matches)
+                    {
+                        if (match.Rink != -1)
+                        {
+                            row[rinkNumber++] = $"{match.Team.TeamNo}-{match.Team1.TeamNo}";
+                            rinks = Math.Max(rinks, match.Rink);
+                        }
+
+                    }
+                    table.Rows.Add(row);
                 }
-                table.Rows.Add(row);
+                else
+                {
+                    object[] row = new object[13];
+                    row[0] = weekNumber++;
+                    row[1] = $"{week.GameDate.Month}/{week.GameDate.Day}";
+                    for (int j = 0; j < rinks; j++)
+                    {
+                        row[j + 3] = "PO";
+                    }
+                    table.Rows.Add(row);
+                }       
+
+
             }
+
+
         
             var reportViewer = new ReportViewer()
             {
@@ -228,18 +249,19 @@ namespace Tournament.Controllers
             reportViewer.LocalReport.ReportPath = Server.MapPath("/ReportFiles/Schedule.rdlc");
            
 
-            var teams = _db.Teams.Where(x => x.Leagueid == id);
+            var teams = _db.Teams.Where(x => x.Leagueid == id).OrderBy(x=>x.TeamNo);
             var ds = new TournamentDS();
             foreach (var team in teams)
             {
-                ds.Team.AddTeamRow(team.TeamNo, team.Player.Membership.FullName, team.Lead == null ? "" : team.Player2.Membership.FullName, team.ViceSkip == null ? "" : team.Player1.Membership.FullName);
+                ds.Team.AddTeamRow(team.TeamNo, team.Player.Membership.FullName, team.Lead == null ? "" : team.Player2.Membership.FullName, team.ViceSkip == null ? "" : team.Player1.Membership.FullName, team.DivisionId);
             }
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Team", ds.Team.Rows));
             reportViewer.LocalReport.DataSources.Add(new ReportDataSource("Schedule", table.Rows));
             var p1 = new ReportParameter("TeamSize", league.TeamSize.ToString());
             var p2 = new ReportParameter("Description", league.LeagueName);
             var p3 = new ReportParameter("Rinks", (teams.Count() / 2).ToString());
-            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3 });
+            var p4 = new ReportParameter("Divisions", league.Divisions.ToString());
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3,p4 });
             ViewBag.ReportViewer = reportViewer;
             return View();
         }

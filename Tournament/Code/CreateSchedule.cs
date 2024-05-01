@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Web;
+
 
 
 namespace Tournament.Code
@@ -140,6 +143,29 @@ namespace Tournament.Code
             }
             rightside[rightside.Length - 1] = remainder;
             return other;
+        }
+
+        public static List<CalculatedMatch> ReadMatches(Stream fs)
+        {
+            var matches = new List<CalculatedMatch>();
+            
+            using (var reader = new StreamReader(fs))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var items = line.Split(new char[] { ',' });
+                    var match = new CalculatedMatch()
+                    {
+                        Week = int.Parse(items[0])-1,
+                        Rink = int.Parse(items[1])-1,
+                        Team1 = int.Parse(items[2])-1,
+                        Team2 = int.Parse(items[3])-1
+                    };
+                    matches.Add(match);
+                }
+            }
+            return matches;
         }
     }
 

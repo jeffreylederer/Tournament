@@ -9,7 +9,7 @@
 }
 
 <h2> Matches</h2>
-@if (((SelectList) ViewBag.ScheduleID).Count() > 0)
+@if (((SelectList)ViewBag.ScheduleID).Count() > 0)
 {
     <table>
         <tr>
@@ -17,7 +17,7 @@
                 Date:&nbsp;&nbsp;
             </td>
             <td>
-                @Html.DropDownList("weekid", (SelectList) ViewBag.ScheduleID, new {@class = "form-control", @onchange = "newSelect(this.value)"})
+                @Html.DropDownList("weekid", (SelectList)ViewBag.ScheduleID, new { @class = "form-control", @onchange = "newSelect(this.value)" })
             </td>
         </tr>
     </table>
@@ -25,12 +25,16 @@
     <div class="validation-summary-errors text-danger">@ViewBag.Error</div>
 <br/>
 <p>
-    @if (ViewBag.WeekID != null && (int) ViewBag.WeekID > 0)
+    @if (ViewBag.WeekID != null && (int)ViewBag.WeekID > 0)
     {
-        @Html.ActionLink("This week's standings report", "StandingsReport", new {weekid = ViewBag.WeekId, id=ViewBag.Id})<br/>
-        @Html.ActionLink("This week's score cards", "ScoreCardReport", new {weekid = ViewBag.WeekId, id = ViewBag.Id })
+        @Html.ActionLink("This week's standings report", "StandingsReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })<br/>
+        @Html.ActionLink("This week's score cards", "ScoreCardReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })
     }
 </p>
+
+@{ 
+    if (!(bool)ViewBag.PlayOffs)
+    {
 
 <table class="table-condensed table-striped">
     <tr>
@@ -185,10 +189,17 @@
 
         </tr>
 
-    }
+                    }
 
 </table>
 <span style="color: red;">Teams with players in wheelchairs are highlighted in red</span>
+                    }
+                    else
+                    {
+                        @Html.Raw("This is a playoff week")
+                        }
+                    }
+
 
 @section Scripts {
     <script type="text/javascript">

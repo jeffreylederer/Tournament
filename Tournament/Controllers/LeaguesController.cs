@@ -37,7 +37,8 @@ namespace Tournament.Controllers
                 ByePoints = 1,
                 TeamSize=2,
                 StartWeek = 1,
-                PointsLimit = true
+                PointsLimit = true,
+                Divisions=1
             };
             
             return View(item);
@@ -48,7 +49,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek, PointsLimit")] League league)
+        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Divisions,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek, PointsLimit")] League league)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +98,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek,PointsLimit")] League league)
+        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Divisions,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek,PointsLimit")] League league)
         {
             try
             {
@@ -129,6 +130,9 @@ namespace Tournament.Controllers
                     if (databaseValues.TeamSize != clientValues.TeamSize)
                         ModelState.AddModelError("Team Size", "Current value: "
                                                               + databaseValues.TeamSize);
+                    if (databaseValues.Divisions != clientValues.Divisions)
+                        ModelState.AddModelError("Number of Divisions", "Current value: "
+                                                              + databaseValues.Divisions);
                     if (databaseValues.Active != clientValues.Active)
                         ModelState.AddModelError("Active", "Current value: "
                                                               + databaseValues.Active);

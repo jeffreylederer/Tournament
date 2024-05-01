@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "File Upload";
+    Layout = "~/Views/Shared/_LeagueLayout.cshtml";
+}
+
+<div>
+    <h1>Upload Schedule File</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm("UploadFile", "Matches", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <input type="file" name="files" /><br/><br/>
+            <input type="submit" value="Upload File" />
+        }
+        <br /><br/>
+    <div style="color:Red">
+        @ViewBag.Error
+    </div>
+    </div>
+</div>

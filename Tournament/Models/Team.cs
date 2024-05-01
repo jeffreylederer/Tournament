@@ -28,6 +28,7 @@ namespace Tournament.Models
         public int Leagueid { get; set; }
         public int TeamNo { get; set; }
         public byte[] rowversion { get; set; }
+        public short DivisionId { get; set; }
     
         public virtual League League { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

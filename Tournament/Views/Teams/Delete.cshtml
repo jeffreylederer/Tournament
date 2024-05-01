@@ -14,13 +14,23 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.TeamNo)
+            @Html.DisplayNameFor(model => model.DivisionId)
         </dt>
+       @{
+           if ((int)ViewBag.NumberDivisions > 1)
+           {
+                <dd>
+                    @Html.DisplayFor(model => model.DivisionId)
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.TeamNo)
+                </dt>
+           }
+        }
 
         <dd>
             @Html.DisplayFor(model => model.TeamNo)
         </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.Skip)
         </dt>

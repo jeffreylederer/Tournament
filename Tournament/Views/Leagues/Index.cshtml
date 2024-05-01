@@ -19,6 +19,10 @@
         </th>
 
         <th>
+            @Html.DisplayNameFor(model => model.Divisions)
+        </th>
+
+        <th>
             @Html.DisplayNameFor(model => model.Active)
         </th>
 
@@ -63,6 +67,9 @@
             @Html.DisplayFor(modelItem => item.TeamSize)
         </td>
         <td>
+            @Html.DisplayFor(modelItem => item.Divisions)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.Active)
         </td>
         <td>
@@ -85,7 +92,7 @@
         <td>
             @Html.DisplayFor(modelItem => item.StartWeek)
         </td>
-        
+
         <td>
             @Html.DisplayFor(modelItem => item.PointsLimit)
         </td>
@@ -100,7 +107,7 @@
             @if ((User.IsInRole("Admin") || User.IsInRole("LeagueAdmin")))
             {
                 @Html.Raw(" | ")
-                @Html.ActionLink("Delete League", "Delete", new {id = item.id})
+                @Html.ActionLink("Delete League", "Delete", new { id = item.id })
 
             }
         </td>

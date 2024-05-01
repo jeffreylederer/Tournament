@@ -21,6 +21,7 @@
           <Property Name="ByePoints" Type="smallint" Nullable="false" />
           <Property Name="StartWeek" Type="int" Nullable="false" />
           <Property Name="PointsLimit" Type="bit" Nullable="false" />
+          <Property Name="Divisions" Type="smallint" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -78,6 +79,7 @@
           <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
           <Property Name="Cancelled" Type="bit" Nullable="false" />
           <Property Name="WeekDate" Type="varchar" MaxLength="10" StoreGeneratedPattern="Computed" />
+          <Property Name="PlayOffs" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -90,6 +92,7 @@
           <Property Name="Leagueid" Type="int" Nullable="false" />
           <Property Name="TeamNo" Type="int" Nullable="false" />
           <Property Name="rowversion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="DivisionId" Type="smallint" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -387,6 +390,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Name="TiePoints" Type="Int16" Nullable="false" />
           <Property Name="ByePoints" Type="Int16" Nullable="false" />
           <Property Name="StartWeek" Type="Int32" Nullable="false" />
+          <Property Name="Divisions" Type="Int16" Nullable="false" />
           <NavigationProperty Name="Players" Relationship="Self.FK__Player__leagueid__4E88ABD4" FromRole="League" ToRole="Player" />
           <NavigationProperty Name="Schedules" Relationship="Self.FK__Schedule__League__4F7CD00D" FromRole="League" ToRole="Schedule" />
           <NavigationProperty Name="Teams" Relationship="Self.FK__Team__leagueid__4D94879B" FromRole="League" ToRole="Team" />
@@ -456,6 +460,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="GameDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="PlayOffs" Type="Boolean" Nullable="false" />
           <Property Name="Leagueid" Type="Int32" Nullable="false" />
           <Property Name="rowversion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
           <Property Name="Cancelled" Type="Boolean" Nullable="false" />
@@ -480,6 +485,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <NavigationProperty Name="Player" Relationship="Self.FK__Players" FromRole="Team" ToRole="Player" />
           <NavigationProperty Name="Player1" Relationship="Self.FK__Players1" FromRole="Team" ToRole="Player" />
           <NavigationProperty Name="Player2" Relationship="Self.FK__Players2" FromRole="Team" ToRole="Player" />
+          <Property Name="DivisionId" Type="Int16" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -768,6 +774,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Type="String" Name="LeagueName" Nullable="false" MaxLength="50" />
           <Property Type="Boolean" Name="Active" Nullable="false" />
           <Property Type="Int32" Name="TeamSize" Nullable="false" />
+          <Property Type="Int16" Name="Divisions" Nullable="false" />
           <Property Type="Binary" Name="rowversion" Nullable="false" MaxLength="8" />
           <Property Type="Boolean" Name="TiesAllowed" Nullable="false" />
           <Property Type="Boolean" Name="PointsCount" Nullable="false" />
@@ -802,12 +809,14 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Type="String" Name="Lead" Nullable="true" MaxLength="101" />
           <Property Type="Int32" Name="Leagueid" Nullable="false" />
           <Property Type="Int32" Name="TeamNo" Nullable="false" />
+          <Property Type="Int16" Name="Division" Nullable="false" />
           <Property Type="Int32" Name="cnt" Nullable="true" />
         </ComplexType>
         <ComplexType Name="ScheduleAllowDelete_Result">
           <Property Type="Int32" Name="id" Nullable="false" />
           <Property Type="DateTime" Name="GameDate" Nullable="false" />
           <Property Type="Boolean" Name="Cancelled" Nullable="false" />
+          <Property Type="Boolean" Name="PlayOffs" Nullable="false" />
           <Property Type="String" Name="WeekDate" Nullable="true" MaxLength="10" />
           <Property Type="Int32" Name="cnt" Nullable="true" />
         </ComplexType>
@@ -820,6 +829,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <EntitySetMapping Name="Leagues">
             <EntityTypeMapping TypeName="TournamentModel.League">
               <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="Divisions" ColumnName="Divisions" />
                 <ScalarProperty Name="PointsLimit" ColumnName="PointsLimit" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
@@ -888,6 +898,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <EntitySetMapping Name="Schedules">
             <EntityTypeMapping TypeName="TournamentModel.Schedule">
               <MappingFragment StoreEntitySet="Schedule">
+                <ScalarProperty Name="PlayOffs" ColumnName="PlayOffs" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="GameDate" ColumnName="GameDate" />
                 <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
@@ -900,6 +911,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <EntitySetMapping Name="Teams">
             <EntityTypeMapping TypeName="TournamentModel.Team">
               <MappingFragment StoreEntitySet="Team">
+                <ScalarProperty Name="DivisionId" ColumnName="DivisionId" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="Skip" ColumnName="Skip" />
                 <ScalarProperty Name="ViceSkip" ColumnName="ViceSkip" />
@@ -968,6 +980,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
                 <ScalarProperty Name="LeagueName" ColumnName="LeagueName" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="TeamSize" ColumnName="TeamSize" />
+                <ScalarProperty Name="Divisions" ColumnName="Divisions" />
                 <ScalarProperty Name="rowversion" ColumnName="rowversion" />
                 <ScalarProperty Name="TiesAllowed" ColumnName="TiesAllowed" />
                 <ScalarProperty Name="PointsCount" ColumnName="PointsCount" />
@@ -1014,6 +1027,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
                 <ScalarProperty Name="Lead" ColumnName="Lead" />
                 <ScalarProperty Name="Leagueid" ColumnName="Leagueid" />
                 <ScalarProperty Name="TeamNo" ColumnName="TeamNo" />
+                <ScalarProperty Name="Division" ColumnName="Division" />
                 <ScalarProperty Name="cnt" ColumnName="cnt" />
               </ComplexTypeMapping>
             </ResultMapping>
@@ -1023,6 +1037,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
               <ComplexTypeMapping TypeName="TournamentModel.ScheduleAllowDelete_Result">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="GameDate" ColumnName="GameDate" />
+                <ScalarProperty Name="PlayOffs" ColumnName="PlayOffs" />
                 <ScalarProperty Name="Cancelled" ColumnName="Cancelled" />
                 <ScalarProperty Name="WeekDate" ColumnName="WeekDate" />
                 <ScalarProperty Name="cnt" ColumnName="cnt" />

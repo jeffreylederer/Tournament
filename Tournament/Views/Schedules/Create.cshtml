@@ -18,13 +18,23 @@
     @Html.HiddenFor(model => model.Cancelled)
 
 
-    <br /><br /><br /><br /><br /><br /><br/>
+    <br /><br /><br /><br /><br /><br /><br />
     <div class="form-group">
         @Html.LabelFor(model => model.GameDate, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
 
             @Html.TextBoxFor(m => m.GameDate, "{0:d}", new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.GameDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.PlayOffs, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.PlayOffs)
+                @Html.ValidationMessageFor(model => model.PlayOffs, "", new { @class = "text-danger" })
+            </div>
         </div>
     </div>
 
@@ -43,17 +53,20 @@
 
 <h2>Schedule So Far</h2>
 <table class="table-condensed table-striped">
-<tr>
-    <th>
-       Week Number
-    </th>
-    <th>
-        @Html.DisplayNameFor(model => model.GameDate)
-    </th>
-    <th>
-        @Html.DisplayNameFor(model => model.Cancelled)
-    </th>
-</tr>
+    <tr>
+        <th>
+            Week Number
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GameDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PlayOffs)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cancelled)
+        </th>
+    </tr>
 
 @foreach (var item in (IEnumerable<Tournament.Models.Schedule>)ViewBag.Schedule)
 {
@@ -63,6 +76,9 @@
         </th>
         <td>
             @Html.DisplayFor(modelItem => item.GameDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PlayOffs)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Cancelled)

@@ -20,6 +20,7 @@ namespace Tournament.Controllers
         public ActionResult Index(int id)
         {
             ViewBag.Id = id;
+
             return View(db.ScheduleAllowDelete(id).ToList());
         }
 
@@ -47,7 +48,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "GameDate,LeagueId,Cancelled")] Schedule schedule)
+        public ActionResult Create([Bind(Include = "GameDate,PlayOffs,LeagueId,Cancelled")] Schedule schedule)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +109,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,GameDate,Leagueid,Cancelled,rowversion")] Schedule schedule)
+        public ActionResult Edit([Bind(Include = "id,GameDate,PlayOffs,Leagueid,Cancelled,rowversion")] Schedule schedule)
         {
             try
             {
