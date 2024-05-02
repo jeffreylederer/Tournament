@@ -280,6 +280,9 @@ namespace Tournament.Controllers
                     if (databaseValues.TeamNo != clientValues.TeamNo)
                         ModelState.AddModelError("Team Number", "Current value: "
                                                                 + databaseValues.TeamNo);
+                    if (databaseValues.DivisionId != clientValues.DivisionId)
+                        ModelState.AddModelError("Division", "Current value: "
+                                                                + databaseValues.TeamNo);
 
 
                     ModelState.AddModelError(string.Empty, "The record you attempted to edit "

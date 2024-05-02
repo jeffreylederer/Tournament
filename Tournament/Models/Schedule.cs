@@ -22,11 +22,11 @@ namespace Tournament.Models
     
         public int id { get; set; }
         public System.DateTime GameDate { get; set; }
+        public bool PlayOffs { get; set; }
         public int Leagueid { get; set; }
         public byte[] rowversion { get; set; }
         public bool Cancelled { get; set; }
         public string WeekDate { get; set; }
-        public bool PlayOffs { get; set; }
     
         public virtual League League { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -164,6 +164,10 @@ namespace Tournament.Models
         [Display(Name = "Do scores count")]
         public bool PointsCount { get; set; }
 
+        [Required]
+        [Display(Name = "Playoffs allowed")]
+        public bool PlayOffs { get; set; }
+
         [Range(1,3)]
         [Required]
         [Display(Name = "Multliplier for a win")]

@@ -22,6 +22,7 @@
           <Property Name="StartWeek" Type="int" Nullable="false" />
           <Property Name="PointsLimit" Type="bit" Nullable="false" />
           <Property Name="Divisions" Type="smallint" Nullable="false" />
+          <Property Name="PlayOffs" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -397,6 +398,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <NavigationProperty Name="RinkOrder" Relationship="Self.FK_League_RinkOrder" FromRole="League" ToRole="RinkOrder" />
           <NavigationProperty Name="UserLeagues" Relationship="Self.FK_UserLeague_League" FromRole="League" ToRole="UserLeague" />
           <Property Name="PointsLimit" Type="Boolean" Nullable="false" />
+          <Property Name="PlayOffs" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Match">
           <Key>
@@ -777,6 +779,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <Property Type="Int16" Name="Divisions" Nullable="false" />
           <Property Type="Binary" Name="rowversion" Nullable="false" MaxLength="8" />
           <Property Type="Boolean" Name="TiesAllowed" Nullable="false" />
+          <Property Type="Boolean" Name="PlayOffs" Nullable="false" />
           <Property Type="Boolean" Name="PointsCount" Nullable="false" />
           <Property Type="Int16" Name="WinPoints" Nullable="false" />
           <Property Type="Int16" Name="TiePoints" Nullable="false" />
@@ -829,6 +832,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
           <EntitySetMapping Name="Leagues">
             <EntityTypeMapping TypeName="TournamentModel.League">
               <MappingFragment StoreEntitySet="League">
+                <ScalarProperty Name="PlayOffs" ColumnName="PlayOffs" />
                 <ScalarProperty Name="Divisions" ColumnName="Divisions" />
                 <ScalarProperty Name="PointsLimit" ColumnName="PointsLimit" />
                 <ScalarProperty Name="id" ColumnName="id" />
@@ -981,6 +985,7 @@ warning 6002: The table/view 'Tournament.dbo.UserLeagueView' does not have a pri
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="TeamSize" ColumnName="TeamSize" />
                 <ScalarProperty Name="Divisions" ColumnName="Divisions" />
+                <ScalarProperty Name="PlayOffs" ColumnName="PlayOffs" />
                 <ScalarProperty Name="rowversion" ColumnName="rowversion" />
                 <ScalarProperty Name="TiesAllowed" ColumnName="TiesAllowed" />
                 <ScalarProperty Name="PointsCount" ColumnName="PointsCount" />

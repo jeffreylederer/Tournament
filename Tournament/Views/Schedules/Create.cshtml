@@ -28,15 +28,26 @@
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.PlayOffs, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            <div class="checkbox">
-                @Html.EditorFor(model => model.PlayOffs)
-                @Html.ValidationMessageFor(model => model.PlayOffs, "", new { @class = "text-danger" })
+    @{
+        if ((bool)ViewBag.Playoffs)
+        {
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PlayOffs, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.PlayOffs)
+                        @Html.ValidationMessageFor(model => model.PlayOffs, "", new { @class = "text-danger" })
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.PlayOffs)
+        }
+    }
 
 
     <div class="form-group">
@@ -48,7 +59,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index", new {id = Model.Leagueid})
+    @Html.ActionLink("Back to List", "Index", new { id = Model.Leagueid })
 </div>
 
 <h2>Schedule So Far</h2>
@@ -60,13 +71,18 @@
         <th>
             @Html.DisplayNameFor(model => model.GameDate)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PlayOffs)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Cancelled)
-        </th>
-    </tr>
+        @{
+            if ((bool)ViewBag.Playoffs)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayOffs)
+                </th>
+                }
+            }
+                <th>
+                    @Html.DisplayNameFor(model => model.Cancelled)
+                </th>
+            </tr>
 
 @foreach (var item in (IEnumerable<Tournament.Models.Schedule>)ViewBag.Schedule)
 {
@@ -77,13 +93,18 @@
         <td>
             @Html.DisplayFor(modelItem => item.GameDate)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PlayOffs)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Cancelled)
-        </td>
-    </tr>
+        @{
+            if (!(bool)ViewBag.Playoffs)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayOffs)
+                </td>
+                }
+            }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cancelled)
+                </td>
+            </tr>
      weeknumber++;
 }
 </table>

@@ -20,24 +20,29 @@
         <dd>
             @Html.DisplayFor(model => model.GameDate)
         </dd>
+        @{
+            if ((bool)ViewBag.Playoffs)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.PlayOffs)
+                </dt>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.PlayOffs)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.PlayOffs)
-        </dd>
+                <dd>
+                    @Html.DisplayFor(model => model.PlayOffs)
+                </dd>
+                }
+            }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Cancelled)
-        </dt>
+            <dt>
+                @Html.DisplayNameFor(model => model.Cancelled)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Cancelled)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.Cancelled)
+            </dd>
 
-    </dl>
+            </dl>
 
     @using (Html.BeginForm())
     {

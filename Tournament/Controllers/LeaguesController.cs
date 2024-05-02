@@ -31,14 +31,15 @@ namespace Tournament.Controllers
             {
                 Active = true,
                 TiesAllowed = false,
-                PointsCount =  true,
+                PointsCount = true,
                 WinPoints = 1,
                 TiePoints = 1,
                 ByePoints = 1,
-                TeamSize=2,
+                TeamSize = 2,
                 StartWeek = 1,
                 PointsLimit = true,
-                Divisions=1
+                Divisions = 1,
+                PlayOffs = false
             };
             
             return View(item);
@@ -49,7 +50,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,LeagueName,TeamSize,Divisions,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek, PointsLimit")] League league)
+        public ActionResult Create([Bind(Include = "id,LeagueName,PlayOffs,TeamSize,Divisions,Active,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek, PointsLimit")] League league)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +99,7 @@ namespace Tournament.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,LeagueName,TeamSize,Divisions,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek,PointsLimit")] League league)
+        public ActionResult Edit([Bind(Include = "id,LeagueName,PlayOffs,TeamSize,Divisions,Active,rowversion,TiesAllowed,PointsCount,WinPoints,TiePoints,ByePoints,StartWeek,PointsLimit")] League league)
         {
             try
             {
@@ -157,6 +158,9 @@ namespace Tournament.Controllers
                     if (databaseValues.PointsLimit != clientValues.PointsLimit)
                         ModelState.AddModelError("PointLimit", "Current value: "
                                                                + databaseValues.StartWeek);
+                    if (databaseValues.PlayOffs != clientValues.PlayOffs)
+                        ModelState.AddModelError("PlayOffs Allowed", "Current value: "
+                                                               + databaseValues.PlayOffs);
 
                     ModelState.AddModelError(string.Empty, "The record you attempted to edit "
                                                            + "was modified by another user after you got the original value. The "

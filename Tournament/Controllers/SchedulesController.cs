@@ -20,7 +20,7 @@ namespace Tournament.Controllers
         public ActionResult Index(int id)
         {
             ViewBag.Id = id;
-
+            ViewBag.PlayOffs = db.Leagues.Find(id).PlayOffs;
             return View(db.ScheduleAllowDelete(id).ToList());
         }
 
@@ -40,6 +40,7 @@ namespace Tournament.Controllers
                 Cancelled = false
             };
             ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == id).OrderBy(x => x.GameDate);
+            ViewBag.PlayOffs = db.Leagues.Find(id).PlayOffs;
             return View(schedule);
         }
 
@@ -101,6 +102,8 @@ namespace Tournament.Controllers
                 return HttpNotFound();
             }
             ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).OrderBy(x => x.GameDate);
+
+            ViewBag.PlayOffs = db.Leagues.Find(schedule.Leagueid).PlayOffs;
             return View(schedule);
         }
 
@@ -200,7 +203,7 @@ namespace Tournament.Controllers
                                                   + "record, click the Delete button again. Otherwise "
                                                   + "click the Back to List hyperlink.";
             }
-
+            ViewBag.PlayOffs = db.Leagues.Find(schedule.Leagueid).PlayOffs;
             return View(schedule);
         }
 

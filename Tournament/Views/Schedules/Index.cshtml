@@ -13,7 +13,7 @@
     if (User.IsInRole("Admin") ||
         User.IsInRole("LeagueAdmin"))
     {
-        @Html.ActionLink("Create New", "Create", new {id = ViewBag.Id})
+        @Html.ActionLink("Create New", "Create", new { id = ViewBag.Id })
     }
 }
 </
@@ -27,16 +27,22 @@
         <th>
             @Html.DisplayNameFor(model => model.GameDate)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PlayOffs)
-        </th>
+        @{
+            if ((bool)ViewBag.Playoffs)
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.PlayOffs)
+                </th>
+                }
+            }
         <th>
             @Html.DisplayNameFor(model => model.Cancelled)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
     <tr>
         <th>
             @weeknumber
@@ -44,9 +50,14 @@
         <td>
             @Html.DisplayFor(modelItem => item.GameDate)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PlayOffs)
-        </td>
+        @{
+            if ((bool)ViewBag.Playoffs)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlayOffs)
+                </td>
+                }
+            }
         <td>
             @Html.DisplayFor(modelItem => item.Cancelled)
         </td>
