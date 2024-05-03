@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Linq;
 using System.Collections;
 using System.Text.RegularExpressions;
+using System.Diagnostics.Eventing.Reader;
 
 namespace RoundRobin
 {
@@ -17,26 +18,46 @@ namespace RoundRobin
             Console.Out.Write("Number of Teams >");
             var val = Console.In.ReadLine();
             int numberOfTeams = int.Parse(val);
+            Console.Out.Write("Number of Weeks >");
+            val = Console.In.ReadLine();
+            int weeks = int.Parse(val);
             var list = new List<CalculatedMatch>();
             var list1 = new List<CalculatedMatch>();
             if (numberOfTeams % 4 == 0)
+            {
                 list = NoByes(numberOfTeams / 2);
+            }
             else
+            {
                 list = Byes(numberOfTeams / 2);
+             }
             
             var numberOfRinks = numberOfTeams / 4;
             foreach (var match in list)
             {
-                var match1 = new CalculatedMatch()
-                {
-                    Week = match.Week,
-                    Rink = match.Rink + numberOfRinks,
-                    Team1 = match.Team1 + numberOfTeams / 2,
-                    Team2 = match.Team2 + numberOfTeams / 2
-                };
-                list1.Add(match1);
+                if (match.Rink > -1)
+                { 
+                    var match1 = new CalculatedMatch()
+                    {
+                        Week = match.Week,
+                        Rink = match.Rink + numberOfRinks,
+                        Team1 = match.Team1 + numberOfTeams / 2,
+                        Team2 = match.Team2 + numberOfTeams / 2
+                    };
+                    list1.Add(match1);
+                }
+                
             }
-            for(int w = numberOfTeams/2-1; w < 9; w++)
+            var newList = list.FindAll(x => x.Rink == -1);
+            foreach (var item in newList)
+            {
+                int index = list.IndexOf(item);
+                var item1 = list[index];
+                item1.Rink = numberOfTeams / 2 - 1;
+                item1.Team2 += numberOfTeams / 2;
+                list[index] = item1;
+            }
+            for (int w = numberOfTeams/2-1 ; w < weeks; w++)
             {
                 for (int i = 0; i < numberOfTeams / 2; i++)
                 {
@@ -56,8 +77,9 @@ namespace RoundRobin
             foreach (var item in list1)
                 list.Add(item);
 
+            
             list.Sort((a,b)=>(a.Week*100+a.Rink).CompareTo(b.Week*100+b.Rink));
-            using (var stream = new StreamWriter($"C:\\Users\\jeffr\\OneDrive\\Documents\\Division{val}.txt", false))
+            using (var stream = new StreamWriter($"C:\\Users\\jeffr\\OneDrive\\Documents\\Division{numberOfTeams}.txt", false))
             {
                 TextWriter writer = stream;
                 foreach (var item in list)
@@ -118,9 +140,9 @@ namespace RoundRobin
         private static List<CalculatedMatch> Byes(int numberOfTeams)
         {
             var teamCount = numberOfTeams + numberOfTeams % 2;
-            var numberofWeeks =teamCount / 2+1;
             var numberOfRinks = teamCount / 2;
             var matches = new List<CalculatedMatch>();
+            int numberofWeeks = numberOfTeams - 1;
 
             int[] leftside = new int[numberOfRinks];
             int[] rightside = new int[numberOfRinks];
@@ -132,9 +154,9 @@ namespace RoundRobin
             matches.Add(new CalculatedMatch()
             {
                 Week = 0,
-                Rink = numberOfRinks,
+                Rink = -1,
                 Team1 = 0,
-                Team2 = numberOfTeams-1
+                Team2 = 0
             });
 
 
@@ -171,10 +193,8 @@ namespace RoundRobin
                     };
                     if (match.Team2 == teamCount - 1)
                     {
-                        match.Team1 = match.Team2;
-                        match.Team2 = -1;
-
-                        match.Rink = numberOfRinks-1;
+                        match.Team2 = match.Team1;
+                        match.Rink = -1;
                         System.Diagnostics.Trace.WriteLine($"Bye {match.Team1}");
                     }
                     else

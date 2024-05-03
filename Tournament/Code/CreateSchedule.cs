@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using Tournament.Models;
 
 
 
@@ -145,28 +147,92 @@ namespace Tournament.Code
             return other;
         }
 
-        public static List<CalculatedMatch> ReadMatches(Stream fs)
-        {
-            var matches = new List<CalculatedMatch>();
+        //public static List<CalculatedMatch> ReadMatches(Stream fs)
+        //{
+        //    var matches = new List<CalculatedMatch>();
             
-            using (var reader = new StreamReader(fs))
+        //    using (var reader = new StreamReader(fs))
+        //    {
+        //        while (!reader.EndOfStream)
+        //        {
+        //            var line = reader.ReadLine();
+        //            var items = line.Split(new char[] { ',' });
+        //            var match = new CalculatedMatch()
+        //            {
+        //                Week = int.Parse(items[0])-1,
+        //                Rink = int.Parse(items[1])-1,
+        //                Team1 = int.Parse(items[2])-1,
+        //                Team2 = int.Parse(items[3])-1
+        //            };
+        //            matches.Add(match);
+        //        }
+        //    }
+        //    return matches;
+        //}
+
+        public List<CalculatedMatch> matchesWithDivisions(int weeks, int numberOfTeams)
+        {
+            var list = new List<CalculatedMatch>();
+            var list1 = new List<CalculatedMatch>();
+            if (numberOfTeams % 4 == 0)
             {
-                while (!reader.EndOfStream)
+                list = NoByes(numberOfTeams / 2, numberOfTeams / 2);
+            }
+            else
+            {
+                list = Byes(numberOfTeams / 2, numberOfTeams / 2);
+            }
+
+            var numberOfRinks = numberOfTeams / 4;
+            foreach (var match in list)
+            {
+                if (match.Rink > -1)
                 {
-                    var line = reader.ReadLine();
-                    var items = line.Split(new char[] { ',' });
-                    var match = new CalculatedMatch()
+                    var match1 = new CalculatedMatch()
                     {
-                        Week = int.Parse(items[0])-1,
-                        Rink = int.Parse(items[1])-1,
-                        Team1 = int.Parse(items[2])-1,
-                        Team2 = int.Parse(items[3])-1
+                        Week = match.Week,
+                        Rink = match.Rink + numberOfRinks,
+                        Team1 = match.Team1 + numberOfTeams / 2,
+                        Team2 = match.Team2 + numberOfTeams / 2
                     };
-                    matches.Add(match);
+                    list1.Add(match1);
+                }
+
+            }
+            var newList = list.FindAll(x => x.Rink == -1);
+            foreach (var item in newList)
+            {
+                int index = list.IndexOf(item);
+                var item1 = list[index];
+                item1.Rink = numberOfTeams / 2 - 1;
+                item1.Team2 += numberOfTeams / 2;
+                list[index] = item1;
+            }
+            for (int w = numberOfTeams / 2; w < weeks; w++)
+            {
+                for (int i = 0; i < numberOfTeams / 2; i++)
+                {
+                    int team2 = (i + w + 1);
+                    if (team2 >= numberOfTeams)
+                        team2 = team2 - numberOfTeams / 2;
+                    var match1 = new CalculatedMatch()
+                    {
+                        Week = w,
+                        Rink = i,
+                        Team1 = i,
+                        Team2 = team2
+                    };
+                    list1.Add(match1);
                 }
             }
-            return matches;
+            foreach (var item in list1)
+                list.Add(item);
+
+            list.Sort((a, b) => (a.Week * 100 + a.Rink).CompareTo(b.Week * 100 + b.Rink));
+            return list;
         }
+
+        
     }
 
     public class CalculatedMatch
