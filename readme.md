@@ -53,7 +53,7 @@ Standings are calculated by the total number of points of all the wins, ties, by
 
 If points scored are allowed to help determine standings, then the total points scored in wins and losses for each team will break ties in points. The total points scored are determined with the following rules:
 
-- A maximum of 20 points are awarded to any team for determining standings
+- A maximum of 20 points are awarded to any team for determining standings if that points limit are selected when the league is created.
 
 - For byes, the team with a bye is awarded the average winning score of all played games that week for determining standings.
 
