@@ -43,8 +43,9 @@ Each league has the following properties:
 - Tie Multiplier – how many points each tie is worth to both teams in the standings.
 
 - Bye Multiplier – how many points a bye is worth to the team with a bye in the standings.
+- Limit Points to 20 - if checked, when calculating a teams standings a team can only be created with up to 20 points in a game.
 
-- Loses are always worth 0 points. Forfeits is a losa for the team that forfeits and a win for the other team.
+Loses are always worth 0 points. Forfeits is a lose for the team that forfeits and a win for the other team.
 
 A league’s properties can only be set when the league is created. The only property that can be changed later is the league’s title.
 
