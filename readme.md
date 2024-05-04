@@ -32,7 +32,7 @@ Each league has the following properties:
 
 - Divisions - number of divisions, the default is 1 and the maximum is 4.
 
-- Playoffs Allowed - this will allow the league administrator to select weeks in schedule for playoffs
+- Playoffs Allowed - this will allow the league administrator to select weeks in the schedule for playoffs
 
 - Allowed Ties – if matches can end in a tie score.
 
