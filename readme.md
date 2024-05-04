@@ -29,9 +29,9 @@ Each league has the following properties:
 - Start Week - Which order of play week item for the first week of the league. See Order of play chapter below.
 
 - Team Size – how many players on each team
-- 
+
 - Divisions - number of divisions, the default is 1
-- 
+
 - Playoffs Allowed - this will allow admin to select weeks in schedule for playoffs
 
 - Allowed Ties – if matches can end in a tie score.
