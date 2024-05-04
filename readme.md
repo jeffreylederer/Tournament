@@ -29,6 +29,10 @@ Each league has the following properties:
 - Start Week - Which order of play week item for the first week of the league. See Order of play chapter below.
 
 - Team Size – how many players on each team
+- 
+- Divisions - number of divisions, the default is 1
+- 
+- Playoffs Allowed - this will allow admin to select weeks in schedule for playoffs
 
 - Allowed Ties – if matches can end in a tie score.
 
@@ -69,6 +73,8 @@ A member cannot be deleted from the membership list if that person is assigned t
 
 A league requires one or more scheduled weeks of play. Each week needs a week number and date. As you add additional weeks, the add method automatically increments the week’s number by one and the week’s date by 7 days. If a week is marked as cancelled by editing that week from the list, then all scores for that week are set to zero and that week is not counted in the league’s standings.
 
+If the league allows playoffs, a week (probably the last few) can be marked as playoff weeks. During these weeks, no games will be scheduled. The league administrator can manually make up the schedules for these weeks.
+
 A scheduled week cannot be deleted if there are one or more matches scheduled for that week.
 
 # Players
@@ -91,7 +97,7 @@ This hyperlink above the list of teams will generate a printed report that shows
 
 Once the teams and schedule are created, you can select the “Create Matches” menu item to create a round robin set of matches. Each team is assigned a different opponent for each scheduled week and each match is assigned a rink.
 
-This method will not create matches if some players in the league are not assigned to a team, if some teams have empty player slots or some matches already have been scored.
+This method will not create matches if some players in the league are not assigned to a team, if some teams have empty player slots, all divisions are the same size or some matches already have been scored.
 
 # Clear Matches
 
@@ -107,7 +113,13 @@ From a week’s list of matches, you can specify the scores for each match. Matc
 
 This hyperlink above a week’s list of matches will generate a printed report that shows results of that week’s matches and the standing so far since the first week of the league. The standing is ranking are determine by the rule give in the Leagues  chapter of this document.
 
-The standing report after the last week of the league is the final standings. See Standings Report  chapter for an example of this report.
+The standing report after the last week of the league is the final standings (except if there are playoffs.) See Standings Report  chapter for an example of this report.
+
+## Schedule Report
+
+This selections will generated a two part report:
+- The makeup of all the teams in league. If the league has mulitple divisions, the team listing will include the division of each team.
+- A grid of matches where the lines are the weeks and the columns are the rinks and the cells are the team numbers of each game.
 
 ## Score Card Report
 
