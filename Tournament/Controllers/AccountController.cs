@@ -58,18 +58,6 @@ namespace Tournament.Controllers
                     string encryptCookie = FormsAuthentication.Encrypt(ticket);
                     HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptCookie);
                     HttpContext.Response.Cookies.Add(cookie);
-
-
-
-                    //if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
-                    //    && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
-                    //else
-                    //{
-                    //    return RedirectToAction("Index", "Home");
-                    //}
                     return RedirectToAction("Index", "Home");
                 }
                 else

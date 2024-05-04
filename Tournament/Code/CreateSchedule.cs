@@ -12,6 +12,12 @@ namespace Tournament.Code
     {
         private const int BYE = -1;
 
+        /// <summary>
+        /// This is called when there is an even number of teams in the league. It uses a round robin algoritm to generate the schedule.
+        /// </summary>
+        /// <param name="numberofWeeks">number of weeks for this league</param>
+        /// <param name="numberOfTeams">number of teams in this league</param>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number.</returns>
         public List<CalculatedMatch> NoByes(int numberofWeeks, int numberOfTeams)
         {
             var numberOfRinks = numberOfTeams / 2;
@@ -54,6 +60,14 @@ namespace Tournament.Code
             return matches;
         }
 
+        /// <summary>
+        /// This is called when an these is an odd number of teams in the league. It uses a round robin algoritm to generate the schedule.
+        /// </summary>
+        /// <param name="numberofWeeks">number of weeks for this league</param>
+        /// <param name="numberOfTeams">number of teams in this league</param>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number. 
+        /// One entry per week will have a rink of -1 which is the bye team for the week.
+        /// </returns>
         public List<CalculatedMatch> Byes(int numberofWeeks, int numberOfTeams)
         {
             var teamCount = numberOfTeams + numberOfTeams % 2;
@@ -147,29 +161,15 @@ namespace Tournament.Code
             return other;
         }
 
-        //public static List<CalculatedMatch> ReadMatches(Stream fs)
-        //{
-        //    var matches = new List<CalculatedMatch>();
-            
-        //    using (var reader = new StreamReader(fs))
-        //    {
-        //        while (!reader.EndOfStream)
-        //        {
-        //            var line = reader.ReadLine();
-        //            var items = line.Split(new char[] { ',' });
-        //            var match = new CalculatedMatch()
-        //            {
-        //                Week = int.Parse(items[0])-1,
-        //                Rink = int.Parse(items[1])-1,
-        //                Team1 = int.Parse(items[2])-1,
-        //                Team2 = int.Parse(items[3])-1
-        //            };
-        //            matches.Add(match);
-        //        }
-        //    }
-        //    return matches;
-        //}
 
+        /// <summary>
+        /// This is called to generate matches for leagues with multiple divisions. It will fill in weeks after the round robin play with
+        /// inter divisional matches. If the number of teams is not divisible by 4, it will schedule inter divisional matches on bye weeks.
+        /// </summary>
+        /// <param name="weeks">number of weeks not counting playoffs</param>
+        /// <param name="numberOfTeams">number of teams in the league. It must be divisible by 2</param>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number.
+        /// </returns>
         public List<CalculatedMatch> matchesWithDivisions(int weeks, int numberOfTeams)
         {
             var list = new List<CalculatedMatch>();
@@ -199,6 +199,8 @@ namespace Tournament.Code
                 }
 
             }
+
+            // handle the bye weeks with inter divisional games.
             var newList = list.FindAll(x => x.Rink == -1);
             foreach (var item in newList)
             {
@@ -208,6 +210,8 @@ namespace Tournament.Code
                 item1.Team2 += numberOfTeams / 2;
                 list[index] = item1;
             }
+
+            //file in the rest of the schedule with inter divisional matches
             for (int w = numberOfTeams / 2; w < weeks; w++)
             {
                 for (int i = 0; i < numberOfTeams / 2; i++)
