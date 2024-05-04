@@ -30,7 +30,7 @@ Each league has the following properties:
 
 - Team Size – how many players on each team
 
-- Divisions - number of divisions, the default is 1
+- Divisions - number of divisions, the default is 1 and the maximum is 4.
 
 - Playoffs Allowed - this will allow the league administrator to select weeks in schedule for playoffs
 
@@ -86,7 +86,7 @@ A player cannot be deleted from a league’s player list once that player is ass
 
 # Teams
 
-A league can have multiple teams. The teams consist of players assigned to that league. The number of players on a team is determined by the team size specified for that league. The application will not allow you to assign the same player to two different teams and the same player multiple times to the same team. You can edit a team to either change players or remove players from that team. Removing a player allows you to move a player to another team.
+A league can have multiple teams. The teams consist of players assigned to that league. The number of players on a team is determined by the team size specified for that league. The application will not allow you to assign the same player to two different teams and the same player multiple times to the same team. You can edit a team to either change players or remove players from that team. Removing a player allows you to move a player to another team. If the league has multiple divisions, a team should be assigned to a division. There should be an equal number of teams per division.
 
 A team cannot be deleted from a league once that team is scheduled for a match.
 
