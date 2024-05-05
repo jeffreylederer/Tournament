@@ -193,7 +193,7 @@ namespace Tournament.Models
         public bool PointsLimit { get; set; }
 
         [Required]
-        [Range(minimum: 1, maximum: 4, ErrorMessage = "Must be between 1 and 4")]
+        [Range(minimum: 1, maximum: 2, ErrorMessage = "Must be between 1 and 2")]
         [Display(Name = "Number of Divisions")]
         public short Divisions { get; set; }
 
