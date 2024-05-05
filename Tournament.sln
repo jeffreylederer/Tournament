@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament", "Tournament\To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoundRobin", "RoundRobin\RoundRobin.csproj", "{2E491ED2-6A46-4AC2-810C-23BB6A05E42C}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TournamentDB", "TournamentDB\TournamentDB.sqlproj", "{8214BC6E-01B5-4D82-B839-CEEC3816F23E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{2E491ED2-6A46-4AC2-810C-23BB6A05E42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E491ED2-6A46-4AC2-810C-23BB6A05E42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E491ED2-6A46-4AC2-810C-23BB6A05E42C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8214BC6E-01B5-4D82-B839-CEEC3816F23E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
