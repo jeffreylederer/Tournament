@@ -183,6 +183,7 @@ namespace Tournament.Code
                 list = Byes(numberOfTeams / 2, numberOfTeams / 2);
             }
 
+            // create matches for teams in division 2 using matches in division 1
             var numberOfRinks = numberOfTeams / 4;
             foreach (var match in list)
             {

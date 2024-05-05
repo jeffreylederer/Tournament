@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Xml.Linq;
-using System.Collections;
-using System.Text.RegularExpressions;
-using System.Diagnostics.Eventing.Reader;
+
+
 
 namespace RoundRobin
 {
+    /// <summary>
+    /// Console program to work out the algorithm for two division league
+    /// </summary>
     internal class Program
     {
         static void Main(string[] args)
@@ -21,6 +19,8 @@ namespace RoundRobin
             Console.Out.Write("Number of Weeks >");
             val = Console.In.ReadLine();
             int weeks = int.Parse(val);
+            Console.Out.Write("Directory to write file >");
+            var path = Console.In.ReadLine();
             var list = new List<CalculatedMatch>();
             var list1 = new List<CalculatedMatch>();
             if (numberOfTeams % 4 == 0)
@@ -31,7 +31,9 @@ namespace RoundRobin
             {
                 list = Byes(numberOfTeams / 2);
              }
-            
+
+           
+            // create matches for teams in division 2 using matches in division 1
             var numberOfRinks = numberOfTeams / 4;
             foreach (var match in list)
             {
@@ -48,6 +50,8 @@ namespace RoundRobin
                 }
                 
             }
+
+            //file in the rest of the schedule with inter divisional matches
             var newList = list.FindAll(x => x.Rink == -1);
             foreach (var item in newList)
             {
@@ -77,9 +81,9 @@ namespace RoundRobin
             foreach (var item in list1)
                 list.Add(item);
 
-            
+            // write out the results to file
             list.Sort((a,b)=>(a.Week*100+a.Rink).CompareTo(b.Week*100+b.Rink));
-            using (var stream = new StreamWriter($"C:\\Users\\jeffr\\OneDrive\\Documents\\Division{numberOfTeams}.txt", false))
+            using (var stream = new StreamWriter($"{path}\\Division{numberOfTeams}.txt", false))
             {
                 TextWriter writer = stream;
                 foreach (var item in list)
@@ -90,6 +94,12 @@ namespace RoundRobin
             }
         }
 
+        /// <summary>
+        /// This is called when there is an even number of teams in the league. It uses a round robin algoritm to generate the schedule.
+        /// </summary>
+        /// <param name="numberofWeeks">number of weeks for this league</param>
+        /// <param name="numberOfTeams">number of teams in this league</param>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number.</returns>
         private static List<CalculatedMatch> NoByes(int numberOfTeams)
         {
             var numberofWeeks = numberOfTeams - 1;
@@ -137,6 +147,14 @@ namespace RoundRobin
             return matches;
         }
 
+        /// <summary>
+        /// This is called when an these is an odd number of teams in the league. It uses a round robin algoritm to generate the schedule.
+        /// </summary>
+        /// <param name="numberofWeeks">number of weeks for this league</param>
+        /// <param name="numberOfTeams">number of teams in this league</param>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number. 
+        /// One entry per week will have a rink of -1 which is the bye team for the week.
+        /// </returns>
         private static List<CalculatedMatch> Byes(int numberOfTeams)
         {
             var teamCount = numberOfTeams + numberOfTeams % 2;
