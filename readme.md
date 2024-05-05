@@ -30,7 +30,7 @@ Each league has the following properties:
 
 - Team Size – how many players on each team
 
-- Divisions - number of divisions, the default is 1 and the maximum is 4.
+- Divisions - number of divisions, the default is 1 and the maximum is 2.
 
 - Playoffs Allowed - this will allow the league administrator to select weeks in the schedule for playoffs
 
