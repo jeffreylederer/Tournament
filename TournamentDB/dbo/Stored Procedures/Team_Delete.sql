@@ -19,7 +19,7 @@ begin
 		(order by id)
 			row_num,
 				id
-			FROM [Tournament].[dbo].[Team]
+			FROM [dbo].[Team]
 			WHERE LEAGUEID=@leagueid) AS X
 
 		update team 

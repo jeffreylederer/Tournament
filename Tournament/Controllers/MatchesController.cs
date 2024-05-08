@@ -206,7 +206,7 @@ namespace Tournament.Controllers
             if (league.Divisions > 1)
                 newMatches = cs.matchesWithDivisions(_db.Schedules.Where(x => !x.PlayOffs).Count(x => x.Leagueid == leagueid), numofTeams);
             else
-                newMatches = numofTeams % 2 == 0 ? cs.NoByes(numOfWeeks, numofTeams) : cs.Byes(numOfWeeks, numofTeams);
+                newMatches = cs.RoundRobin(numOfWeeks, numofTeams);
                         
             var scheduleList = _db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
             var lookup = new Dictionary<int, DateTime>();

@@ -1,4 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
@@ -13,157 +15,80 @@ namespace Tournament.Code
         private const int BYE = -1;
 
         /// <summary>
-        /// This is called when there is an even number of teams in the league. It uses a round robin algoritm to generate the schedule.
+        /// This is called when there is an even number of teams in the league. It uses a week robin algoritm to generate the schedule.
         /// </summary>
-        /// <param name="numberofWeeks">number of weeks for this league</param>
-        /// <param name="numberOfTeams">number of teams in this league</param>
+        /// <param name="Weeks">number of weeks for this league</param>
+        /// <param name="numTeams">number of teams in this league</param>
         /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number.</returns>
-        public List<CalculatedMatch> NoByes(int numberofWeeks, int numberOfTeams)
+        public List<CalculatedMatch> RoundRobin(int Weeks, int numTeams)
         {
-            var numberOfRinks = numberOfTeams / 2;
-            var matches = new List<CalculatedMatch>();
-
-            int[] leftside = new int[numberOfRinks];
-            int[] rightside = new int[numberOfRinks];
-            
-            for (int r = 0; r < numberOfRinks; r++)
+           
+            List<CalculatedMatch> schedule = new List<CalculatedMatch>();
+            // Create a list of teams
+            List<int> teams = new List<int>();
+            for (int i = 0; i < numTeams; i++)
             {
-                leftside[r] = r;
-                rightside[r] = numberOfTeams - r - 1;
-                matches.Add(new CalculatedMatch()
-                {
-                    Week = 0,
-                    Rink = r,
-                    Team1 = r,
-                    Team2 = numberOfTeams - r - 1
-                });
+                teams.Add(i);
             }
 
-            for (int w = 1; w < numberofWeeks; w++)
+            // If the number of teams is odd, add a dummy team
+            if (numTeams % 2 != 0)
             {
-                int remainder = ShiftRight(leftside);
-                int other = ShiftLeft(rightside, remainder);
-                leftside[1] = other;
-                for (int r = 0; r < numberOfRinks; r++)
-                {
-                    var left = leftside[r];
-                    var right = rightside[r];
-                    matches.Add(new CalculatedMatch()
-                    {
-                        Week = w,
-                        Rink = (r + w*2) % numberOfRinks,
-                        Team1 = left < right? left: right,
-                        Team2 = left < right ? right : left
-                    });
-                }
-            }
-            return matches;
-        }
-
-        /// <summary>
-        /// This is called when an these is an odd number of teams in the league. It uses a round robin algoritm to generate the schedule.
-        /// </summary>
-        /// <param name="numberofWeeks">number of weeks for this league</param>
-        /// <param name="numberOfTeams">number of teams in this league</param>
-        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number. 
-        /// One entry per week will have a rink of -1 which is the bye team for the week.
-        /// </returns>
-        public List<CalculatedMatch> Byes(int numberofWeeks, int numberOfTeams)
-        {
-            var teamCount = numberOfTeams + numberOfTeams % 2;
-            var numberOfRinks = teamCount / 2;
-            var matches = new List<CalculatedMatch>();
-
-            int[] leftside = new int[numberOfRinks];
-            int[] rightside = new int[numberOfRinks];
-
-            leftside[0] = 0;
-            rightside[0] = teamCount - 1;
-
-            // do first week bye
-            matches.Add(new CalculatedMatch()
-            {
-                Week = 0,
-                Rink = -1,
-                Team1 = 0,
-                Team2 = 0
-            });
-
-
-            // do first week
-            for (int r = 1; r < numberOfRinks; r++)
-            {
-                leftside[r] = r;
-                rightside[r] = teamCount - r - 1;
-                matches.Add(new CalculatedMatch()
-                {
-                    Week = 0,
-                    Rink = r - 1,
-                    Team1 = r,
-                    Team2 = teamCount - r - 1
-                });
+                teams.Add(-1); // Dummy team represented by -1
+                numTeams++;
             }
 
-            for (int w = 1; w < numberofWeeks; w++)
+            // Generate schedule for each week
+            for (int week = 0; week < Weeks; week++)
             {
-                int remainder = ShiftRight(leftside);
-                int other = ShiftLeft(rightside, remainder);
-                leftside[1] = other;
-                int rink = 0;
-                for (int r = 0; r < numberOfRinks; r++)
+
+                for (int i = 0; i < numTeams / 2; i++)
                 {
-                    var left = leftside[r];
-                    var right = rightside[r];
-                    var match = new CalculatedMatch()
+                    int team1 = teams[i];
+                    int team2 = teams[numTeams - 1 - i];
+
+                    // Skip dummy team matches
+                    if (team1 != -1 && team2 != -1)
                     {
-                        Week = w,
-                        Rink = r,
-                        Team1 = left < right ? left : right,
-                        Team2 = left < right ? right : left
-                    };
-                    if (match.Team2 == teamCount - 1)
+                        schedule.Add(new CalculatedMatch()
+                        {
+                            Week = week,
+                            Rink = i,
+                            Team1 = team1,
+                            Team2 = team2
+                        });
+                    }
+                    else if (team1 == -1)
                     {
-                        match.Team2 = match.Team1;
-                        match.Rink = -1;
-                        System.Diagnostics.Trace.WriteLine($"Bye {match.Team1}");
+                        schedule.Add(new CalculatedMatch()
+                        {
+                            Week = week,
+                            Rink = -1,
+                            Team1 = team2,
+                            Team2 = team2
+                        });
                     }
                     else
                     {
-                        match.Rink = (rink + 2 * w) % (numberOfRinks - 1);
-                        rink++;
+                        schedule.Add(new CalculatedMatch()
+                        {
+                            Week = week,
+                            Rink = -1,
+                            Team1 = team1,
+                            Team2 = team1
+                        });
                     }
-                    System.Diagnostics.Trace.WriteLine($"Rink {match.Rink}, T1={match.Team1}, T2={match.Team2}");
-                    matches.Add(match);
                 }
-            }
-            matches.Sort((a, b) => (a.Week * 100 + a.Rink + 1).CompareTo(b.Week * 100 + b.Rink + 1));
-            return matches;
-        }
 
-        private int ShiftRight(int[] leftside)
-        {
-            int remainder = leftside[leftside.Length - 1];
-            for (int i = leftside.Length-2; i > 0; i--)
-            {
-                leftside[i+1] = leftside[i];
+                // Rotate teams for next week
+                teams.Insert(1, teams[numTeams - 1]);
+                teams.RemoveAt(numTeams);
             }
-            return remainder;
+            return schedule;
         }
-
-        private int ShiftLeft(int[] rightside, int remainder)
-        {
-            int other = rightside[0];
-            for (int i = 0; i < rightside.Length - 1; i++)
-            {
-                rightside[i] = rightside[i+1];
-            }
-            rightside[rightside.Length - 1] = remainder;
-            return other;
-        }
-
 
         /// <summary>
-        /// This is called to generate matches for leagues with multiple divisions. It will fill in weeks after the round robin play with
+        /// This is called to generate matches for leagues with multiple divisions. It will fill in weeks after the week robin play with
         /// inter divisional matches. If the number of teams is not divisible by 4, it will schedule inter divisional matches on bye weeks.
         /// </summary>
         /// <param name="weeks">number of weeks not counting playoffs</param>
@@ -172,16 +97,9 @@ namespace Tournament.Code
         /// </returns>
         public List<CalculatedMatch> matchesWithDivisions(int weeks, int numberOfTeams)
         {
-            var list = new List<CalculatedMatch>();
+            var list = RoundRobin(numberOfTeams / 2, numberOfTeams / 2);
             var list1 = new List<CalculatedMatch>();
-            if (numberOfTeams % 4 == 0)
-            {
-                list = NoByes(numberOfTeams / 2, numberOfTeams / 2);
-            }
-            else
-            {
-                list = Byes(numberOfTeams / 2, numberOfTeams / 2);
-            }
+          
 
             // create matches for teams in division 2 using matches in division 1
             var numberOfRinks = numberOfTeams / 4;
@@ -236,8 +154,6 @@ namespace Tournament.Code
             list.Sort((a, b) => (a.Week * 100 + a.Rink).CompareTo(b.Week * 100 + b.Rink));
             return list;
         }
-
-        
     }
 
     public class CalculatedMatch
