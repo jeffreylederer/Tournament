@@ -734,7 +734,7 @@
             <Height>0.64583in</Height>
             <Width>7.31251in</Width>
             <Visibility>
-              <Hidden>=Parameters!IsCancelled.Value="1"</Hidden>
+              <Hidden>=Parameters!IsCancelled.Value="1" Or Parameters!PlayOff.Value="1"</Hidden>
             </Visibility>
             <Style>
               <Border>
@@ -1403,6 +1403,9 @@
             <Height>0in</Height>
             <Width>7.33209in</Width>
             <ZIndex>4</ZIndex>
+            <Visibility>
+              <Hidden>=Parameters!IsCancelled.Value="1" Or Parameters!PlayOff.Value="1"</Hidden>
+            </Visibility>
             <Style>
               <Border>
                 <Style>Solid</Style>
@@ -2499,6 +2502,10 @@
       <DataType>Integer</DataType>
       <Prompt>ReportParameter1</Prompt>
     </ReportParameter>
+    <ReportParameter Name="PlayOff">
+      <DataType>String</DataType>
+      <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
@@ -2539,6 +2546,11 @@
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>3</RowIndex>
           <ParameterName>Divisions</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>3</RowIndex>
+          <ParameterName>PlayOff</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>

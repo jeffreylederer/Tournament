@@ -477,8 +477,9 @@ namespace Tournament.Controllers
             var p5 = new ReportParameter("PointsCount", league.PointsCount ? "1" : "0");
             var p6 = new ReportParameter("TiesAllowed", league.TiesAllowed ? "1" : "0");
             var p7 = new ReportParameter("Divisions", league.Divisions.ToString());
+            var p8 = new ReportParameter("PlayOff", week.PlayOffs ? "1" : "0");
 
-            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3, p4, p5, p6, p7 });
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { p1, p2, p3, p4, p5, p6, p7,p8 });
 
  
             ViewBag.ReportViewer = reportViewer;
