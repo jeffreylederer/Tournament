@@ -15,11 +15,12 @@ namespace Tournament.Code
         private const int BYE = -1;
 
         /// <summary>
-        /// This is called when there is an even number of teams in the league. It uses a week robin algoritm to generate the schedule.
+        /// It uses a week robin algoritm to generate the schedule.
         /// </summary>
         /// <param name="Weeks">number of weeks for this league</param>
         /// <param name="numTeams">number of teams in this league</param>
-        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number.</returns>
+        /// <returns>Generates a list of matches. Each list has a week number, rink number, team 1 number and team 2 number. If the
+        /// number of teams are odd, a bye week game is created with a rink of -1 and both teams are the same.</returns>
         public List<CalculatedMatch> RoundRobin(int Weeks, int numTeams)
         {
            
