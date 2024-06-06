@@ -39,10 +39,11 @@ namespace Tournament.Code
                 numTeams++;
             }
 
+            
             // Generate schedule for each week
             for (int week = 0; week < Weeks; week++)
             {
-
+                int rink = 0;
                 for (int i = 0; i < numTeams / 2; i++)
                 {
                     int team1 = teams[i];
@@ -54,7 +55,7 @@ namespace Tournament.Code
                         schedule.Add(new CalculatedMatch()
                         {
                             Week = week,
-                            Rink = i,
+                            Rink = rink++,
                             Team1 = team1,
                             Team2 = team2
                         });
