@@ -9,197 +9,203 @@
 }
 
 <h2> Matches</h2>
-@if (((SelectList)ViewBag.ScheduleID).Count() > 0)
+<div class="validation-summary-errors text-danger">@ViewBag.Error</div>
+@if ((string) ViewBag.Error == string.Empty)
 {
-    <table>
-        <tr>
-            <td>
-                Date:&nbsp;&nbsp;
-            </td>
-            <td>
-                @Html.DropDownList("weekid", (SelectList)ViewBag.ScheduleID, new { @class = "form-control", @onchange = "newSelect(this.value)" })
-            </td>
-        </tr>
-    </table>
-}
-    <div class="validation-summary-errors text-danger">@ViewBag.Error</div>
-<br/>
-<p>
-    @if (ViewBag.WeekID != null && (int)ViewBag.WeekID > 0)
+
+
+
+    if (((SelectList)ViewBag.ScheduleID).Count() > 0)
     {
-        @Html.ActionLink("This week's standings report", "StandingsReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })<br/>
-        @Html.ActionLink("This week's score cards", "ScoreCardReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })
+        <table>
+            <tr>
+                <td>
+                    Date:&nbsp;&nbsp;
+                </td>
+                <td>
+                    @Html.DropDownList("weekid", (SelectList)ViewBag.ScheduleID, new { @class = "form-control", @onchange = "newSelect(this.value)" })
+                </td>
+            </tr>
+        </table>
     }
-</p>
 
-@{ 
-    if (!(bool)ViewBag.PlayOffs)
+    <br />
+    <p>
+        @if (ViewBag.WeekID != null && (int)ViewBag.WeekID > 0)
+        {
+            @Html.ActionLink("This week's standings report", "StandingsReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })<br />
+            @Html.ActionLink("This week's score cards", "ScoreCardReport", new { weekid = ViewBag.WeekId, id = ViewBag.Id })
+        }
+    </p>
+
     {
+        if (!(bool)ViewBag.PlayOffs)
+        {
 
-<table class="table-condensed table-striped">
-    <tr>
-        <th>
-            @{
-                if (User.IsInRole("Admin") ||
-                    User.IsInRole("LeagueAdmin"))
-                {
-                    @Html.Raw("Exchange Rink")
-                }
-            }
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Rink)
-        </th>
-
-        <th>
-            @Html.DisplayNameFor(model => model.TeamNo1)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TeamNo2)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Team1Score)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Team2Score)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ForFeitId)
-        </th>
-        <th></th>
-    </tr>
-    @{ var id = 0;}
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @{
-                    if (id > 0 && (User.IsInRole("Admin") ||
-                                    User.IsInRole("LeagueAdmin")))
-                    {
-                        @Html.ActionImage("MoveUp", new { id = item.id }, "~/Content/Images/uparrow.png", "Move Up one rink");
-                    }
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rink)
-            </td>
-            <td>
-                @{
-                    var style = "";
-                    switch ((int)ViewBag.TeamSize)
-                    {
-                        case 1:
-                            if (item.Team.Player.Membership.Wheelchair)
+            <table class="table-condensed table-striped">
+                <tr>
+                    <th>
+                        @{
+                            if (User.IsInRole("Admin") ||
+                                User.IsInRole("LeagueAdmin"))
                             {
-                                style = "color:red;";
+                                @Html.Raw("Exchange Rink")
                             }
-                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName})</span>");
-                            break;
-                        case 2:
-                            if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair)
-                            {
-                                style = "color:red;";
-                            }
-                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
-                            break;
-                        case 3:
-                            if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair || item.Team.Player1.Membership.Wheelchair)
-                            {
-                                style = "color:red;";
-                            }
-                            @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player1.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
-                            break;
-                    }
-                }
-
-            </td>
-
-            <td>
-                @{
-                    style = "";
-                    switch ((int)ViewBag.TeamSize)
-                    {
-                        case 1:
-                            if (item.Team1.Player.Membership.Wheelchair)
-                            {
-                                style = "color:red;";
-                            }
-                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName})</span>");
-                            break;
-                        case 2:
-                            if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair)
-                            {
-                                style = "color:red;";
-                            }
-                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
-                            break;
-                        case 3:
-                            if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair || item.Team1.Player1.Membership.Wheelchair)
-                            {
-                                style = "color:red;";
-                            }
-                            @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player1.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
-                            break;
-                    }
-                }
-            </td>
-
-            <td>
-                @if (item.ForFeitId == 0)
-                {
-                    @Html.DisplayFor(modelItem => item.Team1Score)
-                }
-            </td>
-
-            <td>
-                @if (item.ForFeitId == 0)
-                {
-                    @Html.DisplayFor(modelItem => item.Team2Score)
-                }
-            </td>
-            <td>
-                @if (item.ForFeitId > 0)
-                {
-                    if (item.Team.TeamNo == item.ForFeitId)
-                    {
-                        @Html.Raw(item.Team.TeamNo)
-                    }
-                    else
-                    {
-                        @Html.Raw(item.Team1.TeamNo)
-                    }
-                }
-                else if (item.ForFeitId == -1)
-                {
-                    @Html.Raw("Both")
-                }
-            </td>
-            <td>
-                @{
-                    if (User.IsInRole("Admin") ||
-                        User.IsInRole("LeagueAdmin") ||
-                        HttpContext.Current.User.IsInRole("Scorer"))
-                    {
-                        @Html.ActionLink("Scoring", "Scoring", new { id = item.id })
-                    }
-                    id++;
-                }
-            </td>
-
-        </tr>
-
-                    }
-
-</table>
-<span style="color: red;">Teams with players in wheelchairs are highlighted in red</span>
-                    }
-                    else
-                    {
-                        @Html.Raw("This is a playoff week")
                         }
-                    }
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rink)
+                    </th>
 
+                    <th>
+                        @Html.DisplayNameFor(model => model.TeamNo1)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TeamNo2)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Team1Score)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Team2Score)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ForFeitId)
+                    </th>
+                    <th></th>
+                </tr>
+                @{ var id = 0;}
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @{
+                                if (id > 0 && (User.IsInRole("Admin") ||
+                                                User.IsInRole("LeagueAdmin")))
+                                {
+                                    @Html.ActionImage("MoveUp", new { id = item.id }, "~/Content/Images/uparrow.png", "Move Up one rink");
+                                }
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rink)
+                        </td>
+                        <td>
+                            @{
+                                var style = "";
+                                switch ((int)ViewBag.TeamSize)
+                                {
+                                    case 1:
+                                        if (item.Team.Player.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName})</span>");
+                                        break;
+                                    case 2:
+                                        if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
+                                        break;
+                                    case 3:
+                                        if (item.Team.Player.Membership.Wheelchair || item.Team.Player2.Membership.Wheelchair || item.Team.Player1.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team.TeamNo} ({item.Team.Player.Membership.NickName}, {item.Team.Player1.Membership.NickName}, {item.Team.Player2.Membership.NickName})</span>");
+                                        break;
+                                }
+                            }
+
+                        </td>
+
+                        <td>
+                            @{
+                                style = "";
+                                switch ((int)ViewBag.TeamSize)
+                                {
+                                    case 1:
+                                        if (item.Team1.Player.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName})</span>");
+                                        break;
+                                    case 2:
+                                        if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
+                                        break;
+                                    case 3:
+                                        if (item.Team1.Player.Membership.Wheelchair || item.Team1.Player2.Membership.Wheelchair || item.Team1.Player1.Membership.Wheelchair)
+                                        {
+                                            style = "color:red;";
+                                        }
+                                        @Html.Raw($"<span style='{style}'>{item.Team1.TeamNo} ({item.Team1.Player.Membership.NickName}, {item.Team1.Player1.Membership.NickName}, {item.Team1.Player2.Membership.NickName})</span>");
+                                        break;
+                                }
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.ForFeitId == 0)
+                            {
+                                @Html.DisplayFor(modelItem => item.Team1Score)
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.ForFeitId == 0)
+                            {
+                                @Html.DisplayFor(modelItem => item.Team2Score)
+                            }
+                        </td>
+                        <td>
+                            @if (item.ForFeitId > 0)
+                            {
+                                if (item.Team.TeamNo == item.ForFeitId)
+                                {
+                                    @Html.Raw(item.Team.TeamNo)
+                                }
+                                else
+                                {
+                                    @Html.Raw(item.Team1.TeamNo)
+                                }
+                            }
+                            else if (item.ForFeitId == -1)
+                            {
+                                @Html.Raw("Both")
+                            }
+                        </td>
+                        <td>
+                            @{
+                                if (User.IsInRole("Admin") ||
+                                    User.IsInRole("LeagueAdmin") ||
+                                    HttpContext.Current.User.IsInRole("Scorer"))
+                                {
+                                    @Html.ActionLink("Scoring", "Scoring", new { id = item.id })
+                                }
+                                id++;
+                            }
+                        </td>
+
+                    </tr>
+
+                }
+
+            </table>
+            <span style="color: red;">Teams with players in wheelchairs are highlighted in red</span>
+        }
+        else
+        {
+            @Html.Raw("This is a playoff week")
+        }
+    }
+}
 
 @section Scripts {
     <script type="text/javascript">

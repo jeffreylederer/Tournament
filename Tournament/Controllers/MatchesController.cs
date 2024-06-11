@@ -29,6 +29,7 @@ namespace Tournament.Controllers
         {
 
             ViewBag.PlayOffs = false;
+            ViewBag.Error = string.Empty;
 
             var league = _db.Leagues.Find(id);
             if (league == null)
@@ -82,6 +83,37 @@ namespace Tournament.Controllers
 
             ViewBag.WeekId = weekid;
             ViewBag.Id = id;
+
+            foreach(Team item in  _db.Teams.Where(x=>x.Leagueid == league.id))
+            {
+                switch(league.TeamSize)
+                {
+                    case 1:
+                        if (item.Skip == null)
+                        {
+                            ViewBag.Error = $"No player on team number  {item.TeamNo}";
+                            return View();
+                        }
+                       
+                        break;
+                    case 2:
+                        if(item.Skip == null || item.Lead == null)
+                        {
+                            ViewBag.Error = $"Player is missing from team number {item.TeamNo}";
+                            return View();
+                        }
+                        
+                        break;
+                    case 3:
+                        if (item.Skip == null || item.Lead == null || item.ViceSkip == null)
+                        {
+                            ViewBag.Error = $"Player is missing from team number {item.TeamNo}";
+                            return View();
+                        }
+                        
+                        break;
+                }
+            }
             
             return View(matches);
 
