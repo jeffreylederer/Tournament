@@ -225,6 +225,7 @@
     <Compile Include="Code\CalculateStandings.cs" />
     <Compile Include="Code\CreateSchedule.cs" />
     <Compile Include="Code\Crypto.cs" />
+    <Compile Include="Code\CustomCompare.cs" />
     <Compile Include="Code\Secret.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ElmahController.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="Controllers\LeaguesController.cs" />
     <Compile Include="Controllers\MembershipController.cs" />
     <Compile Include="Controllers\PlayersController.cs" />
+    <Compile Include="Controllers\PlayOffController.cs" />
     <Compile Include="Controllers\RinkOrdersController.cs" />
     <Compile Include="Controllers\SchedulesController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
@@ -269,6 +271,7 @@
     <Compile Include="Models\PlayerAllowDelete_Result.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PlayoffMatch.cs" />
     <Compile Include="Models\RinkOrder.cs">
       <DependentUpon>TournamentModel.tt</DependentUpon>
     </Compile>
@@ -586,6 +589,11 @@
     <Content Include="Views\RinkOrders\Index.cshtml" />
     <Content Include="Views\Shared\_HomeLayout.cshtml" />
     <Content Include="Views\GetSchedule\ScheduleReport.cshtml" />
+    <Content Include="Views\PlayOff\Index.cshtml" />
+    <Content Include="Views\PlayOff\CreateMatch.cshtml" />
+    <Content Include="Views\PlayOff\Scoring.cshtml" />
+    <Content Include="Views\PlayOff\ScheduleReport.cshtml" />
+    <Content Include="Views\PlayOff\StandingsReport.cshtml" />
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -231,7 +231,7 @@ namespace Tournament.Controllers
             }
 
             _db.Matches.RemoveRange(matches);
-            ;
+           
             
             var cs = new CreateSchedule();
             List<CalculatedMatch> newMatches = null;
@@ -239,8 +239,11 @@ namespace Tournament.Controllers
                 newMatches = cs.matchesWithDivisions(_db.Schedules.Where(x => !x.PlayOffs).Count(x => x.Leagueid == leagueid), numofTeams);
             else
                 newMatches = cs.RoundRobin(numOfWeeks, numofTeams);
-                        
-            var scheduleList = _db.Schedules.Where(x=>x.Leagueid== leagueid).ToList();
+
+
+
+
+            var scheduleList = _db.Schedules.Where(x => x.Leagueid == leagueid).ToList();
             var lookup = new Dictionary<int, DateTime>();
             int i = 1;
             foreach (var item in scheduleList)
@@ -255,18 +258,20 @@ namespace Tournament.Controllers
                 var team2 = teamList.Find(x => x.TeamNo == match.Team2 + 1);
                 var date = lookup[match.Week + 1];
                 var round = scheduleList.Find(x => x.GameDate == date);
-                _db.Matches.Add(new Match()
+                if (!round.PlayOffs)
                 {
-                    id=0,
-                    WeekId = round.id,
-                    Rink = match.Rink == -1 ? -1 : match.Rink + 1,
-                    TeamNo1 = team1.id,
-                    TeamNo2 = match.Rink == -1? (int?) null : team2.id,
-                    Team1Score = 0,
-                    Team2Score = 0,
-                    ForFeitId = 0
-                });
-               
+                    _db.Matches.Add(new Match()
+                    {
+                        id = 0,
+                        WeekId = round.id,
+                        Rink = match.Rink == -1 ? -1 : match.Rink + 1,
+                        TeamNo1 = team1.id,
+                        TeamNo2 = match.Rink == -1 ? (int?)null : team2.id,
+                        Team1Score = 0,
+                        Team2Score = 0,
+                        ForFeitId = 0
+                    });
+                }
             }
             try
             {

@@ -98,7 +98,8 @@ namespace Tournament.Controllers
             }
             SetCookie("leagueid", id.Value);
             SetCookie("leaguename", league.LeagueName);
-  
+            SetCookie("playoff", league.PlayOffs?1:0);
+
 
             FormsAuthentication.SetAuthCookie(user.username, false);
             FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(

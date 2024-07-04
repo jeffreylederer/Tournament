@@ -13,6 +13,12 @@
         {
             int.TryParse(cookie.Value, out leagueid);
         }
+        cookie = Request.Cookies["playoff"];
+        int playoff = 0;
+        if (cookie != null)
+        {
+            int.TryParse(cookie.Value, out playoff);
+        }
     }
 </head>
 <body>
@@ -51,6 +57,11 @@
                                     <li>----------------------------</li>
                                     <li>@Html.ActionLink("Create Matches", "CreateMatches", "Matches", new { id = leagueid }, null)</li>
                                     <li>@Html.ActionLink("Delete Matches", "ClearSchedule", "Matches", new { id = leagueid }, null)</li>
+                                }
+                                @if (playoff == 1)
+                                {
+                                    <li>----------------------------</li>
+                                    <li>@Html.ActionLink("Playoff Matches", "Index", "Playoff", new { id = leagueid }, null)</li>
                                 }
                             </ul>
                         </li>

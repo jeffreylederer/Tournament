@@ -1,4 +1,5 @@
-﻿using Elmah;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Elmah;
 using System;
 using System.Data;
 using System.Data.Entity;
@@ -85,6 +86,7 @@ namespace Tournament.Controllers
                 }
             }
             ViewBag.Schedule = db.Schedules.Where(x => x.Leagueid == schedule.Leagueid).OrderBy(x => x.GameDate);
+            ViewBag.PlayOffs = schedule.PlayOffs;
             return View(schedule);
         }
 

@@ -1,15 +1,15 @@
 ﻿@using ReportViewerForMvc
 
 @{
-    ViewBag.Title = "Team Report";
+    ViewBag.Title = "Schedule Report";
     Layout = "~/Views/Shared/_LeagueLayout.cshtml";
 }
 
-<h2>Team Report</h2>
+<h2>Playoffs Schedule Report for @ViewBag.Date</h2>
 <table>
     <tr>
         <td>
-            @Html.ActionLink("Back to List", "Index", new {id=ViewBag.Id})
+            @Html.ActionLink("Back to List", "Index", new { id = ViewBag.Id, weekid = ViewBag.Weekid })
         </td>
     </tr>
     <tr>
